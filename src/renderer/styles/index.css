@@ -9,4 +9,8 @@ body {
   @apply antialiased;
 }
 
+.react-codemirror2 .CodeMirror {
+  @apply font-mono text-xs;
+}
+
 @tailwind utilities;

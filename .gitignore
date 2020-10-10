@@ -10,7 +10,6 @@
 
 # production
 /build
-/types
 /storybook-static
 
 # misc

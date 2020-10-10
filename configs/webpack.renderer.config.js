@@ -41,6 +41,15 @@ module.exports = {
           },
         ],
       },
+
+      {
+        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
+        loader: 'url-loader',
+        options: {
+          name: 'static/media/[name].[hash:8].[ext]',
+          esModule: false,
+        },
+      },
     ],
   },
 
@@ -61,5 +70,6 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname, '../build/renderer'),
     port: 3000,
+    historyApiFallback: true,
   },
 }
