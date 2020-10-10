@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+
+@tailwind components;
+
+body {
+  @apply antialiased;
+}
+
+@tailwind utilities;
