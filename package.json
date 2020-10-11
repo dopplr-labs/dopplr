@@ -1,19 +1,58 @@
 {
   "name": "dopplr-client",
+  "description": "Dopplr is analytical tool for creating beautiful dashboards from sql queries",
   "version": "0.1.0",
   "main": "build/main/index.js",
   "license": "MIT",
+  "author": {
+    "name": "Dopplr Maintainers"
+  },
+  "build": {
+    "appId": "com.dopplr.dopplr-client",
+    "productName": "Dopplr",
+    "copyright": "Copyright © 2020 Dopplr Labs",
+    "mac": {
+      "category": "productivity",
+      "icon": "assets/icons/logo.icns"
+    },
+    "dmg": {
+      "backgroundColor": "#c2e2f5"
+    },
+    "win": {
+      "icon": "assets/icons/logo.ico"
+    },
+    "nsis": {
+      "perMachine": true
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icons/logo.icns"
+    },
+    "files": [
+      "./build/**/*",
+      "./assets/icons/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
   "scripts": {
     "start-renderer": "node scripts/start-renderer.js",
     "start-renderer:browser": "webpack-dev-server --config ./configs/webpack.renderer.config.js --target=web --open",
     "start-main": "node scripts/start-main.js",
-    "start": "concurrently yarn:start-main yarn:start-renderer"
+    "start": "concurrently yarn:start-main yarn:start-renderer",
+    "prebuild": "rimraf build dist",
+    "build-renderer": "NODE_ENV=production webpack --config ./configs/webpack.renderer.config.js",
+    "build-main": "NODE_ENV=production webpack --config ./configs/webpack.main.config.js",
+    "build": "concurrently yarn:build-renderer yarn:build-main",
+    "prepack": "yarn build",
+    "pack": "electron-builder --dir",
+    "predist": "yarn build",
+    "dist": "electron-builder -mwl"
   },
   "dependencies": {
     "@tail-kit/tail-kit": "^0.1.5",
     "codemirror": "^5.58.1",
-    "electron": "^10.1.3",
-    "electron-is-dev": "^1.2.0",
     "react": "^16.13.1",
     "react-codemirror2": "^7.2.1",
     "react-dom": "^16.13.1",
@@ -30,6 +69,9 @@
     "autoprefixer": "^10.0.1",
     "concurrently": "^5.3.0",
     "css-loader": "^4.3.0",
+    "electron": "^10.1.3",
+    "electron-builder": "^22.8.1",
+    "electron-is-dev": "^1.2.0",
     "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
@@ -40,8 +82,10 @@
     "eslint-plugin-standard": "^4.0.1",
     "file-loader": "^6.1.1",
     "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^1.0.0",
     "postcss": "^8.1.1",
     "postcss-loader": "^4.0.4",
+    "rimraf": "^3.0.2",
     "style-loader": "^2.0.0",
     "tailwindcss": "^1.8.13",
     "ts-loader": "^8.0.4",

@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -9,8 +10,8 @@ module.exports = {
   devtool: 'inline-source-map',
 
   output: {
-    path: path.resolve(__dirname, '../build'),
-    filename: isProduction ? '[name].[hash].js' : 'index.js',
+    path: path.resolve(__dirname, '../build/renderer'),
+    filename: isProduction ? 'js/[name].[hash].js' : 'index.js',
   },
 
   module: {
@@ -24,7 +25,7 @@ module.exports = {
       {
         test: /\.css$/i,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -61,9 +62,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/renderer/public/index.html'),
     }),
-  ],
+    isProduction &&
+      new MiniCssExtractPlugin({
+        filename: 'assets/css/[name].[contenthash].css',
+        chunkFilename: 'assets/css/[id].[contenthash].css',
+      }),
+  ].filter(Boolean),
 
-  target: 'electron-renderer',
+  // target: 'electron-renderer',
 
   mode: isProduction ? 'production' : 'development',
 

@@ -8,7 +8,13 @@ module.exports = {
     purgeLayersByDefault: true,
   },
 
-  purge: ['../src/**/*.tsx', '../src/**/*.ts'],
+  // purge: [
+  //   path.resolve(__dirname, '../src/**/*.tsx'),
+  //   path.resolve(__dirname, '../src/**/*.ts'),
+  // ],
+
+  // TODO: Purge CSS files once theming is done in the @tail-kit/tail-kit
+  purge: false,
 
   theme: {
     extend: {

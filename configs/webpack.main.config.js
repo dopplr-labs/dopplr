@@ -9,7 +9,7 @@ module.exports = {
 
   output: {
     path: path.resolve(__dirname, '../build/main'),
-    filename: isProduction ? '[name].[hash].js' : 'index.js',
+    filename: 'index.js',
   },
 
   module: {
