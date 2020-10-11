@@ -44,6 +44,33 @@ module.exports = {
       },
 
       {
+        test: /\.less/i,
+        use: [
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  [
+                    require('tailwindcss')(require('./tailwind.config')),
+                    require('autoprefixer'),
+                  ],
+                ],
+              },
+            },
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: { javascriptEnabled: true },
+            },
+          },
+        ],
+      },
+
+      {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
         loader: 'url-loader',
         options: {
@@ -55,7 +82,7 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts', '.js', '.less'],
   },
 
   plugins: [

@@ -1,5 +1,5 @@
 import React from 'react'
-import { BellSolid } from '@tail-kit/tail-kit'
+import { BellFilled } from '@ant-design/icons'
 
 export default function Navbar() {
   return (
@@ -12,8 +12,8 @@ export default function Navbar() {
         />
         <div className="font-medium text-white">Dopplr</div>
         <div className="flex-1" />
-        <span className="p-2 bg-gray-600 rounded-full cursor-pointer">
-          <BellSolid className="w-5 h-5 text-white" />
+        <span className="flex items-center justify-center w-8 h-8 bg-gray-600 rounded-full cursor-pointer">
+          <BellFilled className="text-base text-white" />
         </span>
       </div>
     </div>

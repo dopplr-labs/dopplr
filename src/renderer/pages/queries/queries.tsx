@@ -1,11 +1,6 @@
 import React from 'react'
-import {
-  ChevronDownSolid,
-  SearchSolid,
-  Button,
-  DownloadSolid,
-  Input,
-} from '@tail-kit/tail-kit'
+import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
+import { Button, Input, Tabs } from 'antd'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 
 require('codemirror/lib/codemirror.css')
@@ -16,37 +11,32 @@ export default function Queries() {
   return (
     <div className="flex flex-1 h-full">
       <div className="w-64 h-full border-r">
-        <div className="flex items-center justify-between px-6 my-4 text-xs font-medium text-gray-600">
-          <span className="px-2 py-1 text-blue-700 bg-blue-100 rounded-md">
-            Resource
-          </span>
-          <span>History</span>
-          <span>Saved</span>
-        </div>
-        <div className="px-6 space-y-4">
-          <div className="flex items-center justify-between px-3 py-1 text-xs text-gray-400 border rounded-md focus-within:shadow-outline">
-            <input
-              className="w-full focus:outline-none"
-              placeholder="Select Resource"
+        <Tabs tabBarGutter={8}>
+          <Tabs.TabPane
+            tab={<span className="px-2">Resources</span>}
+            key="resources"
+            className="px-4"
+          >
+            <Input
+              placeholder="Search Tables and Columns"
+              prefix={<SearchOutlined />}
             />
-            <ChevronDownSolid className="w-5 h-5" />
-          </div>
-          <div className="flex items-center px-3 py-1 space-x-1 text-gray-400 border rounded-md focus-within:shadow-outline">
-            <SearchSolid className="w-5 h-5" />
-            <input
-              className="w-full text-xs focus:outline-none"
-              placeholder="Search tables and columns"
-            />
-          </div>
-        </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane
+            tab={<span className="px-2">History</span>}
+            key="history"
+          />
+          <Tabs.TabPane tab={<span className="px-2">Saved</span>} key="saved" />
+        </Tabs>
+        <div className="px-6 space-y-4" />
       </div>
       <div className="flex flex-col flex-1">
         {/* Query Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b">
           <span className="text-sm">Untitled query</span>
           <div className="flex items-center space-x-4">
-            <Button label="Save" />
-            <Button buttonType={Button.ButtonType.primary} label="Run Query" />
+            <Button>Save</Button>
+            <Button type="primary">Run Query</Button>
           </div>
         </div>
         {/* Query editor */}
@@ -57,9 +47,13 @@ export default function Queries() {
           />
         </div>
         <div className="flex-1 px-6 py-4 border-b ">
-          <div className="flex flex-row-reverse gap-x-4">
-            <Button label="Download" icon={<DownloadSolid />} />
-            <Input placeholder="Search Table" icon={<SearchSolid />} />
+          <div className="flex items-center justify-end gap-x-4">
+            <Input
+              placeholder="Search Table"
+              className="w-64"
+              prefix={<SearchOutlined />}
+            />
+            <Button icon={<DownloadOutlined />}>Download</Button>
           </div>
         </div>
       </div>

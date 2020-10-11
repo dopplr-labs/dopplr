@@ -1,8 +1,10 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
+
+import './styles/index.less'
+
 import { App } from './app'
-import './styles/index.css'
 
 const root = document.getElementById('root')
 if (root) {
