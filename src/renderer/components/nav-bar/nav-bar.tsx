@@ -3,8 +3,8 @@ import { BellSolid } from '@tail-kit/tail-kit'
 
 export default function Navbar() {
   return (
-    <div className="h-12 bg-gray-900">
-      <div className="flex items-center h-full max-w-screen-xl px-6 mx-auto">
+    <div className="relative z-10 h-12 bg-gray-900 shadow-md">
+      <div className="flex items-center h-full px-4 mx-auto">
         <img
           src={require('../../images/logo-transparent.svg')}
           alt="Dopplr"

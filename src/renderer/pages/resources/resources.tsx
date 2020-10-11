@@ -7,39 +7,35 @@ const cardList = [
     id: 'postgres',
     title: 'Postgres',
     description:
-      'Connect with PostgreSQL database to run SQL queries in dopplr',
+      'Connect with PostgreSQL database to run SQL queries in Dopplr',
     imagePath: require('../../images/resources/postgres-logo.png'),
     commingSoon: false,
   },
   {
     id: 'vertica',
     title: 'Vertica',
-    description:
-      'Connect with PostgreSQL database to run SQL queries in dopplr',
+    description: 'Connect with Vertica database to run SQL queries in Dopplr',
     imagePath: require('../../images/resources/vertica-logo.png'),
     comingSoon: true,
   },
   {
     id: 'hive',
     title: 'Hive',
-    description:
-      'Connect with PostgreSQL database to run SQL queries in dopplr',
+    description: 'Connect with Hive database to run SQL queries in Dopplr',
     imagePath: require('../../images/resources/hive-logo.png'),
     comingSoon: true,
   },
   {
     id: 'redshift',
     title: 'Redshift',
-    description:
-      'Connect with PostgreSQL database to run SQL queries in dopplr',
+    description: 'Connect with Redshift database to run SQL queries in Dopplr',
     imagePath: require('../../images/resources/redshift-logo.png'),
     comingSoon: true,
   },
   {
     id: 'mongodb',
     title: 'MongoDB',
-    description:
-      'Connect with PostgreSQL database to run SQL queries in dopplr',
+    description: 'Connect with MongoDB database to run queries in Dopplr',
     imagePath: require('../../images/resources/mongodb-logo.png'),
     comingSoon: true,
   },
