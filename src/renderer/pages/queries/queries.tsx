@@ -11,7 +11,7 @@ export default function Queries() {
   return (
     <div className="flex flex-1 h-full">
       <div className="w-64 h-full border-r">
-        <Tabs tabBarGutter={8}>
+        <Tabs tabBarGutter={8} className="h-full">
           <Tabs.TabPane
             tab={<span className="px-2">Resources</span>}
             key="resources"
