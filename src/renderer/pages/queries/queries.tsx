@@ -45,9 +45,7 @@ export default function Queries() {
         <div className="flex items-center justify-between h-16 px-6 border-b">
           <span className="text-sm">Untitled query</span>
           <div className="flex items-center space-x-4">
-            {/* Remove css prop after fixing the issue */}
             <Button label="Save" />
-            {/* Remove css prop after fixing the issue */}
             <Button buttonType={Button.ButtonType.primary} label="Run Query" />
           </div>
         </div>
@@ -60,9 +58,7 @@ export default function Queries() {
         </div>
         <div className="flex-1 px-6 py-4 border-b ">
           <div className="flex flex-row-reverse gap-x-4">
-            {/* Remove css prop after fixing the issue */}
             <Button label="Download" icon={<DownloadSolid />} />
-            {/* Remove css prop after fixing the issue */}
             <Input placeholder="Search Table" icon={<SearchSolid />} />
           </div>
         </div>
