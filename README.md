@@ -2,7 +2,7 @@
 
 # Dopplr
 
-**dopplr** is an analytical tool for creating beautiful dashboards using sql queries. It is built using `electron` and `nestjs`.
+**dopplr** is an analytical tool for creating beautiful dashboards using sql queries. It is built using `react` and `nestjs`.
 
 ## Development Information
 
@@ -16,7 +16,6 @@
 - [docker](https://www.docker.com/) for containers
 - [react](https://reactjs.org/) for development
 - [tailwindcss](https://tailwindcss.com/) for styling
-- [electron](https://www.electronjs.org/) for building desktop application
 - [nestjs](https://nestjs.com/) for backend
 
 ### Starting with development
