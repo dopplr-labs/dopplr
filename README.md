@@ -8,8 +8,8 @@
 
 ### Requirements
 
-- [Node v14.9.0](https://nodejs.org/) - Preferably use [nvm](https://github.com/nvm-sh/nvm) for installing `node`
-- [Yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable)
+- [`docker`](https://docs.docker.com/engine/install/)
+- [`docker-compose`](https://docs.docker.com/compose/install/)
 
 ### Technologies Used
 
@@ -21,13 +21,32 @@
 
 ### Starting with development
 
-For local development you can use
+If you are running the dockers for the first time (or anytime the `Dockerfile`
+or `docker-entrypoint.sh` changes), make sure to build all the containers using
 
-```sh
-yarn start
+```
+[sudo] docker-compose up --build
 ```
 
-It would run `webpack-dev-server` for the `renderer` and `webpack` in watch mode for changes in the `main` process.
+Later on, to start all the 3 dockers (database, server and client) use
+
+```
+[sudo] docker-compose up
+```
+
+To install any package in the `client`, start the `docker` shell
+
+```
+[sudo] docker-compose exec client sh
+```
+
+To install any package in the `server`, start the `docker` shell
+
+```
+[sudo] docker-compose exec server sh
+```
+
+It would open the shell and you can then install any dependency using `npm` or `yarn`
 
 ### Git Workflow
 
