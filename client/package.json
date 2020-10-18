@@ -11,11 +11,13 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "antd": "^4.7.0",
+    "axios": "^0.20.0",
     "clsx": "^1.1.1",
     "codemirror": "^5.58.1",
     "react": "^16.14.0",
     "react-codemirror2": "^7.2.1",
     "react-dom": "^16.14.0",
+    "react-query": "^2.23.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "typescript": "~3.7.2"
