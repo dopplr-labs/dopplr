@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  client:
+    stdin_open: true
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - './client:/srv/client'
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:3001

@@ -1,0 +1,29 @@
+@import '~antd/lib/style/themes/default';
+@import '~antd/dist/antd.less';
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+
+@tailwind components;
+
+@font-family: theme('fontFamily.sans');
+@primary-color: #3f83f8;
+@border-radius-base: theme('borderRadius.default');
+@font-size-base: 13px;
+@font-size-sm: 11px;
+
+svg {
+  vertical-align: inherit;
+}
+
+body {
+  @apply antialiased;
+}
+
+.react-codemirror2 .CodeMirror {
+  @apply font-mono text-xs;
+}
+
+@tailwind utilities;
