@@ -1,8 +1,24 @@
 import React from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 import Connectors from './components/connectors-list'
+import NewConnection from './components/new-connection'
+
+const connectedResources = [
+  {
+    id: '101',
+    title: 'Project DB',
+  },
+  {
+    id: '102',
+    title: 'Users database',
+  },
+  {
+    id: '103',
+    title: 'Billing DB',
+  },
+]
 
 export default function Resources() {
   return (
@@ -17,8 +33,16 @@ export default function Resources() {
             Create New
           </Button>
         </Link>
+        {connectedResources.map((resource) => (
+          <div key={resource.id} className="cursor-pointer hover:text-blue-500">
+            {resource.title}
+          </div>
+        ))}
       </div>
-      <Connectors />
+      <Switch>
+        <Route path="/resources" exact component={Connectors} />
+        <Route path="/resources/new" component={NewConnection} />
+      </Switch>
     </div>
   )
 }
