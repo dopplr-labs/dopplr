@@ -1,5 +1,20 @@
 version: '3.8'
 services:
+  postgres:
+    image: 'postgres:alpine'
+    environment:
+      POSTGRES_PASSWORD: 'dopplr@123'
+      POSTGRES_USER: 'admin'
+      POSTGRES_DB: 'dopplr'
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+        - 8080:8080
   server:
     stdin_open: true
     build:
@@ -11,6 +26,13 @@ services:
       - './server:/srv/server'
     environment:
       PORT: 3001
+      POSTGRES_DB: 'dopplr'
+      DB_HOST: 'postgres'
+      POSTGRES_PASSWORD: 'dopplr@123'
+      POSTGRES_USER: 'admin'
+      POSTGRES_PORT: '5432'
+    depends_on:
+      - postgres
   client:
     stdin_open: true
     build:
