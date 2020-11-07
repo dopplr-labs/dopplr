@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import ResourceCard from './resource-card'
 import Banner from './banner'
 
@@ -47,13 +48,14 @@ export default function Connectors() {
       <Banner />
       <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {cardList.map((card) => (
-          <ResourceCard
-            key={card.id}
-            title={card.title}
-            description={card.description}
-            imagePath={card.imagePath}
-            comingSoon={card.comingSoon ?? false}
-          />
+          <Link to="/resources/new" key={card.id}>
+            <ResourceCard
+              title={card.title}
+              description={card.description}
+              imagePath={card.imagePath}
+              comingSoon={card.comingSoon ?? false}
+            />
+          </Link>
         ))}
       </div>
     </div>
