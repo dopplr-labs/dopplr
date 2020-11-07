@@ -6,7 +6,7 @@
 @tailwind components;
 
 svg {
-  vertical-align: inherit;
+  vertical-align: initial !important;
 }
 
 body {
