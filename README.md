@@ -47,6 +47,30 @@ To install any package in the `server`, start the `docker` shell
 
 It would open the shell and you can then install any dependency using `npm` or `yarn`
 
+### Creating sample database
+
+To test the application, a sample database can be used, such as [northwind](https://github.com/pthom/northwind_psql). To restore the data use,
+
+- First download the database dump from [here](https://raw.githubusercontent.com/pthom/northwind_psql/master/northwind.sql).
+
+- Run the `docker` command to start `pqsl`
+
+```sh
+docker exec -it dopplr_postgres_1 psql -U admin northwind
+```
+
+- In the `psql` terminal, enter the follwing to create a database and exit out of it.
+
+```psql
+CREATE DATABASE northwind;
+```
+
+- Restore the database from the dump using
+
+```sh
+cat /path/to/downloaded/northwind.sql | docker exec -i dopplr_postgres_1 psql -U admin northwind
+```
+
 ### Git Workflow
 
 We use [gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for managing git. It is recommended to use [gitflow](https://github.com/nvie/gitflow/wiki/Installation) plugin.
