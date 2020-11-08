@@ -53,4 +53,10 @@ export class ConnectionsController {
   ): Promise<{ success: boolean; message: string }> {
     return this.connectionsService.testConnection(id)
   }
+
+  @Post('schema/:id')
+  @HttpCode(200)
+  async fetchSchema(@Param('id') id: number) {
+    return this.connectionsService.fetchSchema(id)
+  }
 }
