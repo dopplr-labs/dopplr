@@ -24,22 +24,23 @@ settings:
   react:
     version: detect
 rules:
-  space-before-function-paren: off
-  comma-dangle: off
+  space-before-function-paren: 0
+  comma-dangle: 0
   react/self-closing-comp:
     - error
     - component: true
       html: true
   react/no-unknown-property: error
-  react/prop-types: off
-  import/un-resolved: off
+  react/prop-types: 0
+  import/un-resolved: 0
   import/order:
     - error
     - groups:
         - - builtin
           - external
           - internal
-  no-unused-vars: off
+  no-unused-vars: 0
   '@typescript-eslint/no-unused-vars': error
-  indent: off
+  indent: 0
   no-console: warn
+  no-useless-constructor: 0

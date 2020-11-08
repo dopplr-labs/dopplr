@@ -1,5 +1,25 @@
 version: '3.8'
 services:
+  # database
+  postgres:
+    image: 'postgres:alpine'
+    environment:
+      POSTGRES_PASSWORD: 'dopplr@123'
+      POSTGRES_USER: 'admin'
+      POSTGRES_DB: 'dopplr'
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dopplr.io
+      PGADMIN_DEFAULT_PASSWORD: dopplr@123
+    ports:
+      - '8080:80'
+      
+  # backend
   server:
     stdin_open: true
     build:
@@ -11,6 +31,15 @@ services:
       - './server:/srv/server'
     environment:
       PORT: 3001
+      POSTGRES_DB: 'dopplr'
+      DB_HOST: 'postgres'
+      POSTGRES_PASSWORD: 'dopplr@123'
+      POSTGRES_USER: 'admin'
+      POSTGRES_PORT: '5432'
+    depends_on:
+      - postgres
+
+  # frontend
   client:
     stdin_open: true
     build:
