@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -18,6 +19,11 @@ export class ConnectionsController {
   @Get()
   getAllConnections(): Promise<Connection[]> {
     return this.connectionsService.getAllConnections()
+  }
+
+  @Get('id')
+  async getConnection(@Param('id') id: number): Promise<Connection> {
+    return this.connectionsService.getConnection(id)
   }
 
   @Post()
@@ -38,5 +44,13 @@ export class ConnectionsController {
   @Delete(':id')
   deleteConnection(@Param('id') id: number): Promise<Connection> {
     return this.connectionsService.deleteConnection(id)
+  }
+
+  @Post('test/:id')
+  @HttpCode(200)
+  async testConnection(
+    @Param('id') id: number,
+  ): Promise<{ success: boolean; message: string }> {
+    return this.connectionsService.testConnection(id)
   }
 }

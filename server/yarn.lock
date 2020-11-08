@@ -819,6 +819,19 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
+"@types/pg-types@*":
+  version "1.11.5"
+  resolved "https://registry.yarnpkg.com/@types/pg-types/-/pg-types-1.11.5.tgz#1eebbe62b6772fcc75c18957a90f933d155e005b"
+  integrity sha512-L8ogeT6vDzT1vxlW3KITTCt+BVXXVkLXfZ/XNm6UqbcJgxf+KPO7yjWx7dQQE8RW07KopL10x2gNMs41+IkMGQ==
+
+"@types/pg@^7.14.6":
+  version "7.14.6"
+  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-7.14.6.tgz#10d2ab6ae8bdda38a77ef677f15d24e9a66d526e"
+  integrity sha512-mf6kYvuYS2CObDxtsw5imE4vOvq+XHJtiJNFXir/fn9nxZtIFQ3/ECpokm8fNkxKBh7nQhyegHwNg1NIW+yYJA==
+  dependencies:
+    "@types/node" "*"
+    "@types/pg-types" "*"
+
 "@types/prettier@^2.0.0":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.5.tgz#b6ab3bba29e16b821d84e09ecfaded462b816b00"
