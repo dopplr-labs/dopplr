@@ -75,6 +75,14 @@ cat /path/to/downloaded/northwind.sql | docker exec -i dopplr_postgres_1 psql -U
 
 We use [gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for managing git. It is recommended to use [gitflow](https://github.com/nvie/gitflow/wiki/Installation) plugin.
 
+We also use [commitizen](https://github.com/commitizen/cz-cli) to write commit messages. It is very simple to use. Just install `commitizen` globally using
+
+```sh
+npm install -g commitizen
+```
+
+and use `cz` instead of `git commit`. It would ask you fill the some fields and your commit message would be ready. You can find more information about it [here](https://github.com/commitizen/cz-cli#if-your-repo-is-commitizen-friendly).
+
 The overall flow of Gitflow is:
 
 - A develop branch is created from master
