@@ -9,7 +9,11 @@ import {
   Post,
 } from '@nestjs/common'
 import { Connection } from './connection.entity'
-import { CreateConnectionDto, UpdateConnectionDto } from './connections.dto'
+import {
+  CreateConnectionDto,
+  TestConnectionDto,
+  UpdateConnectionDto,
+} from './connections.dto'
 import { ConnectionsService } from './connections.service'
 
 @Controller('connections')
@@ -46,12 +50,12 @@ export class ConnectionsController {
     return this.connectionsService.deleteConnection(id)
   }
 
-  @Post('test/:id')
+  @Post('test')
   @HttpCode(200)
   async testConnection(
-    @Param('id') id: number,
+    @Body() testConnectionDto: TestConnectionDto,
   ): Promise<{ success: boolean; message: string }> {
-    return this.connectionsService.testConnection(id)
+    return this.connectionsService.testConnection(testConnectionDto)
   }
 
   @Post('schema/:id')

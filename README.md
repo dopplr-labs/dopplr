@@ -23,25 +23,25 @@
 If you are running the dockers for the first time (or anytime the `Dockerfile`
 or `docker-entrypoint.sh` changes), make sure to build all the containers using
 
-```
+```sh
 [sudo] docker-compose up --build
 ```
 
 Later on, to start all the 3 dockers (database, server and client) use
 
-```
+```sh
 [sudo] docker-compose up
 ```
 
 To install any package in the `client`, start the `docker` shell
 
-```
+```sh
 [sudo] docker-compose exec client sh
 ```
 
 To install any package in the `server`, start the `docker` shell
 
-```
+```sh
 [sudo] docker-compose exec server sh
 ```
 
@@ -56,7 +56,7 @@ To test the application, a sample database can be used, such as [northwind](http
 - Run the `docker` command to start `pqsl`
 
 ```sh
-docker exec -it dopplr_postgres_1 psql -U admin northwind
+docker exec -it dopplr_postgres_1 psql -U admin postgres
 ```
 
 - In the `psql` terminal, enter the follwing to create a database and exit out of it.
@@ -71,17 +71,17 @@ CREATE DATABASE northwind;
 cat /path/to/downloaded/northwind.sql | docker exec -i dopplr_postgres_1 psql -U admin northwind
 ```
 
+### pgAdmin
+
+To run `pgAdmin` explicitly, run the following command
+
+```sh
+docker-compose up pgadmin
+```
+
 ### Git Workflow
 
 We use [gitflow workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for managing git. It is recommended to use [gitflow](https://github.com/nvie/gitflow/wiki/Installation) plugin.
-
-We also use [commitizen](https://github.com/commitizen/cz-cli) to write commit messages. It is very simple to use. Just install `commitizen` globally using
-
-```sh
-npm install -g commitizen
-```
-
-and use `cz` instead of `git commit`. It would ask you fill the some fields and your commit message would be ready. You can find more information about it [here](https://github.com/commitizen/cz-cli#if-your-repo-is-commitizen-friendly).
 
 The overall flow of Gitflow is:
 
@@ -113,16 +113,10 @@ git flow hotfix start hotfix_branch
 
 #### Commit Message
 
-We're using conventional commits to ensure consistency of commit messages.
+We're using conventional commits to ensure consistency of commit messages. We use [commitizen](https://github.com/commitizen/cz-cli) to write commit messages. It is very simple to use. Just install `commitizen` globally using
 
-Always assign a prefix to your first commit in a new branch.
-
-For more information, check the [convention](https://www.conventionalcommits.org/en/v1.0.0/).
-
-Please see [https://chris.beams.io/posts/git-commit/](https://chris.beams.io/posts/git-commit/) for information on how to write commit messages.
-
-If the commit has a corresponding issue, make sure to add the reference to the issue in the commit message
-
-```git
-[ref-#329] Fixing the performance issue on the input field
+```sh
+npm install -g commitizen
 ```
+
+and use `cz` instead of `git commit`. It would ask you fill the some fields and your commit message would be ready. You can find more information about it [here](https://github.com/commitizen/cz-cli#if-your-repo-is-commitizen-friendly).

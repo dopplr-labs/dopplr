@@ -4,7 +4,11 @@ import { Pool } from 'pg'
 import { omit } from 'lodash'
 import { Connection } from './connection.entity'
 import { ConnectionRepository } from './connection.repository'
-import { CreateConnectionDto, UpdateConnectionDto } from './connections.dto'
+import {
+  CreateConnectionDto,
+  TestConnectionDto,
+  UpdateConnectionDto,
+} from './connections.dto'
 
 @Injectable()
 export class ConnectionsService {
@@ -77,9 +81,8 @@ export class ConnectionsService {
    * @param id - Id of the connection to be tested
    */
   async testConnection(
-    id: number,
+    connection: TestConnectionDto,
   ): Promise<{ success: boolean; message: string }> {
-    const connection = await this.getConnection(id)
     if (connection.type === 'postgres') {
       const pool = this._createPgConnectionPool(connection)
 
@@ -146,7 +149,7 @@ export class ConnectionsService {
    *
    * @param connection - Connection configuration
    */
-  _createPgConnectionPool(connection: Connection) {
+  _createPgConnectionPool(connection: TestConnectionDto | CreateConnectionDto) {
     const pool = new Pool({
       host: connection.host,
       database: connection.database,

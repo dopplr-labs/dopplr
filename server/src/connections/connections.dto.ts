@@ -22,7 +22,6 @@ export class CreateConnectionDto {
   @IsString()
   password: string
 }
-
 export class UpdateConnectionDto {
   @IsOptional()
   @IsString()
@@ -49,6 +48,29 @@ export class UpdateConnectionDto {
   username: string
 
   @IsOptional()
+  @IsString()
+  password: string
+}
+
+export class TestConnectionDto {
+  @IsString()
+  name: string
+
+  @IsIn(['postgres'])
+  type: string
+
+  @IsString()
+  host: string
+
+  @IsNumber()
+  port: number
+
+  @IsString()
+  database: string
+
+  @IsString()
+  username: string
+
   @IsString()
   password: string
 }
