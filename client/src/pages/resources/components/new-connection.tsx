@@ -1,13 +1,46 @@
 import React from 'react'
-import { Button, Form, Input, InputNumber, Divider, Checkbox } from 'antd'
+import { Button, Form, Input, InputNumber, Divider } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import { queryCache, useMutation, useQuery } from 'react-query'
+import {
+  createResource,
+  fetchResources,
+} from '../../../queries/resourceQueries'
 
 export default function NewConnection() {
+  const { data: resources } = useQuery(['resources'], fetchResources)
+
+  const [addResource] = useMutation(createResource, {
+    onSuccess: (createdResource) => {
+      queryCache.setQueryData(
+        ['resources'],
+        resources ? [...resources, createdResource] : [createdResource],
+      )
+    },
+  })
+
   const formItemLayout = {
     labelCol: { span: 7 },
     wrapperCol: { span: 14 },
   }
+  const tailLayout = {
+    wrapperCol: { offset: 7, span: 14 },
+  }
+
+  const onFinish = (values: any) => {
+    const { name, host, port, database, username, password } = values
+    addResource({
+      name,
+      type: 'postgres',
+      host,
+      port,
+      database,
+      username,
+      password,
+    })
+  }
+
   return (
     <div className="flex-1 py-8">
       <div>
@@ -26,36 +59,37 @@ export default function NewConnection() {
           Connect Postgres
         </div>
         <div className="px-8 mb-8">
-          <Form {...formItemLayout} layout="horizontal">
-            <Form.Item name="Name" label="Name" rules={[{ required: true }]}>
+          <Form
+            {...formItemLayout}
+            layout="horizontal"
+            onFinish={onFinish}
+            initialValues={{ port: 5432 }}
+          >
+            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
               <Input placeholder='i.e. "Production DB (readonly)"' />
-              <span className="text-xs text-gray-600">
-                The name for this resource when creating queries
-              </span>
             </Form.Item>
             <Divider />
-            <Form.Item name="Host" label="Host" rules={[{ required: true }]}>
+            <Form.Item name="host" label="Host" rules={[{ required: true }]}>
               <Input />
             </Form.Item>
-            <Form.Item name="Port" label="Port" rules={[{ required: true }]}>
-              <InputNumber defaultValue={5432} />
+            <Form.Item name="port" label="Port" rules={[{ required: true }]}>
+              <InputNumber />
             </Form.Item>
-            <Form.Item name="database-name" label="Database Name">
+            <Form.Item name="database" label="Database Name">
               <Input placeholder="hn_api_production" />
             </Form.Item>
-            <Form.Item name="database-username" label="Database Username">
+            <Form.Item name="username" label="Database Username">
               <Input placeholder="postgres" />
             </Form.Item>
-            <Form.Item name="database-password" label="Database Password">
+            <Form.Item name="password" label="Database Password">
               <Input.Password />
             </Form.Item>
-            <Checkbox className="ml-40">Connect Using SSL</Checkbox>
+            <Form.Item {...tailLayout}>
+              <Button type="primary" htmlType="submit">
+                Create Resource
+              </Button>
+            </Form.Item>
           </Form>
-        </div>
-        <div className="flex px-8 py-5 space-x-2">
-          <span className="flex-1" />
-          <Button>Test Connection</Button>
-          <Button type="primary">Create Resource</Button>
         </div>
       </div>
     </div>
