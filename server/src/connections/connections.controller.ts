@@ -25,29 +25,42 @@ export class ConnectionsController {
     return this.connectionsService.getAllConnections()
   }
 
-  @Get('id')
-  async getConnection(@Param('id') id: number): Promise<Connection> {
-    return this.connectionsService.getConnection(id)
+  @Get(':id')
+  async getConnection(
+    @Param('id') id: number,
+  ): Promise<{ success: boolean; data: Connection }> {
+    const connection = await this.connectionsService.getConnection(id)
+    return { success: true, data: connection }
   }
 
   @Post()
-  createConnection(
+  async createConnection(
     @Body() createConnectionDto: CreateConnectionDto,
-  ): Promise<Connection> {
-    return this.connectionsService.createConnection(createConnectionDto)
+  ): Promise<{ success: boolean; data: Connection }> {
+    const connection = await this.connectionsService.createConnection(
+      createConnectionDto,
+    )
+    return { success: true, data: connection }
   }
 
   @Patch(':id')
-  updateConnection(
+  async updateConnection(
     @Param('id') id: number,
     @Body() updateConnectionDto: UpdateConnectionDto,
-  ): Promise<Connection> {
-    return this.connectionsService.updateConnection(id, updateConnectionDto)
+  ): Promise<{ success: boolean; data: Connection }> {
+    const connection = await this.connectionsService.updateConnection(
+      id,
+      updateConnectionDto,
+    )
+    return { success: true, data: connection }
   }
 
   @Delete(':id')
-  deleteConnection(@Param('id') id: number): Promise<Connection> {
-    return this.connectionsService.deleteConnection(id)
+  async deleteConnection(
+    @Param('id') id: number,
+  ): Promise<{ success: boolean; data: Connection }> {
+    const connection = await this.connectionsService.deleteConnection(id)
+    return { success: true, data: connection }
   }
 
   @Post('test')
@@ -60,7 +73,9 @@ export class ConnectionsController {
 
   @Post('schema/:id')
   @HttpCode(200)
-  async fetchSchema(@Param('id') id: number) {
+  async fetchSchema(
+    @Param('id') id: number,
+  ): Promise<{ success: boolean; data: any[] }> {
     return this.connectionsService.fetchSchema(id)
   }
 }

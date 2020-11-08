@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { HealthModule } from './health/health.module'
 import { ConnectionsModule } from './connections/connections.module'
+import { QueriesModule } from './queries/queries.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ConnectionsModule } from './connections/connections.module'
       synchronize: true,
     }),
     ConnectionsModule,
+    QueriesModule,
   ],
 })
 export class AppModule {}

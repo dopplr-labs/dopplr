@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Pool } from 'pg'
 import { omit } from 'lodash'
+import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { Connection } from './connection.entity'
 import { ConnectionRepository } from './connection.repository'
 import {
@@ -84,19 +88,19 @@ export class ConnectionsService {
     connection: TestConnectionDto,
   ): Promise<{ success: boolean; message: string }> {
     if (connection.type === 'postgres') {
-      const pool = this._createPgConnectionPool(connection)
+      const pool = createPostgresConnectionPool(connection)
 
       try {
         await pool.query('SELECT NOW()')
         return { success: true, message: 'database connected successfully' }
       } catch (error) {
-        return { success: false, message: error.message }
+        throw new InternalServerErrorException(error)
       } finally {
         pool.end()
       }
     }
 
-    return { success: false, message: 'database type not yet implemented' }
+    throw new InternalServerErrorException('database type not yet implemented')
   }
 
   /**
@@ -104,11 +108,11 @@ export class ConnectionsService {
    *
    * @param id - Id of the connection whose schema is to be fetched
    */
-  async fetchSchema(id: number) {
+  async fetchSchema(id: number): Promise<{ success: boolean; data: any[] }> {
     const connection = await this.getConnection(id)
 
     if (connection.type === 'postgres') {
-      const pool = this._createPgConnectionPool(connection)
+      const pool = createPostgresConnectionPool(connection)
 
       try {
         const { rows: tableRows } = await pool.query(
@@ -132,32 +136,14 @@ export class ConnectionsService {
               ),
             }
           }),
-          message: 'schema fetched successfully',
         }
       } catch (error) {
-        return { success: false, message: error.message }
+        throw new InternalServerErrorException(error)
       } finally {
         pool.end()
       }
     }
 
-    return { success: false, message: 'database type not yet implemented' }
-  }
-
-  /**
-   * Create a pg connection pool for connecting to a particular database
-   *
-   * @param connection - Connection configuration
-   */
-  _createPgConnectionPool(connection: TestConnectionDto | CreateConnectionDto) {
-    const pool = new Pool({
-      host: connection.host,
-      database: connection.database,
-      user: connection.username,
-      password: connection.password,
-      port: connection.port,
-    })
-
-    return pool
+    throw new InternalServerErrorException('database type not yet implemented')
   }
 }

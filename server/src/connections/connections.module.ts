@@ -8,5 +8,6 @@ import { ConnectionsService } from './connections.service'
   imports: [TypeOrmModule.forFeature([ConnectionRepository])],
   controllers: [ConnectionsController],
   providers: [ConnectionsService],
+  exports: [ConnectionsService],
 })
 export class ConnectionsModule {}
