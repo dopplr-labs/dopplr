@@ -2,25 +2,14 @@ import React from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { Link, Route, Switch } from 'react-router-dom'
+import { useQuery } from 'react-query'
+import { fetchResources } from '../../queries/resourceQueries'
 import Connectors from './components/connectors-list'
 import NewConnection from './components/new-connection'
 
-const connectedResources = [
-  {
-    id: '101',
-    title: 'Project DB',
-  },
-  {
-    id: '102',
-    title: 'Users database',
-  },
-  {
-    id: '103',
-    title: 'Billing DB',
-  },
-]
-
 export default function Resources() {
+  const { data: resources } = useQuery(['resources'], fetchResources)
+
   return (
     <div className="flex flex-1 h-full">
       <div className="flex flex-col w-64 h-full p-6 space-y-3 border-r">
@@ -33,15 +22,15 @@ export default function Resources() {
             Create New
           </Button>
         </Link>
-        {connectedResources.map((resource) => (
+        {resources?.map((resource: any) => (
           <div key={resource.id} className="cursor-pointer hover:text-blue-500">
-            {resource.title}
+            {resource.name}
           </div>
         ))}
       </div>
       <Switch>
         <Route path="/resources" exact component={Connectors} />
-        <Route path="/resources/new" component={NewConnection} />
+        <Route path="/resources/new/postgres" component={NewConnection} />
       </Switch>
     </div>
   )
