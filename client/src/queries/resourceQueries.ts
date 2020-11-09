@@ -45,7 +45,7 @@ export const updateResource = async ({
   username,
   password,
 }: {
-  id: string
+  id: number
   name?: string
   host?: string
   port?: number
@@ -64,7 +64,7 @@ export const updateResource = async ({
   return data
 }
 
-export const deleteResource = async ({ id }: { id: string }) => {
+export const deleteResource = async ({ id }: { id: number }) => {
   const { data } = await client.delete(`/connections/${id}`)
   return data
 }
