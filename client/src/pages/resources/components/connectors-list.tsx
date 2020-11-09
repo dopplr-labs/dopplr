@@ -47,16 +47,25 @@ export default function Connectors() {
     <div className="flex flex-col flex-1">
       <Banner />
       <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {cardList.map((card) => (
-          <Link to="/resources/new" key={card.id}>
+        {cardList.map((card) =>
+          card.comingSoon ? (
             <ResourceCard
               title={card.title}
               description={card.description}
               imagePath={card.imagePath}
               comingSoon={card.comingSoon ?? false}
             />
-          </Link>
-        ))}
+          ) : (
+            <Link to={`/resources/new/${card.id}`} key={card.id}>
+              <ResourceCard
+                title={card.title}
+                description={card.description}
+                imagePath={card.imagePath}
+                comingSoon={card.comingSoon ?? false}
+              />
+            </Link>
+          ),
+        )}
       </div>
     </div>
   )
