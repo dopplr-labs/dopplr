@@ -11,7 +11,7 @@ import {
 export default function NewConnection() {
   const { data: resources } = useQuery(['resources'], fetchResources)
 
-  const [addResource] = useMutation(createResource, {
+  const [addResource, { isLoading }] = useMutation(createResource, {
     onSuccess: (createdResource) => {
       queryCache.setQueryData(
         ['resources'],
@@ -21,11 +21,12 @@ export default function NewConnection() {
   })
 
   const formItemLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 14 },
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
   }
+
   const tailLayout = {
-    wrapperCol: { offset: 7, span: 14 },
+    wrapperCol: { offset: 8, span: 16 },
   }
 
   const onFinish = (values: any) => {
@@ -85,7 +86,10 @@ export default function NewConnection() {
               <Input.Password />
             </Form.Item>
             <Form.Item {...tailLayout}>
-              <Button type="primary" htmlType="submit">
+              <Button htmlType="button" className="mr-2">
+                Test Connection
+              </Button>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
                 Create Resource
               </Button>
             </Form.Item>
