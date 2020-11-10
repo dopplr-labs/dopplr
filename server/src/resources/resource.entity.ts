@@ -9,7 +9,7 @@ import {
 import { Query } from 'src/queries/query.entity'
 
 @Entity()
-export class Connection {
+export class Resource {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -42,7 +42,7 @@ export class Connection {
 
   @OneToMany(
     () => Query,
-    query => query.connection,
+    query => query.resource,
   )
   queries: Query[]
 }

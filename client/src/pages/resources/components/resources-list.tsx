@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import ResourceCard from './resource-card'
 
-const cardList = [
+const resources = [
   {
     id: 'postgres',
     title: 'Postgres',
@@ -41,26 +41,26 @@ const cardList = [
   },
 ]
 
-export default function Connectors() {
+export default function ResourcesList() {
   return (
     <div className="flex flex-col flex-1">
       <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {cardList.map((card) =>
-          card.comingSoon ? (
+        {resources.map((resource) =>
+          resource.comingSoon ? (
             <ResourceCard
-              title={card.title}
-              description={card.description}
-              imagePath={card.imagePath}
-              comingSoon={card.comingSoon ?? false}
-              key={card.id}
+              title={resource.title}
+              description={resource.description}
+              imagePath={resource.imagePath}
+              comingSoon={resource.comingSoon ?? false}
+              key={resource.id}
             />
           ) : (
-            <Link to={`/resources/new/${card.id}`} key={card.id}>
+            <Link to={`/resources/new/${resource.id}`} key={resource.id}>
               <ResourceCard
-                title={card.title}
-                description={card.description}
-                imagePath={card.imagePath}
-                comingSoon={card.comingSoon ?? false}
+                title={resource.title}
+                description={resource.description}
+                imagePath={resource.imagePath}
+                comingSoon={resource.comingSoon ?? false}
               />
             </Link>
           ),

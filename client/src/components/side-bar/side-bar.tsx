@@ -2,7 +2,6 @@ import React from 'react'
 import {
   BarChartOutlined,
   CodeOutlined,
-  TableOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons'
 import clsx from 'clsx'
@@ -11,32 +10,29 @@ import { Tooltip } from 'antd'
 
 const pages = [
   {
-    id: 'dashboard',
-    title: 'Dashboard',
-    icon: <BarChartOutlined className="text-xl" />,
-    defaultRoute: '/dashboards',
-    route: '/dashboards/:dashboardId?',
+    id: 'resources',
+    title: 'Resources',
+    icon: <DatabaseOutlined className="text-xl" />,
+    defaultRoute: '/resources',
+    routes: [
+      '/resources',
+      '/resources/:resourceId',
+      '/resources/new/:resourceType',
+    ],
   },
   {
     id: 'queries',
     title: 'Queries',
     icon: <CodeOutlined className="text-xl" />,
     defaultRoute: '/queries',
-    route: '/queries/:queriesId?',
+    routes: ['/queries/:queriesId?'],
   },
   {
-    id: 'tables',
-    title: 'Tables',
-    icon: <TableOutlined className="text-xl" />,
-    defaultRoute: '/tables',
-    route: '/tables/:tablesId?',
-  },
-  {
-    id: 'resources',
-    title: 'Resources',
-    icon: <DatabaseOutlined className="text-xl" />,
-    defaultRoute: '/resources',
-    route: '/resources/:routeId?',
+    id: 'dashboard',
+    title: 'Dashboard',
+    icon: <BarChartOutlined className="text-xl" />,
+    defaultRoute: '/dashboards',
+    routes: ['/dashboards/:dashboardId?'],
   },
 ]
 
@@ -45,22 +41,18 @@ export default function SideBar() {
 
   return (
     <div className="flex flex-col items-center justify-start w-16 h-full pt-4 shadow gap-y-4">
-      {pages.map((page) => (
-        <Link to={page.defaultRoute} key={page.id}>
-          <PageIcon
-            selected={
-              !!matchPath(location.pathname, {
-                path: page.route,
-                exact: true,
-                strict: false,
-              })
-            }
-            title={page.title}
-          >
-            {page.icon}
-          </PageIcon>
-        </Link>
-      ))}
+      {pages.map((page) => {
+        const pageSelected = page.routes.some(
+          (path) => !!matchPath(path, location.pathname),
+        )
+        return (
+          <Link to={page.defaultRoute} key={page.id}>
+            <PageIcon title={page.title} selected={pageSelected}>
+              {page.icon}
+            </PageIcon>
+          </Link>
+        )
+      })}
     </div>
   )
 }

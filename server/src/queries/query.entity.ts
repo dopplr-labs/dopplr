@@ -1,4 +1,4 @@
-import { Connection } from 'src/connections/connection.entity'
+import { Resource } from 'src/resources/resource.entity'
 import {
   Column,
   Entity,
@@ -20,11 +20,11 @@ export class Query {
   updatedAt: Date
 
   @ManyToOne(
-    () => Connection,
-    connection => connection.queries,
+    () => Resource,
+    resource => resource.queries,
     { eager: true },
   )
-  connection: Connection
+  resource: Resource
 
   @Column({ length: 500, nullable: true })
   name?: string

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import { message } from 'antd'
-import NavBar from './components/nav-bar'
-import SideBar from './components/side-bar'
-import Queries from './pages/queries'
-import Resources from './pages/resources'
+import { ReactQueryDevtools } from 'react-query-devtools'
+import AppShell from 'components/app-shell'
+import Resources from 'pages/resources'
+import Queries from 'pages/queries'
 
 async function fetchHealthStatus() {
   const { data } = await axios.get('/health/knock-knock', {
@@ -18,6 +18,7 @@ async function fetchHealthStatus() {
 export function App() {
   const { data, error } = useQuery('health', fetchHealthStatus, {
     refetchOnWindowFocus: false,
+    enabled: process.env.NODE_ENV === 'development',
   })
 
   useEffect(() => {
@@ -29,17 +30,14 @@ export function App() {
   }, [data, error])
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden">
-      <NavBar />
-      <div className="flex flex-1 overflow-hidden bg-white">
-        <SideBar />
-        <div className="flex-1 overflow-auto">
-          <Switch>
-            <Route path="/resources/:resourceId?" component={Resources} />
-            <Route path="/queries/:queriesId?" component={Queries} />
-          </Switch>
-        </div>
-      </div>
-    </div>
+    <>
+      <Routes>
+        <Route element={<AppShell />} path="/">
+          <Route element={<Resources />} path="resources*" />
+          <Route element={<Queries />} path="queries" />
+        </Route>
+      </Routes>
+      {process.env.NODE_ENV === 'development' ? <ReactQueryDevtools /> : null}
+    </>
   )
 }

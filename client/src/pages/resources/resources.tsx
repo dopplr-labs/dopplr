@@ -1,35 +1,43 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
-import { Link, Route, Switch } from 'react-router-dom'
+import { Button, Result } from 'antd'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import { useQuery } from 'react-query'
+import { range } from 'lodash-es'
 import { Postgres } from 'components/icons'
 import { fetchResources } from './queries'
-import Connectors from './components/connectors-list'
-import NewConnection from './components/new-connection'
+import ResourcesList from './components/resources-list'
+import CreateResource from './components/create-resource'
 
 export default function Resources() {
-  const { data: resources } = useQuery(['resources'], fetchResources)
+  const { pathname } = useLocation()
 
-  return (
-    <div className="flex flex-1 h-full">
-      <div className="flex flex-col w-64 h-full p-4 text-gray-800 border-r">
-        <div className="flex items-center mb-2 space-x-2">
-          <DatabaseOutlined className="text-lg" />
-          <span className="font-semibold">Resources</span>
+  const { data: resources, isLoading, error } = useQuery(
+    ['resources'],
+    fetchResources,
+  )
+
+  const resourcesList = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="space-y-4">
+          {range(5).map((val) => (
+            <div
+              key={val}
+              className="w-full h-4 bg-gray-200 rounded animate-pulse"
+              style={{ opacity: 1 - val / 5 }}
+            />
+          ))}
         </div>
-        <div className="mb-4 text-xs text-gray-600">
-          Connect with your preferred database and fetch data to render in
-          Tables
-        </div>
-        <Link to="/resources" className="block mb-4">
-          <Button icon={<PlusOutlined />} className="w-full" type="primary">
-            Create New
-          </Button>
-        </Link>
+      )
+    }
 
-        <div className="mb-4 -mx-4 border-b" />
+    if (error) {
+      return <Result status="warning" subTitle={(error as any).message} />
+    }
 
+    if (resources) {
+      return (
         <div className="space-y-4">
           {resources?.map((resource) => (
             <div
@@ -43,11 +51,41 @@ export default function Resources() {
             </div>
           ))}
         </div>
+      )
+    }
+
+    return null
+  }, [resources, isLoading, error])
+
+  return (
+    <div className="flex flex-1 h-full">
+      <div className="flex flex-col w-64 h-full p-4 text-gray-800 border-r">
+        <div className="flex items-center mb-2 space-x-2">
+          <DatabaseOutlined className="text-lg" />
+          <span className="font-semibold">Resources</span>
+        </div>
+        <div className="mb-4 text-xs text-gray-600">
+          Connect with your preferred database and fetch data to render in
+          Tables
+        </div>
+
+        {pathname !== '/resources' ? (
+          <Link to="/resources" className="block mb-4">
+            <Button icon={<PlusOutlined />} className="w-full" type="primary">
+              Create New
+            </Button>
+          </Link>
+        ) : null}
+
+        <div className="mb-4 -mx-4 border-b" />
+
+        {resourcesList}
       </div>
-      <Switch>
-        <Route path="/resources" exact component={Connectors} />
-        <Route path="/resources/new/postgres" component={NewConnection} />
-      </Switch>
+
+      <Routes>
+        <Route path="/" element={<ResourcesList />} />
+        <Route path="new/:resourceType" element={<CreateResource />} />
+      </Routes>
     </div>
   )
 }

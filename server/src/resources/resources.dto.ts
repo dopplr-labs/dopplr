@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsIn, IsOptional } from 'class-validator'
 
-export class CreateConnectionDto {
+export class CreateResourceDto {
   @IsString()
   name: string
 
@@ -22,7 +22,7 @@ export class CreateConnectionDto {
   @IsString()
   password: string
 }
-export class UpdateConnectionDto {
+export class UpdateResourceDto {
   @IsOptional()
   @IsString()
   name: string
@@ -52,7 +52,7 @@ export class UpdateConnectionDto {
   password: string
 }
 
-export class TestConnectionDto {
+export class TestResourceDto {
   @IsString()
   name: string
 

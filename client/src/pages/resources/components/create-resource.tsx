@@ -2,11 +2,13 @@ import React from 'react'
 import { Button, Form, Input, InputNumber } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createResource, fetchResources } from '../queries'
 
-export default function NewConnection() {
-  const history = useHistory()
+export default function CreateResource() {
+  const { resourceType } = useParams() as { resourceType: string }
+
+  const navigate = useNavigate()
 
   const { data: resources } = useQuery(['resources'], fetchResources)
 
@@ -16,7 +18,7 @@ export default function NewConnection() {
         ['resources'],
         resources ? [...resources, createdResource] : [createdResource],
       )
-      history.push(`/resources/${createdResource.id}`)
+      navigate(`/resources/${createdResource.id}`)
     },
   })
 
@@ -31,6 +33,10 @@ export default function NewConnection() {
       username,
       password,
     })
+  }
+
+  if (resourceType !== 'postgres') {
+    return null
   }
 
   return (
@@ -48,6 +54,7 @@ export default function NewConnection() {
             <img
               src={require('images/resources/postgres-logo.png')}
               className="w-5 h-5 mb-4"
+              alt="Postgres"
             />
             <div className="font-medium text-gray-800">Connect to Postgres</div>
             <div className="mb-6 text-xs">
