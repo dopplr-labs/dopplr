@@ -2,11 +2,13 @@ import React from 'react'
 import { Button, Form, Input, InputNumber } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createResource, fetchResources } from '../queries'
 
-export default function NewResource() {
-  const history = useHistory()
+export default function CreateResource() {
+  const { resourceType } = useParams() as { resourceType: string }
+
+  const navigate = useNavigate()
 
   const { data: resources } = useQuery(['resources'], fetchResources)
 
@@ -16,7 +18,7 @@ export default function NewResource() {
         ['resources'],
         resources ? [...resources, createdResource] : [createdResource],
       )
-      history.push(`/resources/${createdResource.id}`)
+      navigate(`/resources/${createdResource.id}`)
     },
   })
 
@@ -31,6 +33,10 @@ export default function NewResource() {
       username,
       password,
     })
+  }
+
+  if (resourceType !== 'postgres') {
+    return null
   }
 
   return (
