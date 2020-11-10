@@ -16,7 +16,9 @@ async function fetchHealthStatus() {
 }
 
 export function App() {
-  const { data, error } = useQuery('health', fetchHealthStatus)
+  const { data, error } = useQuery('health', fetchHealthStatus, {
+    refetchOnWindowFocus: false,
+  })
 
   useEffect(() => {
     if (data) {

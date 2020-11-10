@@ -1,61 +1,53 @@
 import React from 'react'
-import Banner from './components/banner'
-import ResourceCard from './components/resource-card'
-
-const cardList = [
-  {
-    id: 'postgres',
-    title: 'Postgres',
-    description:
-      'Connect with PostgreSQL database to run SQL queries in Dopplr',
-    imagePath: require('../../images/resources/postgres-logo.png'),
-    commingSoon: false,
-  },
-  {
-    id: 'vertica',
-    title: 'Vertica',
-    description: 'Connect with Vertica database to run SQL queries in Dopplr',
-    imagePath: require('../../images/resources/vertica-logo.png'),
-    comingSoon: true,
-  },
-  {
-    id: 'hive',
-    title: 'Hive',
-    description: 'Connect with Hive database to run SQL queries in Dopplr',
-    imagePath: require('../../images/resources/hive-logo.png'),
-    comingSoon: true,
-  },
-  {
-    id: 'redshift',
-    title: 'Redshift',
-    description: 'Connect with Redshift database to run SQL queries in Dopplr',
-    imagePath: require('../../images/resources/redshift-logo.png'),
-    comingSoon: true,
-  },
-  {
-    id: 'mongodb',
-    title: 'MongoDB',
-    description: 'Connect with MongoDB database to run queries in Dopplr',
-    imagePath: require('../../images/resources/mongodb-logo.png'),
-    comingSoon: true,
-  },
-]
+import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
+import { Link, Route, Switch } from 'react-router-dom'
+import { useQuery } from 'react-query'
+import { Postgres } from 'components/icons'
+import { fetchResources } from './queries'
+import Connectors from './components/connectors-list'
+import NewConnection from './components/new-connection'
 
 export default function Resources() {
+  const { data: resources } = useQuery(['resources'], fetchResources)
+
   return (
-    <div>
-      <Banner />
-      <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {cardList.map((card) => (
-          <ResourceCard
-            key={card.id}
-            title={card.title}
-            description={card.description}
-            imagePath={card.imagePath}
-            comingSoon={card.comingSoon ?? false}
-          />
-        ))}
+    <div className="flex flex-1 h-full">
+      <div className="flex flex-col w-64 h-full p-4 text-gray-800 border-r">
+        <div className="flex items-center mb-2 space-x-2">
+          <DatabaseOutlined className="text-lg" />
+          <span className="font-semibold">Resources</span>
+        </div>
+        <div className="mb-4 text-xs text-gray-600">
+          Connect with your preferred database and fetch data to render in
+          Tables
+        </div>
+        <Link to="/resources" className="block mb-4">
+          <Button icon={<PlusOutlined />} className="w-full" type="primary">
+            Create New
+          </Button>
+        </Link>
+
+        <div className="mb-4 -mx-4 border-b" />
+
+        <div className="space-y-4">
+          {resources?.map((resource) => (
+            <div
+              key={resource.id}
+              className="flex items-center space-x-2 text-sm text-gray-800 cursor-pointer hover:text-blue-500"
+            >
+              {resource.type === 'postgres' ? (
+                <Postgres className="w-5 h-5" />
+              ) : null}
+              <span>{resource.name}</span>
+            </div>
+          ))}
+        </div>
       </div>
+      <Switch>
+        <Route path="/resources" exact component={Connectors} />
+        <Route path="/resources/new/postgres" component={NewConnection} />
+      </Switch>
     </div>
   )
 }
