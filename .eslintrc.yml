@@ -44,3 +44,4 @@ rules:
   indent: 0
   no-console: warn
   no-useless-constructor: 0
+  camelcase: error

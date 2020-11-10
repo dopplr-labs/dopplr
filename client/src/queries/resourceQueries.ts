@@ -1,13 +1,14 @@
 import Axios from 'axios'
+import { Resource } from '../types/resource'
 
 const client = Axios.create({ baseURL: 'http://localhost:3001/' })
 
-export const fetchResources = async () => {
-  const { data } = await client.get('/connections')
+export async function fetchResources(): Promise<Resource[]> {
+  const { data } = await client.get<Resource[]>('/connections')
   return data
 }
 
-export const createResource = async ({
+export async function createResource({
   name,
   type,
   host,
@@ -23,8 +24,8 @@ export const createResource = async ({
   database?: string
   username?: string
   password?: string
-}) => {
-  const { data } = await client.post('/connections', {
+}): Promise<Resource> {
+  const { data } = await client.post<Resource>('/connections', {
     name,
     type,
     host,
@@ -36,7 +37,7 @@ export const createResource = async ({
   return data
 }
 
-export const updateResource = async ({
+export async function updateResource({
   id,
   name,
   host,
@@ -52,8 +53,8 @@ export const updateResource = async ({
   database?: string
   username?: string
   password?: string
-}) => {
-  const { data } = await client.patch(`/connections/${id}`, {
+}): Promise<Resource> {
+  const { data } = await client.patch<Resource>(`/connections/${id}`, {
     name,
     host,
     port,
@@ -64,7 +65,11 @@ export const updateResource = async ({
   return data
 }
 
-export const deleteResource = async ({ id }: { id: number }) => {
-  const { data } = await client.delete(`/connections/${id}`)
+export async function deleteResource({
+  id,
+}: {
+  id: number
+}): Promise<Resource> {
+  const { data } = await client.delete<Resource>(`/connections/${id}`)
   return data
 }

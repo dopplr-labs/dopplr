@@ -56,6 +56,7 @@ export default function NewConnection() {
           <img
             src={require('../../../images/resources/postgres-logo.png')}
             className="w-8 h-8"
+            alt="Postgres"
           />
           Connect Postgres
         </div>

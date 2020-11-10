@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import ResourceCard from './resource-card'
-import Banner from './banner'
 
 const cardList = [
   {
@@ -45,7 +44,6 @@ const cardList = [
 export default function Connectors() {
   return (
     <div className="flex flex-col flex-1">
-      <Banner />
       <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {cardList.map((card) =>
           card.comingSoon ? (
@@ -54,6 +52,7 @@ export default function Connectors() {
               description={card.description}
               imagePath={card.imagePath}
               comingSoon={card.comingSoon ?? false}
+              key={card.id}
             />
           ) : (
             <Link to={`/resources/new/${card.id}`} key={card.id}>

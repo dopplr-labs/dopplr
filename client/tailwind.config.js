@@ -13,9 +13,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Noto Sans HK"', ...defaultTheme.fontFamily.sans],
-        mono: ['"Fira Mono"', ...defaultTheme.fontFamily.mono],
+        sans: ['"Inter var"', ...defaultTheme.fontFamily.sans],
+        mono: ['"JetBrains Mono"', ...defaultTheme.fontFamily.mono],
       },
+      borderColor: (theme) => ({
+        default: theme('colors.gray.200'),
+      }),
     },
   },
 

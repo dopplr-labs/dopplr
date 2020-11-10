@@ -80,7 +80,7 @@ function PageIcon({
         className={clsx(
           'flex rounded-md px-3 py-2 text-sm cursor-pointer focus:outline-none',
           selected
-            ? 'bg-blue-500 text-white'
+            ? 'bg-blue-50 text-blue-500'
             : 'hover:text-gray-700 hover:bg-gray-100',
         )}
       >
