@@ -3,10 +3,10 @@ import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import { Link, Route, Switch } from 'react-router-dom'
 import { useQuery } from 'react-query'
-import { fetchResources } from '../../queries/resourceQueries'
+import { Postgres } from 'components/icons'
+import { fetchResources } from './queries'
 import Connectors from './components/connectors-list'
 import NewConnection from './components/new-connection'
-import { Postgres } from '../../components/icons'
 
 export default function Resources() {
   const { data: resources } = useQuery(['resources'], fetchResources)
@@ -34,7 +34,7 @@ export default function Resources() {
           {resources?.map((resource) => (
             <div
               key={resource.id}
-              className="flex items-center space-x-2 text-xs text-gray-800 cursor-pointer hover:text-blue-500"
+              className="flex items-center space-x-2 text-sm text-gray-800 cursor-pointer hover:text-blue-500"
             >
               {resource.type === 'postgres' ? (
                 <Postgres className="w-5 h-5" />

@@ -21,8 +21,9 @@ export class ConnectionsController {
   constructor(private connectionsService: ConnectionsService) {}
 
   @Get()
-  getAllConnections(): Promise<Connection[]> {
-    return this.connectionsService.getAllConnections()
+  async getAllConnections(): Promise<{ success: boolean; data: Connection[] }> {
+    const connections = await this.connectionsService.getAllConnections()
+    return { success: true, data: connections }
   }
 
   @Get(':id')
