@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { HealthModule } from './health/health.module'
-import { ConnectionsModule } from './connections/connections.module'
+import { ResourcesModule } from './resources/resources.module'
 import { QueriesModule } from './queries/queries.module'
 
 @Module({
@@ -19,7 +19,7 @@ import { QueriesModule } from './queries/queries.module'
       entities: [`${__dirname}/**/*.entity{.ts,.js}`],
       synchronize: true,
     }),
-    ConnectionsModule,
+    ResourcesModule,
     QueriesModule,
   ],
 })

@@ -5,7 +5,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useHistory } from 'react-router-dom'
 import { createResource, fetchResources } from '../queries'
 
-export default function NewConnection() {
+export default function NewResource() {
   const history = useHistory()
 
   const { data: resources } = useQuery(['resources'], fetchResources)
@@ -48,6 +48,7 @@ export default function NewConnection() {
             <img
               src={require('images/resources/postgres-logo.png')}
               className="w-5 h-5 mb-4"
+              alt="Postgres"
             />
             <div className="font-medium text-gray-800">Connect to Postgres</div>
             <div className="mb-6 text-xs">

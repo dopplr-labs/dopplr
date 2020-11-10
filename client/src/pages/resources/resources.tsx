@@ -5,8 +5,8 @@ import { Link, Route, Switch } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import { Postgres } from 'components/icons'
 import { fetchResources } from './queries'
-import Connectors from './components/connectors-list'
-import NewConnection from './components/new-connection'
+import ResourcesList from './components/resources-list'
+import NewResource from './components/new-resource'
 
 export default function Resources() {
   const { data: resources } = useQuery(['resources'], fetchResources)
@@ -45,8 +45,8 @@ export default function Resources() {
         </div>
       </div>
       <Switch>
-        <Route path="/resources" exact component={Connectors} />
-        <Route path="/resources/new/postgres" component={NewConnection} />
+        <Route path="/resources" exact component={ResourcesList} />
+        <Route path="/resources/new/postgres" component={NewResource} />
       </Switch>
     </div>
   )

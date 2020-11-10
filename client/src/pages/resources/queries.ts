@@ -5,7 +5,7 @@ const client = Axios.create({ baseURL: 'http://localhost:3001/' })
 
 export async function fetchResources(): Promise<Resource[]> {
   const { data } = await client.get<{ success: boolean; data: Resource[] }>(
-    '/connections',
+    '/resources',
   )
   return data.data
 }
@@ -20,7 +20,7 @@ export async function createResource({
   password,
 }: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>): Promise<Resource> {
   const { data } = await client.post<{ success: boolean; data: Resource }>(
-    '/connections',
+    '/resources',
     {
       name,
       type,
@@ -44,7 +44,7 @@ export async function updateResource({
   password,
 }: Partial<Resource>): Promise<Resource> {
   const { data } = await client.patch<{ success: boolean; data: Resource }>(
-    `/connections/${id}`,
+    `/resources/${id}`,
     {
       name,
       host,
@@ -63,7 +63,7 @@ export async function deleteResource({
   id: number
 }): Promise<Resource> {
   const { data } = await client.delete<{ success: boolean; data: Resource }>(
-    `/connections/${id}`,
+    `/resources/${id}`,
   )
   return data.data
 }

@@ -23,7 +23,7 @@ export default function ResourceCard({
     >
       <img
         src={imagePath}
-        alt="postgres logo"
+        alt="Postgres"
         className="object-contain object-left w-20 h-10 mb-4"
       />
       <p className="mb-1 text-sm font-bold text-gray-800 group-hover:text-blue-700">

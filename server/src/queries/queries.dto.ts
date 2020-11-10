@@ -4,7 +4,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator'
 export class RunQueryDto {
   @Transform(parseInt)
   @IsNumber()
-  connection: number
+  resource: number
 
   @IsOptional()
   @IsString()
@@ -17,7 +17,7 @@ export class RunQueryDto {
 export class SaveQueryDto {
   @Transform(parseInt)
   @IsNumber()
-  connection: number
+  resource: number
 
   @IsString()
   name: string
@@ -29,5 +29,5 @@ export class SaveQueryDto {
 export class FilterHistoryDto {
   @Transform(parseInt)
   @IsNumber()
-  connection: number
+  resource: number
 }
