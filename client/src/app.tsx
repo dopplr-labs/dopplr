@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import { message } from 'antd'
+import { ReactQueryDevtools } from 'react-query-devtools'
 import AppShell from 'components/app-shell'
 import Resources from 'pages/resources'
 import Queries from 'pages/queries'
@@ -29,11 +30,14 @@ export function App() {
   }, [data, error])
 
   return (
-    <Routes>
-      <Route element={<AppShell />} path="/">
-        <Route element={<Resources />} path="resources*" />
-        <Route element={<Queries />} path="queries" />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route element={<AppShell />} path="/">
+          <Route element={<Resources />} path="resources*" />
+          <Route element={<Queries />} path="queries" />
+        </Route>
+      </Routes>
+      {process.env.NODE_ENV === 'development' ? <ReactQueryDevtools /> : null}
+    </>
   )
 }
