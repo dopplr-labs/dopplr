@@ -8,6 +8,7 @@ import { Postgres } from 'components/icons'
 import { fetchResources } from './queries'
 import ResourcesList from './components/resources-list'
 import CreateResource from './components/create-resource'
+import ResourceForm from './components/resource-form'
 
 export default function Resources() {
   const { pathname } = useLocation()
@@ -40,7 +41,8 @@ export default function Resources() {
       return (
         <div className="space-y-4">
           {resources?.map((resource) => (
-            <div
+            <Link
+              to={`/resources/${resource.id}`}
               key={resource.id}
               className="flex items-center space-x-2 text-sm text-gray-800 cursor-pointer hover:text-blue-500"
             >
@@ -48,7 +50,7 @@ export default function Resources() {
                 <Postgres className="w-5 h-5" />
               ) : null}
               <span>{resource.name}</span>
-            </div>
+            </Link>
           ))}
         </div>
       )
@@ -85,6 +87,7 @@ export default function Resources() {
       <Routes>
         <Route path="/" element={<ResourcesList />} />
         <Route path="new/:resourceType" element={<CreateResource />} />
+        <Route path=":resourceId" element={<ResourceForm />} />
       </Routes>
     </div>
   )
