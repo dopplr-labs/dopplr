@@ -1,13 +1,21 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { range } from 'lodash-es'
-import { Form, Input, InputNumber, Button, Result } from 'antd'
+import { Form, Input, InputNumber, Button, Result, Modal } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, queryCache } from 'react-query'
-import { fetchResource, fetchResources, updateResource } from '../queries'
+import {
+  deleteResource,
+  fetchResource,
+  fetchResources,
+  updateResource,
+} from '../queries'
 
 export default function ResourceForm() {
   const { resourceId } = useParams() as { resourceId: string }
+
+  const navigate = useNavigate()
+
   const { isLoading, data: resource, error } = useQuery(
     ['resources', resourceId],
     () => fetchResource(resourceId),
@@ -28,6 +36,17 @@ export default function ResourceForm() {
     },
   })
 
+  const [removeResource] = useMutation(deleteResource, {
+    onMutate: (deletedResource) => {
+      queryCache.setQueryData(
+        ['resources'],
+        resources?.filter((resource) => resource.id !== deletedResource.id),
+      )
+      queryCache.removeQueries(['resources', resourceId])
+      navigate('/resources')
+    },
+  })
+
   const onFinish = useCallback(
     (values: any) => {
       const { name, host, port, database, username, password } = values
@@ -44,6 +63,19 @@ export default function ResourceForm() {
     },
     [editResource, resourceId],
   )
+
+  const confirm = useCallback(() => {
+    Modal.confirm({
+      title: 'Delete this resource?',
+      content: 'This action cannot be reverted',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        removeResource({ id: parseInt(resourceId) })
+      },
+    })
+  }, [removeResource, resourceId])
 
   const renderForm = useMemo(() => {
     if (isLoading) {
@@ -197,17 +229,14 @@ export default function ResourceForm() {
           </Form.Item>
           <div className="flex p-4 -mx-4 -mb-4 space-x-4 bg-gray-50">
             <Link to="/resources">
-              <Button
-                htmlType="button"
-                className="mr-2"
-                icon={<ArrowLeftOutlined />}
-              >
+              <Button htmlType="button" icon={<ArrowLeftOutlined />}>
                 Back
               </Button>
             </Link>
             <div className="flex-1" />
-            <Button htmlType="button" className="mr-2">
-              Test Connection
+            <Button htmlType="button">Test Connection</Button>
+            <Button htmlType="button" danger onClick={confirm}>
+              Delete
             </Button>
             <Button type="primary" htmlType="submit" disabled={disabled}>
               Save
@@ -218,7 +247,7 @@ export default function ResourceForm() {
     }
 
     return null
-  }, [isLoading, resource, error, disabled, resourceId, onFinish])
+  }, [isLoading, resource, error, disabled, resourceId, onFinish, confirm])
 
   return (
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
