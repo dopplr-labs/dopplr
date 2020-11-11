@@ -10,6 +10,13 @@ export async function fetchResources(): Promise<Resource[]> {
   return data.data
 }
 
+export async function fetchResource(resourceId: string): Promise<Resource> {
+  const { data } = await client.get<{ success: boolean; data: Resource }>(
+    `/resources/${resourceId}`,
+  )
+  return data.data
+}
+
 export async function createResource({
   name,
   type,
