@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Result } from 'antd'
 import { Link, Route, Routes, useLocation } from 'react-router-dom'
-import { useQuery } from 'react-query'
+import { queryCache, useQuery } from 'react-query'
 import { range } from 'lodash-es'
 import { Postgres } from 'components/icons'
 import { fetchResources } from './queries'
@@ -16,6 +16,16 @@ export default function Resources() {
   const { data: resources, isLoading, error } = useQuery(
     ['resources'],
     fetchResources,
+    {
+      onSuccess: (data) => {
+        data.forEach((resource) => {
+          queryCache.setQueryData(
+            ['resources', resource.id.toString()],
+            resource,
+          )
+        })
+      },
+    },
   )
 
   const resourcesList = useMemo(() => {
