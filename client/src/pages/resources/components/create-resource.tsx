@@ -46,6 +46,7 @@ export default function CreateResource() {
           <Form
             layout="horizontal"
             onFinish={onFinish}
+            name="create-resource"
             initialValues={{ port: 5432 }}
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
