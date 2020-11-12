@@ -10,6 +10,40 @@ export async function fetchResources(): Promise<Resource[]> {
   return data.data
 }
 
+export async function fetchResource(resourceId: string): Promise<Resource> {
+  const { data } = await client.get<{ success: boolean; data: Resource }>(
+    `/resources/${resourceId}`,
+  )
+  return data.data
+}
+
+export async function testResourceConnection({
+  name,
+  type,
+  host,
+  port,
+  database,
+  username,
+  password,
+}: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>): Promise<{
+  success: boolean
+  message: string
+}> {
+  const { data } = await client.post<{ success: boolean; message: string }>(
+    '/resources/test',
+    {
+      name,
+      type,
+      host,
+      port,
+      database,
+      username,
+      password,
+    },
+  )
+  return data
+}
+
 export async function createResource({
   name,
   type,
