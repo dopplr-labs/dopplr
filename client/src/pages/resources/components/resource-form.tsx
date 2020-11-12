@@ -1,26 +1,38 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { range } from 'lodash-es'
-import { Form, Input, InputNumber, Button, Result, Modal } from 'antd'
+import { Form, Input, InputNumber, Button, Result, Modal, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, queryCache } from 'react-query'
 import {
   deleteResource,
   fetchResource,
-  fetchResources,
+  testResourceConnection,
   updateResource,
 } from '../queries'
+import { Resource } from 'types/resource'
 
 export default function ResourceForm() {
   const { resourceId } = useParams() as { resourceId: string }
 
   const navigate = useNavigate()
 
+  const [form] = Form.useForm()
+
   const { isLoading, data: resource, error } = useQuery(
     ['resources', resourceId],
     () => fetchResource(resourceId),
+    {
+      onSuccess: (data) => {
+        const { name, host, port, database, username, password } = data
+        form.setFieldsValue({ name, host, port, database, username, password })
+      },
+    },
   )
-  const { data: resources } = useQuery(['resources'], fetchResources)
+
+  const resources: Resource[] | undefined = queryCache.getQueryData([
+    'resources',
+  ])
   const [disabled, setDisabled] = useState(true)
 
   const [editResource] = useMutation(updateResource, {
@@ -33,6 +45,13 @@ export default function ResourceForm() {
             : resource,
         ),
       )
+      queryCache.setQueryData(['resources', resourceId], {
+        ...resource,
+        ...updatedResource,
+      })
+    },
+    onSuccess: () => {
+      message.success('Resource updated successfully')
     },
   })
 
@@ -76,6 +95,31 @@ export default function ResourceForm() {
       },
     })
   }, [removeResource, resourceId])
+
+  const pingConnection = useCallback(async () => {
+    const {
+      name,
+      host,
+      port,
+      database,
+      username,
+      password,
+    } = form.getFieldsValue()
+    try {
+      const response = await testResourceConnection({
+        name,
+        type: 'postgres',
+        host,
+        port,
+        database,
+        username,
+        password,
+      })
+      message.success(response.message)
+    } catch (error) {
+      message.error(error.message)
+    }
+  }, [form])
 
   const renderForm = useMemo(() => {
     if (isLoading) {
@@ -130,12 +174,11 @@ export default function ResourceForm() {
     }
 
     if (resource) {
-      const { name, host, port, database, username, password } = resource
       return (
         <Form
           layout="horizontal"
-          key={resourceId}
-          initialValues={{ name, host, port, database, username, password }}
+          form={form}
+          name="update-resource"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           labelAlign="left"
@@ -234,7 +277,9 @@ export default function ResourceForm() {
               </Button>
             </Link>
             <div className="flex-1" />
-            <Button htmlType="button">Test Connection</Button>
+            <Button htmlType="button" onClick={pingConnection}>
+              Test Connection
+            </Button>
             <Button htmlType="button" danger onClick={confirm}>
               Delete
             </Button>
@@ -247,7 +292,17 @@ export default function ResourceForm() {
     }
 
     return null
-  }, [isLoading, resource, error, disabled, resourceId, onFinish, confirm])
+  }, [
+    isLoading,
+    resource,
+    error,
+    disabled,
+    resourceId,
+    onFinish,
+    confirm,
+    form,
+    pingConnection,
+  ])
 
   return (
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
