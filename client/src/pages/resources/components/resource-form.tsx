@@ -83,7 +83,7 @@ export default function ResourceForm() {
     [editResource, resourceId],
   )
 
-  const confirm = useCallback(() => {
+  const confirmDelete = useCallback(() => {
     Modal.confirm({
       title: 'Delete this resource?',
       content: 'This action cannot be reverted',
@@ -121,7 +121,7 @@ export default function ResourceForm() {
     }
   }, [form])
 
-  const renderForm = useMemo(() => {
+  const formContent = useMemo(() => {
     if (isLoading) {
       return (
         <div>
@@ -280,7 +280,7 @@ export default function ResourceForm() {
             <Button htmlType="button" onClick={pingConnection}>
               Test Connection
             </Button>
-            <Button htmlType="button" danger onClick={confirm}>
+            <Button htmlType="button" danger onClick={confirmDelete}>
               Delete
             </Button>
             <Button type="primary" htmlType="submit" disabled={disabled}>
@@ -308,7 +308,7 @@ export default function ResourceForm() {
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
       <div className="flex items-start w-full max-w-screen-md mx-auto space-x-8">
         <div className="flex-1 p-4 overflow-hidden bg-white rounded-md shadow">
-          {renderForm}
+          {formContent}
         </div>
       </div>
     </div>
