@@ -299,7 +299,7 @@ export default function ResourceForm() {
     disabled,
     resourceId,
     onFinish,
-    confirm,
+    confirmDelete,
     form,
     pingConnection,
   ])
