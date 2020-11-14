@@ -1,46 +1,97 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
-import { Button, Input, Tabs } from 'antd'
+import { useQuery } from 'react-query'
+import { Input, Select, Spin, Tabs, Button } from 'antd'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
+import { Scrollbars } from 'react-custom-scrollbars'
+import { fetchResources } from 'pages/resources/queries'
+import ResourceTab from './components/resource-tab'
 
 require('codemirror/lib/codemirror.css')
 require('codemirror/theme/ayu-mirage.css')
 require('codemirror/mode/sql/sql')
 
 export default function Queries() {
+  const { Option } = Select
+
+  const { isLoading, data: resources } = useQuery(['resources'], fetchResources)
+  const [selectedResource, setSelectedResource] = useState<number>()
+
+  useEffect(() => {
+    if (resources) {
+      setSelectedResource(resources[0]?.id)
+    }
+  }, [resources])
+
+  const panelContent = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <Spin tip="Loading..." />
+        </div>
+      )
+    }
+
+    if (resources && selectedResource) {
+      return (
+        <>
+          <div className="w-full px-3 pt-4">
+            <Select
+              placeholder="Select a resource"
+              className="w-full"
+              value={selectedResource}
+              onChange={(value: number) => {
+                setSelectedResource(value)
+              }}
+            >
+              {resources.map((resource) => (
+                <Option key={resource.id} value={resource.id}>
+                  {resource.name}
+                </Option>
+              ))}
+            </Select>
+          </div>
+          <Scrollbars autoHide>
+            <Tabs tabBarGutter={8} className="flex-1">
+              <Tabs.TabPane
+                tab={<span className="px-2">Resources</span>}
+                key="resources"
+                className="px-4"
+              >
+                <ResourceTab resourceId={selectedResource} />
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                tab={<span className="px-2">History</span>}
+                key="history"
+              />
+              <Tabs.TabPane
+                tab={<span className="px-2">Saved</span>}
+                key="saved"
+              />
+            </Tabs>
+          </Scrollbars>
+        </>
+      )
+    }
+  }, [isLoading, resources, selectedResource])
+
   return (
     <div className="flex flex-1 h-full">
-      <div className="w-64 h-full border-r">
-        <Tabs tabBarGutter={8} className="h-full">
-          <Tabs.TabPane
-            tab={<span className="px-2">Resources</span>}
-            key="resources"
-            className="px-4"
-          >
-            <Input
-              placeholder="Search Tables and Columns"
-              prefix={<SearchOutlined />}
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane
-            tab={<span className="px-2">History</span>}
-            key="history"
-          />
-          <Tabs.TabPane tab={<span className="px-2">Saved</span>} key="saved" />
-        </Tabs>
-        <div className="px-6 space-y-4" />
+      <div className="flex flex-col w-64 h-full overflow-y-auto border-r">
+        {panelContent}
       </div>
       <div className="flex flex-col flex-1">
         {/* Query Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b">
           <span className="text-sm">Untitled query</span>
           <div className="flex items-center space-x-4">
+            <Button>New</Button>
             <Button>Save</Button>
             <Button type="primary">Run Query</Button>
           </div>
         </div>
         {/* Query editor */}
-        <div className="border-b ">
+        <div className="border-b">
           <CodeMirror
             value="SELECT * FROM superstar WHERE age > 20;"
             options={{ mode: 'sql', theme: 'ayu-mirage', lineNumbers: true }}
