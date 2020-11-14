@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:14.15.0-alpine
 EXPOSE 3000
 
 RUN mkdir /srv/client
