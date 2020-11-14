@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import MonacoEditor from 'react-monaco-editor'
-import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api'
 import {
   MonacoServices,
+  Services,
   ErrorAction,
   CloseAction,
   MonacoLanguageClient,
   createConnection,
+  Disposable,
 } from 'monaco-languageclient'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
@@ -60,34 +61,42 @@ export default function Editor({ resourceId }: ResourceId) {
   const [value, setValue] = useState(
     "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
   )
-  const websocket = useRef<WebSocket | undefined>()
 
-  function editorDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
-    editor.focus()
-
-    websocket.current = createWebSocket(
-      process.env.REACT_APP_LANGUAGE_SERVER_WS as string,
-    )
-
-    MonacoServices.install(editor)
-
-    listen({
-      webSocket: websocket.current,
-      onConnection: (connection) => {
-        const languageClient = createLanguageClient(connection, resourceId)
-        const disposable = languageClient.start()
-        connection.onClose(() => disposable.dispose())
-      },
-    })
-  }
+  const editor = useRef<MonacoEditor | null>(null)
+  const serviceDisposer = useRef<Disposable | undefined>(undefined)
 
   useEffect(() => {
+    let websocket: WebSocket | undefined
+
+    if (editor.current?.editor) {
+      websocket = createWebSocket(
+        process.env.REACT_APP_LANGUAGE_SERVER_WS as string,
+      )
+
+      const service = MonacoServices.create(editor)
+      if (serviceDisposer.current) {
+        serviceDisposer.current.dispose()
+      }
+      serviceDisposer.current = Services.install(service)
+
+      listen({
+        webSocket: websocket,
+        onConnection: (connection) => {
+          const languageClient = createLanguageClient(connection, resourceId)
+          const disposable = languageClient.start()
+          connection.onClose(() => {
+            disposable.dispose()
+          })
+        },
+      })
+    }
+
     return () => {
-      if (websocket.current) {
-        websocket.current.close()
+      if (websocket) {
+        websocket.close()
       }
     }
-  }, [])
+  }, [resourceId])
 
   return (
     <div className="editor">
@@ -110,7 +119,7 @@ export default function Editor({ resourceId }: ResourceId) {
             enabled: false,
           },
         }}
-        editorDidMount={editorDidMount}
+        ref={editor}
       />
     </div>
   )

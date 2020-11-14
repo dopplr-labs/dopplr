@@ -60,10 +60,6 @@ export class SqlLanguageServer {
   ) {
     this.documents.listen(this.connection)
 
-    this.documents.onDidOpen(change => {
-      this.validateTextDocument(change.document)
-    })
-
     this.documents.onDidChangeContent(change => {
       this.validateTextDocument(change.document)
     })
@@ -504,6 +500,7 @@ export class SqlLanguageServer {
         }
       }
       try {
+        await this.isDbInitialized()
         await this.dbConnection.query(`EXPLAIN ${sql.statement}`)
       } catch (err) {
         // can use err.position (string)
@@ -539,6 +536,20 @@ export class SqlLanguageServer {
       }
     }
     this.connection.sendDiagnostics({ uri: textDocument.uri, diagnostics })
+  }
+
+  isDbInitialized = () => {
+    return new Promise(resolve => {
+      const check = () => {
+        if (this.dbConnection) {
+          resolve(true)
+        } else {
+          setTimeout(check, 100)
+        }
+      }
+
+      check()
+    })
   }
 }
 

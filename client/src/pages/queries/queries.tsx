@@ -10,8 +10,8 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 import { fetchResources } from 'pages/resources/queries'
-import SchemaTab from './components/schema-tab'
 import Editor from 'components/editor'
+import SchemaTab from './components/schema-tab'
 
 export default function Queries() {
   const { Option } = Select
