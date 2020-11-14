@@ -44,4 +44,10 @@ rules:
   indent: 0
   no-console: warn
   no-useless-constructor: 0
-  camelcase: error
+  camelcase: 
+    - error
+    - properties: never
+      ignoreDestructuring: false
+      ignoreImports: false
+      ignoreGlobals: false
+  generator-star-spacing: 0

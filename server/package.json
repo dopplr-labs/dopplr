@@ -21,7 +21,10 @@
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/platform-ws": "^7.5.2",
     "@nestjs/typeorm": "^7.1.4",
+    "@nestjs/websockets": "^7.5.2",
+    "@types/ws": "^7.4.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "lodash-es": "^4.17.15",
@@ -29,7 +32,10 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
-    "typeorm": "^0.2.29"
+    "typeorm": "^0.2.29",
+    "vscode-languageserver": "^6.1.1",
+    "vscode-languageserver-textdocument": "^1.0.1",
+    "vscode-ws-jsonrpc": "^0.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",

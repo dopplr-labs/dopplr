@@ -3,14 +3,10 @@ import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import { Input, Select, Spin, Tabs, Button, Empty } from 'antd'
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
-import { UnControlled as CodeMirror } from 'react-codemirror2'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { fetchResources } from 'pages/resources/queries'
 import ResourceTab from './components/resource-tab'
-
-require('codemirror/lib/codemirror.css')
-require('codemirror/theme/ayu-mirage.css')
-require('codemirror/mode/sql/sql')
+import Editor from 'components/editor'
 
 export default function Queries() {
   const { Option } = Select
@@ -106,14 +102,7 @@ export default function Queries() {
           </div>
           {/* Query editor */}
           <div className="border-b">
-            <CodeMirror
-              value="SELECT * FROM superstar WHERE age > 20;"
-              options={{
-                mode: 'sql',
-                theme: 'ayu-mirage',
-                lineNumbers: true,
-              }}
-            />
+            <Editor resourceId={1} />
           </div>
           <div className="flex-1 px-6 py-4 border-b ">
             <div className="flex items-center justify-end gap-x-4">

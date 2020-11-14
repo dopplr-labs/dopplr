@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { HealthModule } from './health/health.module'
 import { ResourcesModule } from './resources/resources.module'
 import { QueriesModule } from './queries/queries.module'
+import { LanguageServer } from './language-server/language-server.module'
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { QueriesModule } from './queries/queries.module'
     }),
     ResourcesModule,
     QueriesModule,
+    LanguageServer,
   ],
 })
 export class AppModule {}
