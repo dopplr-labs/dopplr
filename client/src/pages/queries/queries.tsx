@@ -85,46 +85,58 @@ export default function Queries() {
         <div className="flex flex-col h-full overflow-y-auto border-r w-72">
           {panelContent}
         </div>
-        <div className="flex flex-col flex-1">
-          {/* Query Header */}
-          <div className="flex items-center justify-between h-16 px-6 border-b">
-            <span className="text-sm">Untitled query</span>
-            <div className="flex items-center space-x-4">
-              <Button
-                icon={<CodeOutlined />}
-                onClick={() => {
-                  editor.current?.editor
-                    ?.getAction('editor.action.formatDocument')
-                    .run()
-                }}
-              >
-                Beautify
-              </Button>
-              <Button icon={<SaveOutlined />}>Save</Button>
-              <Button type="primary" icon={<CaretRightFilled />}>
-                Run Query
-              </Button>
-            </div>
-          </div>
-          {/* Query editor */}
-          <div className="border-b">
-            <Editor
-              resourceId={selectedResource}
-              ref={(monacoEditor) => {
-                editor.current = monacoEditor
-              }}
-            />
-          </div>
-          <div className="flex-1 px-6 py-4 border-b ">
-            <div className="flex items-center justify-end gap-x-4">
-              <Input
-                placeholder="Search Table"
-                className="w-64"
-                prefix={<SearchOutlined />}
-              />
-              <Button icon={<DownloadOutlined />}>Download</Button>
-            </div>
-          </div>
+        <div className="flex flex-col flex-1 pt-4 tabs-container">
+          <Tabs
+            type="editable-card"
+            tabBarExtraContent={{ left: <div className="w-4" /> }}
+          >
+            <Tabs.TabPane
+              tab={
+                <span className="text-xs text-gray-800">Untitled Query</span>
+              }
+              className="w-full"
+            >
+              {/* Query Header */}
+              <div className="flex items-center justify-between h-16 px-6 border-b">
+                <span className="text-sm">Untitled query</span>
+                <div className="flex items-center space-x-4">
+                  <Button
+                    icon={<CodeOutlined />}
+                    onClick={() => {
+                      editor.current?.editor
+                        ?.getAction('editor.action.formatDocument')
+                        .run()
+                    }}
+                  >
+                    Beautify
+                  </Button>
+                  <Button icon={<SaveOutlined />}>Save</Button>
+                  <Button type="primary" icon={<CaretRightFilled />}>
+                    Run Query
+                  </Button>
+                </div>
+              </div>
+              {/* Query editor */}
+              <div className="border-b">
+                <Editor
+                  resourceId={selectedResource}
+                  ref={(monacoEditor) => {
+                    editor.current = monacoEditor
+                  }}
+                />
+              </div>
+              <div className="flex-1 px-6 py-4 border-b ">
+                <div className="flex items-center justify-end gap-x-4">
+                  <Input
+                    placeholder="Search Table"
+                    className="w-64"
+                    prefix={<SearchOutlined />}
+                  />
+                  <Button icon={<DownloadOutlined />}>Download</Button>
+                </div>
+              </div>
+            </Tabs.TabPane>
+          </Tabs>
         </div>
       </>
     )

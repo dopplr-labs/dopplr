@@ -70,9 +70,7 @@ const Editor = forwardRef(
   ): JSX.Element => {
     const [containerRef, bounds] = useMeasure()
 
-    const [value, setValue] = useState(
-      "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
-    )
+    const [value, setValue] = useState('')
 
     const editor = useRef<MonacoEditor | null>(null)
     const serviceDisposer = useRef<Disposable | undefined>(undefined)

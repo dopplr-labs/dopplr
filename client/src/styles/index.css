@@ -93,7 +93,7 @@
 @tailwind components;
 
 svg {
-  vertical-align: bottom !important;
+  vertical-align: initial !important;
 }
 
 body {
@@ -111,6 +111,15 @@ body {
 
 .editor .monaco-editor .lines-content.monaco-editor-background {
   @apply ml-2;
+}
+
+.tabs-container .ant-tabs-tab-active {
+  @apply relative overflow-hidden;
+}
+
+.tabs-container .ant-tabs-tab-active::after {
+  content: '';
+  @apply absolute top-0 left-0 right-0 h-0.5 bg-blue-500;
 }
 
 @tailwind utilities;
