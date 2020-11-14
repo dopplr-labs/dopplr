@@ -12,6 +12,7 @@
     "@types/react": "^16.9.0",
     "@types/react-custom-scrollbars": "^4.0.7",
     "@types/react-dom": "^16.9.0",
+    "@types/sql-formatter": "^2.3.0",
     "antd": "^4.7.0",
     "axios": "^0.21.0",
     "clsx": "^1.1.1",
@@ -30,6 +31,7 @@
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "3.4.3",
     "reconnecting-websocket": "^4.4.0",
+    "sql-formatter": "^2.3.3",
     "typescript": "~3.7.2",
     "vscode-ws-jsonrpc": "^0.2.0"
   },

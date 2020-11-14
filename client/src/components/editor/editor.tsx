@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useRef, useState } from 'react'
 import MonacoEditor from 'react-monaco-editor'
 import {
   MonacoServices,
@@ -11,6 +11,7 @@ import {
 } from 'monaco-languageclient'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
+import sqlFormatter from 'sql-formatter'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -53,74 +54,104 @@ function createLanguageClient(
   })
 }
 
-type ResourceId = {
+type EditorProps = {
   resourceId: number
 }
 
-export default function Editor({ resourceId }: ResourceId) {
-  const [value, setValue] = useState(
-    "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
-  )
+const Editor = forwardRef(
+  (
+    { resourceId }: EditorProps,
+    ref: React.Ref<MonacoEditor | null>,
+  ): JSX.Element => {
+    const [value, setValue] = useState(
+      "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
+    )
 
-  const editor = useRef<MonacoEditor | null>(null)
-  const serviceDisposer = useRef<Disposable | undefined>(undefined)
+    const editor = useRef<MonacoEditor | null>(null)
+    const serviceDisposer = useRef<Disposable | undefined>(undefined)
 
-  useEffect(() => {
-    let websocket: WebSocket | undefined
+    useEffect(() => {
+      let websocket: WebSocket | undefined
 
-    if (editor.current?.editor) {
-      websocket = createWebSocket(
-        process.env.REACT_APP_LANGUAGE_SERVER_WS as string,
-      )
+      if (editor.current?.editor) {
+        websocket = createWebSocket(
+          process.env.REACT_APP_LANGUAGE_SERVER_WS as string,
+        )
 
-      const service = MonacoServices.create(editor)
-      if (serviceDisposer.current) {
-        serviceDisposer.current.dispose()
-      }
-      serviceDisposer.current = Services.install(service)
+        const service = MonacoServices.create(editor)
+        if (serviceDisposer.current) {
+          serviceDisposer.current.dispose()
+        }
+        serviceDisposer.current = Services.install(service)
 
-      listen({
-        webSocket: websocket,
-        onConnection: (connection) => {
-          const languageClient = createLanguageClient(connection, resourceId)
-          const disposable = languageClient.start()
-          connection.onClose(() => {
-            disposable.dispose()
-          })
-        },
-      })
-    }
-
-    return () => {
-      if (websocket) {
-        websocket.close()
-      }
-    }
-  }, [resourceId])
-
-  return (
-    <div className="editor">
-      <MonacoEditor
-        height="400"
-        language="pgsql"
-        theme="vs-light"
-        value={value}
-        onChange={setValue}
-        options={{
-          lightbulb: { enabled: true },
-          fontFamily: 'JetBrains Mono',
-          fontSize: 12,
-          lineHeight: 18,
-          padding: {
-            top: 8,
+        listen({
+          webSocket: websocket,
+          onConnection: (connection) => {
+            const languageClient = createLanguageClient(connection, resourceId)
+            const disposable = languageClient.start()
+            connection.onClose(() => {
+              disposable.dispose()
+            })
           },
-          glyphMargin: false,
-          minimap: {
-            enabled: false,
-          },
-        }}
-        ref={editor}
-      />
-    </div>
-  )
-}
+        })
+      }
+
+      return () => {
+        if (websocket) {
+          websocket.close()
+        }
+      }
+    }, [resourceId])
+
+    return (
+      <div className="editor">
+        <MonacoEditor
+          height="400"
+          language="pgsql"
+          theme="vs-light"
+          value={value}
+          onChange={setValue}
+          options={{
+            lightbulb: { enabled: true },
+            fontFamily: 'JetBrains Mono',
+            fontSize: 12,
+            lineHeight: 18,
+            padding: {
+              top: 8,
+            },
+            glyphMargin: false,
+            minimap: {
+              enabled: false,
+            },
+          }}
+          ref={(monacoEditor) => {
+            editor.current = monacoEditor
+            if (typeof ref === 'function') {
+              ref(monacoEditor)
+            } else if (ref !== null) {
+              // @ts-ignore
+              ref.current = editor
+            }
+          }}
+          editorDidMount={(editor, monaco) => {
+            monaco.languages.registerDocumentFormattingEditProvider('pgsql', {
+              provideDocumentFormattingEdits: (model) => {
+                const formattedText = sqlFormatter.format(model.getValue())
+                return [
+                  {
+                    range: model.getFullModelRange(),
+                    text: formattedText,
+                  },
+                ]
+              },
+            })
+          }}
+        />
+      </div>
+    )
+  },
+)
+
+Editor.displayName = 'Editor'
+
+export default Editor
