@@ -57,14 +57,20 @@ type ResourceId = {
 }
 
 export default function Editor({ resourceId }: ResourceId) {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(
+    `SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';`,
+  )
   const websocket = useRef<WebSocket | undefined>()
 
   function editorDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
-    MonacoServices.install(editor)
+    editor.focus()
+
     websocket.current = createWebSocket(
       process.env.REACT_APP_LANGUAGE_SERVER_WS as string,
     )
+
+    MonacoServices.install(editor)
+
     listen({
       webSocket: websocket.current,
       onConnection: (connection) => {
@@ -84,14 +90,28 @@ export default function Editor({ resourceId }: ResourceId) {
   }, [])
 
   return (
-    <MonacoEditor
-      height="400"
-      language="pgsql"
-      theme="vs-dark"
-      value={value}
-      onChange={setValue}
-      options={{ lightbulb: { enabled: true }, glyphMargin: true }}
-      editorDidMount={editorDidMount}
-    />
+    <div className="editor">
+      <MonacoEditor
+        height="400"
+        language="pgsql"
+        theme="vs-light"
+        value={value}
+        onChange={setValue}
+        options={{
+          lightbulb: { enabled: true },
+          fontFamily: 'JetBrains Mono',
+          fontSize: 12,
+          lineHeight: 18,
+          padding: {
+            top: 8,
+          },
+          glyphMargin: false,
+          minimap: {
+            enabled: false,
+          },
+        }}
+        editorDidMount={editorDidMount}
+      />
+    </div>
   )
 }

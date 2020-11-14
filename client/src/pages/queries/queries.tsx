@@ -2,10 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import { Input, Select, Spin, Tabs, Button, Empty } from 'antd'
-import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
-import { Scrollbars } from 'react-custom-scrollbars'
+import {
+  SearchOutlined,
+  DownloadOutlined,
+  CaretRightFilled,
+  SaveOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import { fetchResources } from 'pages/resources/queries'
-import ResourceTab from './components/resource-tab'
+import SchemaTab from './components/schema-tab'
 import Editor from 'components/editor'
 
 export default function Queries() {
@@ -23,8 +28,8 @@ export default function Queries() {
   const panelContent = useMemo(() => {
     if (resources && selectedResource) {
       return (
-        <>
-          <div className="w-full px-3 pt-4">
+        <div className="flex flex-col h-full py-3 space-y-2">
+          <div className="mx-3">
             <Select
               placeholder="Select a resource"
               className="w-full"
@@ -40,26 +45,14 @@ export default function Queries() {
               ))}
             </Select>
           </div>
-          <Scrollbars autoHide>
-            <Tabs tabBarGutter={8} className="flex-1">
-              <Tabs.TabPane
-                tab={<span className="px-2">Resources</span>}
-                key="resources"
-                className="px-4"
-              >
-                <ResourceTab resourceId={selectedResource} />
-              </Tabs.TabPane>
-              <Tabs.TabPane
-                tab={<span className="px-2">History</span>}
-                key="history"
-              />
-              <Tabs.TabPane
-                tab={<span className="px-2">Saved</span>}
-                key="saved"
-              />
-            </Tabs>
-          </Scrollbars>
-        </>
+          <Tabs className="flex-1 queries-tab" size="small" centered>
+            <Tabs.TabPane tab="Schema" key="schema" className="h-full">
+              <SchemaTab resourceId={selectedResource} />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="History" key="history" />
+            <Tabs.TabPane tab="Saved" key="saved" />
+          </Tabs>
+        </div>
       )
     }
   }, [resources, selectedResource])
@@ -87,7 +80,7 @@ export default function Queries() {
 
     return (
       <>
-        <div className="flex flex-col w-64 h-full overflow-y-auto border-r">
+        <div className="flex flex-col h-full overflow-y-auto border-r w-72">
           {panelContent}
         </div>
         <div className="flex flex-col flex-1">
@@ -95,9 +88,11 @@ export default function Queries() {
           <div className="flex items-center justify-between h-16 px-6 border-b">
             <span className="text-sm">Untitled query</span>
             <div className="flex items-center space-x-4">
-              <Button>New</Button>
-              <Button>Save</Button>
-              <Button type="primary">Run Query</Button>
+              <Button icon={<PlusOutlined />}>New</Button>
+              <Button icon={<SaveOutlined />}>Save</Button>
+              <Button type="primary" icon={<CaretRightFilled />}>
+                Run Query
+              </Button>
             </div>
           </div>
           {/* Query editor */}

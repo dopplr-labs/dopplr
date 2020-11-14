@@ -37,11 +37,12 @@ export function launch(
   const reader = new rpc.WebSocketMessageReader(socket)
   const writer = new rpc.WebSocketMessageWriter(socket)
   const connection = createConnection(reader, writer)
-  const server = new SqlServer(connection, resourcesService)
+  const server = new SqlLanguageServer(connection, resourcesService)
   server.start()
+  return server
 }
 
-export class SqlServer {
+export class SqlLanguageServer {
   protected readonly documents = new TextDocuments(
     TextDocumentImpl.TextDocument,
   )
@@ -317,6 +318,13 @@ export class SqlServer {
 
   start() {
     this.connection.listen()
+  }
+
+  stop() {
+    if (this.dbConnection) {
+      this.dbConnection.end()
+    }
+    this.connection.dispose()
   }
 
   loadCompletionCache = async (resourceId: number) => {

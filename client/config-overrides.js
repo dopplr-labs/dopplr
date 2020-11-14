@@ -32,7 +32,6 @@ module.exports = override(
         '@font-family': tailwindConfig.theme.extend.fontFamily.sans.join(', '),
         '@primary-color': tailwindUiColors.blue['500'],
         '@border-radius-base': defaultTailwindConfig.borderRadius.default,
-        '@height-base': remToPx(defaultTailwindConfig.spacing[10]),
         '@padding-sm': remToPx(defaultTailwindConfig.spacing[4]),
         '@heading-color': tailwindUiColors.gray['900'],
         '@text-color': tailwindUiColors.gray['500'],

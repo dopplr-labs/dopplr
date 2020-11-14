@@ -93,15 +93,24 @@
 @tailwind components;
 
 svg {
-  vertical-align: initial !important;
+  vertical-align: bottom !important;
 }
 
 body {
   @apply antialiased;
 }
 
-.react-codemirror2 .CodeMirror {
-  @apply font-mono text-xs;
+.queries-tab .ant-tabs-content-holder,
+.queries-tab .ant-tabs-content {
+  height: 100%;
+}
+
+.editor .margin-view-overlays {
+  @apply border-r border-gray-200 bg-gray-50;
+}
+
+.editor .monaco-editor .lines-content.monaco-editor-background {
+  @apply ml-2;
 }
 
 @tailwind utilities;
