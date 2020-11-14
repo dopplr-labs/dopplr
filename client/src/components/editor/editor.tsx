@@ -58,7 +58,7 @@ type ResourceId = {
 
 export default function Editor({ resourceId }: ResourceId) {
   const [value, setValue] = useState(
-    `SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';`,
+    "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
   )
   const websocket = useRef<WebSocket | undefined>()
 

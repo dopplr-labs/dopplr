@@ -1,4 +1,3 @@
-import { MessageReader, MessageWriter } from 'vscode-jsonrpc'
 import {
   CompletionItem,
   CompletionItemKind,
