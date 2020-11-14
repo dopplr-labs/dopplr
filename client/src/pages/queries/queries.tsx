@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
 import { useQuery } from 'react-query'
-import { Input, Select, Spin, Tabs, Button } from 'antd'
+import { Link } from 'react-router-dom'
+import { Input, Select, Spin, Tabs, Button, Empty } from 'antd'
+import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 import { Scrollbars } from 'react-custom-scrollbars'
 import { fetchResources } from 'pages/resources/queries'
@@ -24,14 +25,6 @@ export default function Queries() {
   }, [resources])
 
   const panelContent = useMemo(() => {
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <Spin tip="Loading..." />
-        </div>
-      )
-    }
-
     if (resources && selectedResource) {
       return (
         <>
@@ -73,41 +66,69 @@ export default function Queries() {
         </>
       )
     }
-  }, [isLoading, resources, selectedResource])
+  }, [resources, selectedResource])
 
-  return (
-    <div className="flex flex-1 h-full">
-      <div className="flex flex-col w-64 h-full overflow-y-auto border-r">
-        {panelContent}
-      </div>
-      <div className="flex flex-col flex-1">
-        {/* Query Header */}
-        <div className="flex items-center justify-between h-16 px-6 border-b">
-          <span className="text-sm">Untitled query</span>
-          <div className="flex items-center space-x-4">
-            <Button>New</Button>
-            <Button>Save</Button>
-            <Button type="primary">Run Query</Button>
+  const pageContent = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center w-full h-full">
+          <Spin tip="Loading..." />
+        </div>
+      )
+    }
+
+    if (resources?.length === 0 || selectedResource === undefined) {
+      return (
+        <div className="flex items-center justify-center w-full h-full">
+          <Empty description="You need to connect a resource first">
+            <Link to="/resources">
+              <Button type="primary">Connect Resource</Button>
+            </Link>
+          </Empty>
+        </div>
+      )
+    }
+
+    return (
+      <>
+        <div className="flex flex-col w-64 h-full overflow-y-auto border-r">
+          {panelContent}
+        </div>
+        <div className="flex flex-col flex-1">
+          {/* Query Header */}
+          <div className="flex items-center justify-between h-16 px-6 border-b">
+            <span className="text-sm">Untitled query</span>
+            <div className="flex items-center space-x-4">
+              <Button>New</Button>
+              <Button>Save</Button>
+              <Button type="primary">Run Query</Button>
+            </div>
           </div>
-        </div>
-        {/* Query editor */}
-        <div className="border-b">
-          <CodeMirror
-            value="SELECT * FROM superstar WHERE age > 20;"
-            options={{ mode: 'sql', theme: 'ayu-mirage', lineNumbers: true }}
-          />
-        </div>
-        <div className="flex-1 px-6 py-4 border-b ">
-          <div className="flex items-center justify-end gap-x-4">
-            <Input
-              placeholder="Search Table"
-              className="w-64"
-              prefix={<SearchOutlined />}
+          {/* Query editor */}
+          <div className="border-b">
+            <CodeMirror
+              value="SELECT * FROM superstar WHERE age > 20;"
+              options={{
+                mode: 'sql',
+                theme: 'ayu-mirage',
+                lineNumbers: true,
+              }}
             />
-            <Button icon={<DownloadOutlined />}>Download</Button>
+          </div>
+          <div className="flex-1 px-6 py-4 border-b ">
+            <div className="flex items-center justify-end gap-x-4">
+              <Input
+                placeholder="Search Table"
+                className="w-64"
+                prefix={<SearchOutlined />}
+              />
+              <Button icon={<DownloadOutlined />}>Download</Button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
+      </>
+    )
+  }, [isLoading, resources, selectedResource, panelContent])
+
+  return <div className="flex flex-1 h-full">{pageContent}</div>
 }

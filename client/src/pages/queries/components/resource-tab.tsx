@@ -29,7 +29,7 @@ export default function ResourceTab({ resourceId }: { resourceId: number }) {
               <div
                 key={val}
                 className="w-full h-4 bg-gray-200 rounded animate-pulse"
-                style={{ opacity: 1 - val / 5 }}
+                style={{ opacity: 1 - val / 10 }}
               />
             ))
           : schema?.map((table: any) => (
