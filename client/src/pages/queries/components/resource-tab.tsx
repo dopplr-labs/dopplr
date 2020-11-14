@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import Axios from 'axios'
+import { matchSorter } from 'match-sorter'
 import { SearchOutlined } from '@ant-design/icons'
 import { Input } from 'antd'
 import { useQuery } from 'react-query'
@@ -17,11 +18,25 @@ export default function ResourceTab({ resourceId }: { resourceId: number }) {
     fetchSchema(resourceId),
   )
 
+  const [input, setInput] = useState('')
+
+  const filteredSchema = useMemo(() => {
+    if (schema) {
+      return matchSorter(schema, input, {
+        keys: [(table: any) => table.columns.map((i: any) => i.column_name)],
+      })
+    }
+  }, [input, schema])
+
   return (
     <>
       <Input
         placeholder="Search Tables and Columns"
         prefix={<SearchOutlined />}
+        value={input}
+        onChange={({ target: { value } }) => {
+          setInput(value)
+        }}
       />
       <div className="my-4 space-y-4">
         {isLoading
@@ -32,7 +47,7 @@ export default function ResourceTab({ resourceId }: { resourceId: number }) {
                 style={{ opacity: 1 - val / 10 }}
               />
             ))
-          : schema?.map((table: any) => (
+          : filteredSchema?.map((table: any) => (
               <div key={table.table}>
                 <div className="font-bold truncate">{table.table}</div>
                 <ul>
