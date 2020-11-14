@@ -92,8 +92,8 @@
 
 @tailwind components;
 
-svg {
-  vertical-align: initial !important;
+.ant-btn {
+  @apply inline-flex items-center !important;
 }
 
 body {
