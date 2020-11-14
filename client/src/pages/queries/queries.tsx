@@ -102,7 +102,7 @@ export default function Queries() {
           </div>
           {/* Query editor */}
           <div className="border-b">
-            <Editor resourceId={1} />
+            <Editor resourceId={selectedResource} />
           </div>
           <div className="flex-1 px-6 py-4 border-b ">
             <div className="flex items-center justify-end gap-x-4">
