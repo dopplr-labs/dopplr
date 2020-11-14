@@ -12,6 +12,8 @@ import {
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
 import sqlFormatter from 'sql-formatter'
+import clsx from 'clsx'
+import useMeasure from 'react-use-measure'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -56,13 +58,18 @@ function createLanguageClient(
 
 type EditorProps = {
   resourceId: number
+  height?: number
+  className?: string
+  style?: React.CSSProperties
 }
 
 const Editor = forwardRef(
   (
-    { resourceId }: EditorProps,
+    { resourceId, height = 400, className, style }: EditorProps,
     ref: React.Ref<MonacoEditor | null>,
   ): JSX.Element => {
+    const [containerRef, bounds] = useMeasure()
+
     const [value, setValue] = useState(
       "SELECT birth_date, photo, hire_date, reports_to FROM employees WHERE country = 'Britain';",
     )
@@ -104,9 +111,14 @@ const Editor = forwardRef(
     }, [resourceId])
 
     return (
-      <div className="editor">
+      <div
+        className={clsx('editor w-full', className)}
+        style={style}
+        ref={containerRef}
+      >
         <MonacoEditor
-          height="400"
+          width={bounds?.width}
+          height={height}
           language="pgsql"
           theme="vs-light"
           value={value}
