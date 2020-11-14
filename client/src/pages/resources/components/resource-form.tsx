@@ -4,13 +4,13 @@ import { Form, Input, InputNumber, Button, Result, Modal, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, queryCache } from 'react-query'
+import { Resource } from 'types/resource'
 import {
   deleteResource,
   fetchResource,
   testResourceConnection,
   updateResource,
 } from '../queries'
-import { Resource } from 'types/resource'
 
 export default function ResourceForm() {
   const { resourceId } = useParams() as { resourceId: string }
@@ -297,7 +297,6 @@ export default function ResourceForm() {
     resource,
     error,
     disabled,
-    resourceId,
     onFinish,
     confirmDelete,
     form,
