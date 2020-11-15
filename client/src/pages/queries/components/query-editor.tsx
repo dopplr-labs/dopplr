@@ -12,7 +12,17 @@ import {
 import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
 
-export default function QueryEditor({ resourceId }: { resourceId: number }) {
+type QueryEditorProps = {
+  resourceId: number
+  className?: string
+  style?: React.CSSProperties
+}
+
+export default function QueryEditor({
+  resourceId,
+  className,
+  style,
+}: QueryEditorProps) {
   const [query, setQuery] = useState('')
   const editor = useRef<MonacoEditor | null>(null)
 
@@ -37,7 +47,7 @@ export default function QueryEditor({ resourceId }: { resourceId: number }) {
   }
 
   return (
-    <>
+    <div className={className} style={style}>
       <div className="flex items-center justify-between h-16 px-6 border-b">
         <span className="text-sm">Untitled query</span>
         <div className="flex items-center space-x-4">
@@ -98,6 +108,6 @@ export default function QueryEditor({ resourceId }: { resourceId: number }) {
           scroll={{ y: 300 }}
         />
       </div>
-    </>
+    </div>
   )
 }
