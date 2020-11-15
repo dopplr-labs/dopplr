@@ -1,25 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
-import { Input, Select, Spin, Tabs, Button, Empty } from 'antd'
-import {
-  SearchOutlined,
-  DownloadOutlined,
-  CaretRightFilled,
-  SaveOutlined,
-  CodeOutlined,
-} from '@ant-design/icons'
+import { Select, Spin, Tabs, Button, Empty } from 'antd'
 import { fetchResources } from 'pages/resources/queries'
-import Editor from 'components/editor'
-import MonacoEditor from 'react-monaco-editor'
 import SchemaTab from './components/schema-tab'
+import QueryEditor from './components/query-editor'
 
 export default function Queries() {
   const { Option } = Select
 
   const { isLoading, data: resources } = useQuery(['resources'], fetchResources)
   const [selectedResource, setSelectedResource] = useState<number>()
-  const editor = useRef<MonacoEditor | null>(null)
 
   useEffect(() => {
     if (resources) {
@@ -96,45 +87,7 @@ export default function Queries() {
               }
               className="w-full"
             >
-              {/* Query Header */}
-              <div className="flex items-center justify-between h-16 px-6 border-b">
-                <span className="text-sm">Untitled query</span>
-                <div className="flex items-center space-x-4">
-                  <Button
-                    icon={<CodeOutlined />}
-                    onClick={() => {
-                      editor.current?.editor
-                        ?.getAction('editor.action.formatDocument')
-                        .run()
-                    }}
-                  >
-                    Beautify
-                  </Button>
-                  <Button icon={<SaveOutlined />}>Save</Button>
-                  <Button type="primary" icon={<CaretRightFilled />}>
-                    Run Query
-                  </Button>
-                </div>
-              </div>
-              {/* Query editor */}
-              <div className="border-b">
-                <Editor
-                  resourceId={selectedResource}
-                  ref={(monacoEditor) => {
-                    editor.current = monacoEditor
-                  }}
-                />
-              </div>
-              <div className="flex-1 px-6 py-4 border-b ">
-                <div className="flex items-center justify-end gap-x-4">
-                  <Input
-                    placeholder="Search Table"
-                    className="w-64"
-                    prefix={<SearchOutlined />}
-                  />
-                  <Button icon={<DownloadOutlined />}>Download</Button>
-                </div>
-              </div>
+              <QueryEditor resourceId={selectedResource} />
             </Tabs.TabPane>
           </Tabs>
         </div>
