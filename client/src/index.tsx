@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import 'antd/dist/antd.less'
 
-import './styles/index.css'
+import './styles/index.less'
 import { App } from './app'
 
 const root = document.getElementById('root')
