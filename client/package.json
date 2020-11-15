@@ -28,6 +28,7 @@
     "react-monaco-editor": "^0.40.0",
     "react-query": "^2.23.1",
     "react-query-devtools": "^2.6.3",
+    "react-resizable": "^1.11.0",
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "3.4.3",
     "react-use-measure": "^2.0.3",
