@@ -10,6 +10,13 @@ import { Tooltip } from 'antd'
 
 const pages = [
   {
+    id: 'queries',
+    title: 'Queries',
+    icon: <CodeOutlined className="text-xl" />,
+    defaultRoute: '/queries',
+    routes: ['/queries'],
+  },
+  {
     id: 'resources',
     title: 'Resources',
     icon: <DatabaseOutlined className="text-xl" />,
@@ -19,13 +26,6 @@ const pages = [
       '/resources/:resourceId',
       '/resources/new/:resourceType',
     ],
-  },
-  {
-    id: 'queries',
-    title: 'Queries',
-    icon: <CodeOutlined className="text-xl" />,
-    defaultRoute: '/queries',
-    routes: ['/queries/:queriesId?'],
   },
   {
     id: 'dashboard',

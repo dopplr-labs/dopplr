@@ -92,16 +92,34 @@
 
 @tailwind components;
 
-svg {
-  vertical-align: initial !important;
+.ant-btn {
+  @apply inline-flex items-center !important;
 }
 
 body {
   @apply antialiased;
 }
 
-.react-codemirror2 .CodeMirror {
-  @apply font-mono text-xs;
+.queries-tab .ant-tabs-content-holder,
+.queries-tab .ant-tabs-content {
+  height: 100%;
+}
+
+.editor .margin-view-overlays {
+  @apply border-r border-gray-200 bg-gray-50;
+}
+
+.editor .monaco-editor .lines-content.monaco-editor-background {
+  @apply ml-2;
+}
+
+.tabs-container .ant-tabs-tab-active {
+  @apply relative overflow-hidden;
+}
+
+.tabs-container .ant-tabs-tab-active::after {
+  content: '';
+  @apply absolute top-0 left-0 right-0 h-0.5 bg-blue-500;
 }
 
 @tailwind utilities;
