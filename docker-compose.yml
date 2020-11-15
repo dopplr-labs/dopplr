@@ -18,7 +18,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: dopplr@123
     ports:
       - '8080:80'
-      
+
   # backend
   server:
     stdin_open: true
@@ -51,5 +51,6 @@ services:
       - './client:/srv/client'
     environment:
       REACT_APP_API_BASE_URL: http://localhost:3001
+      REACT_APP_LANGUAGE_SERVER_WS: ws://localhost:3001
     depends_on:
       - server
