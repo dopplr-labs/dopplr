@@ -93,7 +93,7 @@
 @tailwind components;
 
 .ant-btn {
-  @apply inline-flex items-center !important;
+  @apply inline-flex items-center justify-center !important;
 }
 
 body {
