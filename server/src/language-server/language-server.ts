@@ -531,7 +531,7 @@ export class SqlLanguageServer {
             end: { line: sql.line + errLine, character: spacePos },
           },
           message: err.message,
-          source: 'localhost',
+          source: 'dopplr',
         })
       }
     }

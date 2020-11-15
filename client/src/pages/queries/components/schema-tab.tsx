@@ -41,7 +41,7 @@ export default function SchemaTab({ resourceId }: { resourceId: number }) {
           }}
         />
       </div>
-      <Scrollbars className="h-full">
+      <Scrollbars className="h-full" autoHide>
         <div className="px-3 space-y-4">
           {isLoading
             ? range(10).map((val) => (
