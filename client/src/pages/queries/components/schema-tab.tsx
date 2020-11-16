@@ -6,15 +6,10 @@ import { Input } from 'antd'
 import { useQuery } from 'react-query'
 import { range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
+import { fetchSchema } from '../queries-and-mutations'
+import { ColumnsField, SchemaResult } from 'types/schema'
 
 export default function SchemaTab({ resourceId }: { resourceId: number }) {
-  async function fetchSchema(id: number) {
-    const { data } = await Axios.post(
-      `http://localhost:3001/resources/schema/${id}`,
-    )
-    return data.data
-  }
-
   const { isLoading, data: schema } = useQuery(['schema', resourceId], () =>
     fetchSchema(resourceId),
   )
@@ -24,7 +19,10 @@ export default function SchemaTab({ resourceId }: { resourceId: number }) {
   const filteredSchema = useMemo(() => {
     if (schema) {
       return matchSorter(schema, input, {
-        keys: [(table: any) => table.columns.map((i: any) => i.column_name)],
+        keys: [
+          (table: SchemaResult) =>
+            table.columns.map((i: ColumnsField) => i.column_name),
+        ],
       })
     }
   }, [input, schema])
