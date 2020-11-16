@@ -1,13 +1,21 @@
 import { Result } from 'antd'
-import Select from 'antd/lib/select'
+import clsx from 'clsx'
 import { fetchResources } from 'pages/resources/queries'
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
+import useMeasure from 'react-use-measure'
 import QueryEditor from './query-editor'
 import SchemaTab from './schema-tab'
 
-export default function QueryTab() {
+type QueryTabProps = {
+  width: number
+  className?: string
+  style?: React.CSSProperties
+}
+
+export default function QueryTab({ width, className, style }: QueryTabProps) {
   const [selectedResource, setSelectedResource] = useState<number>()
+  const [measureSchemaTab, schemaTabBounds] = useMeasure()
 
   const { isLoading, data: resources, error } = useQuery(
     ['resources'],
@@ -23,7 +31,10 @@ export default function QueryTab() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full px-4 space-x-4">
+      <div
+        className={clsx('flex h-full px-4 space-x-4', className)}
+        style={style}
+      >
         <div className="flex-1 py-4 space-y-4">
           <div className="w-full bg-gray-200 rounded-md h-80 animate-pulse" />
           <div className="w-full h-40 bg-gray-200 rounded-md animate-pulse" />
@@ -37,30 +48,33 @@ export default function QueryTab() {
   }
 
   if (error) {
-    return <Result status="warning" subTitle={(error as any).message} />
+    return (
+      <Result
+        status="warning"
+        subTitle={(error as any).message}
+        className={className}
+        style={style}
+      />
+    )
   }
 
   if (resources && selectedResource) {
     return (
-      <div className="flex h-full">
-        <QueryEditor resourceId={selectedResource} className="flex-1" />
-        <div className="border-l border-gray-200 w-80">
-          <div className="px-3 py-4">
-            <Select
-              placeholder="Select a resource"
-              className="w-full"
-              value={selectedResource}
-              onChange={(value: number) => {
-                setSelectedResource(value)
-              }}
-            >
-              {resources?.map((resource) => (
-                <Select.Option key={resource.id} value={resource.id}>
-                  {resource.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
+      <div className={clsx('flex h-full', className)} style={style}>
+        {schemaTabBounds.width ? (
+          <QueryEditor
+            className="flex-1"
+            editorWidth={width - schemaTabBounds.width}
+            resources={resources}
+            selectedResource={selectedResource}
+            onResourceChange={setSelectedResource}
+          />
+        ) : null}
+
+        <div
+          ref={measureSchemaTab}
+          className="flex-shrink-0 h-full py-4 border-l border-gray-200 w-80"
+        >
           <SchemaTab resourceId={selectedResource} />
         </div>
       </div>

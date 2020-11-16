@@ -13,7 +13,6 @@ import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
 import sqlFormatter from 'sql-formatter'
 import clsx from 'clsx'
-import useMeasure from 'react-use-measure'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -58,6 +57,7 @@ function createLanguageClient(
 
 type EditorProps = {
   resourceId: number
+  width: number
   height?: number
   value: string
   setValue: React.Dispatch<React.SetStateAction<string>>
@@ -69,6 +69,7 @@ const Editor = forwardRef(
   (
     {
       resourceId,
+      width,
       height = 300,
       value,
       setValue,
@@ -77,8 +78,6 @@ const Editor = forwardRef(
     }: EditorProps,
     ref: React.Ref<MonacoEditor | null>,
   ): JSX.Element => {
-    const [containerRef, bounds] = useMeasure()
-
     const editor = useRef<MonacoEditor | null>(null)
     const serviceDisposer = useRef<Disposable | undefined>(undefined)
 
@@ -116,13 +115,9 @@ const Editor = forwardRef(
     }, [resourceId])
 
     return (
-      <div
-        className={clsx('editor w-full', className)}
-        style={style}
-        ref={containerRef}
-      >
+      <div className={clsx('editor w-full', className)} style={style}>
         <MonacoEditor
-          width={bounds?.width}
+          width={width}
           height={height}
           language="pgsql"
           theme="vs-light"
@@ -140,6 +135,8 @@ const Editor = forwardRef(
             minimap: {
               enabled: false,
             },
+            tabSize: 2,
+            useTabStops: false,
           }}
           ref={(monacoEditor) => {
             editor.current = monacoEditor
