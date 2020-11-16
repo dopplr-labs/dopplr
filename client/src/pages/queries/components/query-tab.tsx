@@ -26,7 +26,7 @@ export default function QueryTab({ width, className, style }: QueryTabProps) {
     fetchResources,
     {
       onSettled: (data) => {
-        if (data && data.length > 0) {
+        if (data && data.length > 0 && !selectedResource) {
           setSelectedResource(data[0].id)
         }
       },
