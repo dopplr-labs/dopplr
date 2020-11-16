@@ -8,7 +8,7 @@ export type QueryField = {
   format: string
 }
 
-export type Query = {
+export type QueryResult = {
   rows: any[]
   fields: QueryField[]
   rowCount: number

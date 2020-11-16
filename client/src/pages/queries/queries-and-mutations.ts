@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { Query } from 'types/query'
+import { QueryResult } from 'types/query'
 
 const client = Axios.create({ baseURL: process.env.REACT_APP_API_BASE_URL })
 
@@ -10,8 +10,8 @@ export async function runQuery({
   resource: number
   query: string
 }) {
-  const { data } = await client.post<{ success: boolean; data: Query }>(
-    'http://localhost:3001/queries/run',
+  const { data } = await client.post<{ success: boolean; data: QueryResult }>(
+    '/queries/run',
     {
       resource,
       query,

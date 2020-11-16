@@ -1,21 +1,13 @@
 import React, { useRef, useState } from 'react'
 import { useMutation } from 'react-query'
-import { Input, Button, Table, Select } from 'antd'
-import {
-  SearchOutlined,
-  DownloadOutlined,
-  CaretRightFilled,
-  SaveOutlined,
-  CodeOutlined,
-} from '@ant-design/icons'
+import { Button, Select } from 'antd'
+import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
 import clsx from 'clsx'
-import useMeasure from 'react-use-measure'
 import { Resource } from 'types/resource'
 import { runQuery } from '../queries-and-mutations'
-
-const PAGINATION_CONTAINER_HEIGHT = 56
+import ResultsTable from './results-table'
 
 type QueryEditorProps = {
   editorWidth: number
@@ -36,7 +28,7 @@ export default function QueryEditor({
 }: QueryEditorProps) {
   const [query, setQuery] = useState('')
 
-  const [runQueryMutation, { isLoading, data }] = useMutation(runQuery)
+  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
 
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
@@ -47,11 +39,6 @@ export default function QueryEditor({
   function handleQueryFormat() {
     editor.current?.editor?.getAction('editor.action.formatDocument').run()
   }
-
-  const [measureTableContainer, tableContainerBounds] = useMeasure()
-  const [tableHeaderSize, setTableHeaderSize] = useState<number | undefined>(
-    undefined,
-  )
 
   return (
     <div className={clsx('flex flex-col', className)} style={style}>
@@ -98,51 +85,7 @@ export default function QueryEditor({
         />
       </div>
       <div className="flex-1 p-4" style={{ width: editorWidth }}>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-end flex-shrink-0 mb-4 gap-x-4">
-            <Input
-              placeholder="Search Table"
-              className="w-64"
-              prefix={<SearchOutlined />}
-            />
-            <Button icon={<DownloadOutlined />}>Download</Button>
-          </div>
-          <div className="flex-1" ref={measureTableContainer}>
-            <Table
-              columns={data?.fields.map((field) => ({
-                key: field.name,
-                title: <span title={field.name}>{field.name}</span>,
-                dataIndex: field.name,
-                width: 120,
-              }))}
-              dataSource={data?.rows.map((row: any, index: number) => ({
-                key: (index + 1).toString(),
-                ...row,
-              }))}
-              rowClassName="text-xs font-sans"
-              size="small"
-              loading={isLoading}
-              // @ts-ignore
-              onHeaderRow={() => ({
-                ref: (node: HTMLTableRowElement) => {
-                  if (node) {
-                    setTableHeaderSize(node?.getBoundingClientRect()?.height)
-                  }
-                },
-              })}
-              scroll={{
-                x: tableContainerBounds.width,
-                y:
-                  tableHeaderSize && tableContainerBounds.height
-                    ? tableContainerBounds.height -
-                      tableHeaderSize -
-                      PAGINATION_CONTAINER_HEIGHT
-                    : undefined,
-              }}
-              pagination={{ showSizeChanger: true }}
-            />
-          </div>
-        </div>
+        <ResultsTable data={data} isLoading={isLoading} error={error} />
       </div>
     </div>
   )
