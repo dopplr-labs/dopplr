@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react'
-import Axios from 'axios'
 import { matchSorter } from 'match-sorter'
 import { SearchOutlined } from '@ant-design/icons'
 import { Input } from 'antd'
