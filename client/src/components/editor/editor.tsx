@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useRef } from 'react'
 import MonacoEditor from 'react-monaco-editor'
 import {
   MonacoServices,
@@ -13,7 +13,6 @@ import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
 import sqlFormatter from 'sql-formatter'
 import clsx from 'clsx'
-import useMeasure from 'react-use-measure'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -58,20 +57,17 @@ function createLanguageClient(
 
 type EditorProps = {
   resourceId: number
-  height?: number
+  value: string
+  setValue: React.Dispatch<React.SetStateAction<string>>
   className?: string
   style?: React.CSSProperties
 }
 
 const Editor = forwardRef(
   (
-    { resourceId, height = 400, className, style }: EditorProps,
+    { resourceId, value, setValue, className, style }: EditorProps,
     ref: React.Ref<MonacoEditor | null>,
   ): JSX.Element => {
-    const [containerRef, bounds] = useMeasure()
-
-    const [value, setValue] = useState('')
-
     const editor = useRef<MonacoEditor | null>(null)
     const serviceDisposer = useRef<Disposable | undefined>(undefined)
 
@@ -109,14 +105,8 @@ const Editor = forwardRef(
     }, [resourceId])
 
     return (
-      <div
-        className={clsx('editor w-full', className)}
-        style={style}
-        ref={containerRef}
-      >
+      <div className={clsx('editor h-full', className)} style={style}>
         <MonacoEditor
-          width={bounds?.width}
-          height={height}
           language="pgsql"
           theme="vs-light"
           value={value}
@@ -133,6 +123,8 @@ const Editor = forwardRef(
             minimap: {
               enabled: false,
             },
+            tabSize: 2,
+            automaticLayout: true,
           }}
           ref={(monacoEditor) => {
             editor.current = monacoEditor

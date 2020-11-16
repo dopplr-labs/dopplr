@@ -32,7 +32,7 @@ const pages = [
     title: 'Dashboard',
     icon: <BarChartOutlined className="text-xl" />,
     defaultRoute: '/dashboards',
-    routes: ['/dashboards/:dashboardId?'],
+    routes: ['/dashboards', '/dashboards/:dashboardId?'],
   },
 ]
 
