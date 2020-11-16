@@ -27,7 +27,8 @@ export default function ResultsTable({
   className,
   style,
 }: ResultsTableProps) {
-  const [measureTableContainer, tableContainerBounds] = useMeasure()
+  const [measureContainer, containerBounds] = useMeasure()
+  const [measureActionsContainer, actionsContainerBounds] = useMeasure()
   const [tableHeaderSize, setTableHeaderSize] = useState<number | undefined>(
     undefined,
   )
@@ -56,7 +57,10 @@ export default function ResultsTable({
     if (data) {
       return (
         <>
-          <div className="flex items-center justify-end flex-shrink-0 mb-4 gap-x-4">
+          <div
+            className="flex items-center justify-end flex-shrink-0 mb-4 gap-x-4"
+            ref={measureActionsContainer}
+          >
             <Input
               placeholder="Search Table"
               className="w-64"
@@ -64,7 +68,7 @@ export default function ResultsTable({
             />
             <Button icon={<DownloadOutlined />}>Download</Button>
           </div>
-          <div className="flex-1" ref={measureTableContainer}>
+          <div>
             <Table
               columns={data?.fields.map((field) => ({
                 key: field.name,
@@ -87,10 +91,11 @@ export default function ResultsTable({
                 },
               })}
               scroll={{
-                x: tableContainerBounds.width,
+                x: containerBounds.width,
                 y:
-                  tableHeaderSize && tableContainerBounds.height
-                    ? tableContainerBounds.height -
+                  tableHeaderSize && containerBounds.height
+                    ? containerBounds.height -
+                      actionsContainerBounds.height -
                       tableHeaderSize -
                       PAGINATION_CONTAINER_HEIGHT
                     : 0,
@@ -116,13 +121,18 @@ export default function ResultsTable({
     data,
     isLoading,
     error,
-    measureTableContainer,
-    tableContainerBounds,
+    measureActionsContainer,
+    actionsContainerBounds,
+    containerBounds,
     tableHeaderSize,
   ])
 
   return (
-    <div className={clsx('flex flex-col h-full', className)} style={style}>
+    <div
+      className={clsx('flex flex-col h-full', className)}
+      style={style}
+      ref={measureContainer}
+    >
       {content}
     </div>
   )

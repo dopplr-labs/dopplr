@@ -58,7 +58,6 @@ function createLanguageClient(
 type EditorProps = {
   resourceId: number
   width: number
-  height?: number
   value: string
   setValue: React.Dispatch<React.SetStateAction<string>>
   className?: string
@@ -67,15 +66,7 @@ type EditorProps = {
 
 const Editor = forwardRef(
   (
-    {
-      resourceId,
-      width,
-      height = 300,
-      value,
-      setValue,
-      className,
-      style,
-    }: EditorProps,
+    { resourceId, width, value, setValue, className, style }: EditorProps,
     ref: React.Ref<MonacoEditor | null>,
   ): JSX.Element => {
     const editor = useRef<MonacoEditor | null>(null)
@@ -115,10 +106,9 @@ const Editor = forwardRef(
     }, [resourceId])
 
     return (
-      <div className={clsx('editor w-full', className)} style={style}>
+      <div className={clsx('editor h-full', className)} style={style}>
         <MonacoEditor
           width={width}
-          height={height}
           language="pgsql"
           theme="vs-light"
           value={value}
@@ -137,6 +127,7 @@ const Editor = forwardRef(
             },
             tabSize: 2,
             useTabStops: false,
+            automaticLayout: true,
           }}
           ref={(monacoEditor) => {
             editor.current = monacoEditor

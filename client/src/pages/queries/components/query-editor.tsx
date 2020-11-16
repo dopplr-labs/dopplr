@@ -6,6 +6,8 @@ import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
 import clsx from 'clsx'
 import { Resource } from 'types/resource'
+import useMeasure from 'react-use-measure'
+import { ResizableBox } from 'react-resizable'
 import { runQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
@@ -26,7 +28,7 @@ export default function QueryEditor({
   className,
   style,
 }: QueryEditorProps) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('SELECT * FROM orders LIMIT 20;')
 
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
 
@@ -40,8 +42,14 @@ export default function QueryEditor({
     editor.current?.editor?.getAction('editor.action.formatDocument').run()
   }
 
+  const [measureContainer, containerBounds] = useMeasure()
+  const [tableContainerHeight, setTableContainerHeight] = useState(480)
+
   return (
-    <div className={clsx('flex flex-col', className)} style={style}>
+    <div
+      className={clsx('flex flex-col overflow-hidden', className)}
+      style={style}
+    >
       <div className="flex items-center px-4 py-3 space-x-3 border-b">
         <Select
           placeholder="Select a resource"
@@ -72,20 +80,41 @@ export default function QueryEditor({
           Run Query
         </Button>
       </div>
-      <div className="border-b">
-        <Editor
-          resourceId={selectedResource}
-          value={query}
-          setValue={setQuery}
-          ref={(monacoEditor) => {
-            editor.current = monacoEditor
+
+      <div className="flex-1" ref={measureContainer}>
+        <div
+          style={{
+            width: editorWidth,
+            height: containerBounds.height - tableContainerHeight,
           }}
+        >
+          <Editor
+            resourceId={selectedResource}
+            value={query}
+            setValue={setQuery}
+            ref={(monacoEditor) => {
+              editor.current = monacoEditor
+            }}
+            width={editorWidth}
+          />
+        </div>
+        <ResizableBox
+          className="relative flex-shrink-0 p-4 border-t"
           width={editorWidth}
-          height={300}
-        />
-      </div>
-      <div className="flex-1 p-4" style={{ width: editorWidth }}>
-        <ResultsTable data={data} isLoading={isLoading} error={error} />
+          height={tableContainerHeight}
+          onResize={(event, { size: { height } }) => {
+            setTableContainerHeight(height)
+          }}
+          axis="y"
+          resizeHandles={['n']}
+          handle={() => (
+            <div className="absolute top-0 left-0 right-0 h-px bg-gray-200 row-resize-handle" />
+          )}
+        >
+          <div className="h-full">
+            <ResultsTable data={data} isLoading={isLoading} error={error} />
+          </div>
+        </ResizableBox>
       </div>
     </div>
   )

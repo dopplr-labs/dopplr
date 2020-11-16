@@ -4,6 +4,8 @@ import { fetchResources } from 'pages/resources/queries'
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import useMeasure from 'react-use-measure'
+import { ResizableBox } from 'react-resizable'
+import 'react-resizable/css/styles.css'
 import QueryEditor from './query-editor'
 import SchemaTab from './schema-tab'
 
@@ -14,8 +16,10 @@ type QueryTabProps = {
 }
 
 export default function QueryTab({ width, className, style }: QueryTabProps) {
+  const [measureContainer, containerBounds] = useMeasure()
+  const [schemaContainerWidth, setSchemaContainerWidth] = useState(320)
+
   const [selectedResource, setSelectedResource] = useState<number>()
-  const [measureSchemaTab, schemaTabBounds] = useMeasure()
 
   const { isLoading, data: resources, error } = useQuery(
     ['resources'],
@@ -60,23 +64,36 @@ export default function QueryTab({ width, className, style }: QueryTabProps) {
 
   if (resources && selectedResource) {
     return (
-      <div className={clsx('flex h-full', className)} style={style}>
-        {schemaTabBounds.width ? (
-          <QueryEditor
-            className="flex-1"
-            editorWidth={width - schemaTabBounds.width}
-            resources={resources}
-            selectedResource={selectedResource}
-            onResourceChange={setSelectedResource}
-          />
-        ) : null}
+      <div
+        className={clsx('flex h-full', className)}
+        style={style}
+        ref={measureContainer}
+      >
+        <QueryEditor
+          className="flex-1"
+          editorWidth={width - schemaContainerWidth}
+          resources={resources}
+          selectedResource={selectedResource}
+          onResourceChange={setSelectedResource}
+        />
 
-        <div
-          ref={measureSchemaTab}
-          className="flex-shrink-0 h-full py-4 border-l border-gray-200 w-80"
+        <ResizableBox
+          className="relative flex-shrink-0 h-full py-4 border-l border-gray-200"
+          axis="x"
+          width={schemaContainerWidth}
+          resizeHandles={['w']}
+          handle={() => (
+            <div className="absolute top-0 left-0 w-px h-full bg-gray-200 col-resize-handle" />
+          )}
+          height={containerBounds.height}
+          minConstraints={[240, containerBounds.height]}
+          maxConstraints={[480, containerBounds.height]}
+          onResize={(event, { size: { width } }) => {
+            setSchemaContainerWidth(width)
+          }}
         >
           <SchemaTab resourceId={selectedResource} />
-        </div>
+        </ResizableBox>
       </div>
     )
   }
