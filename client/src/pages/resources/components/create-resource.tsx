@@ -1,14 +1,20 @@
 import React from 'react'
-import { Button, Form, Input, InputNumber } from 'antd'
+import { Button, Form, Input, InputNumber, message } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { createResource, fetchResources } from '../queries'
+import {
+  createResource,
+  fetchResources,
+  testResourceConnection,
+} from '../queries'
 
 export default function CreateResource() {
   const { resourceType } = useParams() as { resourceType: string }
 
   const navigate = useNavigate()
+
+  const [form] = Form.useForm()
 
   const { data: resources } = useQuery(['resources'], fetchResources)
 
@@ -39,18 +45,44 @@ export default function CreateResource() {
     return null
   }
 
+  async function pingConnection() {
+    const {
+      name,
+      host,
+      port,
+      database,
+      username,
+      password,
+    } = form.getFieldsValue()
+    try {
+      const response = await testResourceConnection({
+        name,
+        type: 'postgres',
+        host,
+        port,
+        database,
+        username,
+        password,
+      })
+      message.success(response.message)
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
   return (
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
       <div className="flex items-start w-full max-w-screen-md mx-auto space-x-8">
         <div className="flex-1 p-4 overflow-hidden bg-white rounded-md shadow">
           <Form
             layout="horizontal"
-            onFinish={onFinish}
+            form={form}
             name="create-resource"
             initialValues={{ port: 5432 }}
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             labelAlign="left"
+            onFinish={onFinish}
           >
             <img
               src={require('images/resources/postgres-logo.png')}
@@ -147,7 +179,7 @@ export default function CreateResource() {
                 </Button>
               </Link>
               <div className="flex-1" />
-              <Button htmlType="button" className="mr-2">
+              <Button htmlType="button" onClick={pingConnection}>
                 Test Connection
               </Button>
               <Button type="primary" htmlType="submit" loading={isLoading}>
