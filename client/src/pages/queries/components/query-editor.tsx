@@ -28,7 +28,7 @@ export default function QueryEditor({
   className,
   style,
 }: QueryEditorProps) {
-  const [query, setQuery] = useState('SELECT * FROM orders LIMIT 20;')
+  const [query, setQuery] = useState('')
 
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
 
@@ -95,7 +95,6 @@ export default function QueryEditor({
             ref={(monacoEditor) => {
               editor.current = monacoEditor
             }}
-            width={editorWidth}
           />
         </div>
         <ResizableBox
