@@ -16,6 +16,7 @@ import {
 import * as TextDocumentImpl from 'vscode-languageserver-textdocument'
 import * as rpc from 'vscode-ws-jsonrpc'
 import { ResourcesService } from 'src/resources/resources.service'
+import { Logger } from '@nestjs/common'
 import { PgClient } from './db-connection'
 import {
   DBFunction,
@@ -53,6 +54,8 @@ export class SqlLanguageServer {
   databaseCache: string[] = []
 
   dbConnection: PgClient | undefined
+
+  logger: Logger = new Logger('SqlLanguageServer')
 
   constructor(
     protected readonly connection: IConnection,
@@ -350,8 +353,7 @@ export class SqlLanguageServer {
         `)
       this.schemaCache = schemas.rows
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err.message)
+      this.logger.error(err)
     }
 
     try {
@@ -410,8 +412,7 @@ export class SqlLanguageServer {
         `)
       this.tableCache = tablesAndColumns.rows
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err.message)
+      this.logger.error(err)
     }
 
     try {
@@ -437,8 +438,7 @@ export class SqlLanguageServer {
         existing.overloads.push({ args, description: fn.description })
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err.message)
+      this.logger.error(err)
     }
 
     try {
@@ -449,8 +449,7 @@ export class SqlLanguageServer {
         rw.word.toLocaleUpperCase(),
       )
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err.message)
+      this.logger.error(err)
     }
 
     try {
@@ -463,8 +462,7 @@ export class SqlLanguageServer {
     ;`)
       this.databaseCache = databases.rows.map<string>(rw => rw.datname)
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err.message)
+      this.logger.error(err)
     }
   }
 

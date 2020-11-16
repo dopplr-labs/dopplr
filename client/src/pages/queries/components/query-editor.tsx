@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation } from 'react-query'
 import { Button, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
+import { usePrevious } from 'hooks/use-previous'
 import { runQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
@@ -29,21 +30,25 @@ export default function QueryEditor({
   style,
 }: QueryEditorProps) {
   const [query, setQuery] = useState('')
-
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
-
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
   }
 
   const editor = useRef<MonacoEditor | null>(null)
-
   function handleQueryFormat() {
     editor.current?.editor?.getAction('editor.action.formatDocument').run()
   }
 
   const [measureContainer, containerBounds] = useMeasure()
   const [tableContainerHeight, setTableContainerHeight] = useState(480)
+
+  const prevResourceSelected = usePrevious(selectedResource)
+  useEffect(() => {
+    if (selectedResource !== prevResourceSelected) {
+      setQuery('')
+    }
+  }, [prevResourceSelected, selectedResource])
 
   return (
     <div

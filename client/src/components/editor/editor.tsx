@@ -124,7 +124,6 @@ const Editor = forwardRef(
               enabled: false,
             },
             tabSize: 2,
-            useTabStops: false,
             automaticLayout: true,
           }}
           ref={(monacoEditor) => {
