@@ -22,7 +22,7 @@ module.exports = {
     },
   },
 
-  variants: defaultConfig.variants,
+  variants: { ...defaultConfig.variants, visibility: ['group-hover'] },
 
   plugins: [tailwindUI],
 }
