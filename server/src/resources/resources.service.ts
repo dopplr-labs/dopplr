@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { omit } from 'lodash'
 import { createPostgresConnectionPool } from 'src/utils/postgres'
+import { postgresColumnTypes } from 'src/utils/postgres-column-types'
 import { Resource } from './resource.entity'
 import { ResourceRepository } from './resource.repository'
 import {
@@ -158,9 +159,16 @@ export class ResourcesService {
         return tables.map((table, index) => {
           return {
             table,
-            columns: tableRowQueries[index].rows.map(row =>
-              omit(row, ['table_catalog', 'table_name', 'table_schema']),
-            ),
+            columns: tableRowQueries[index].rows.map(row => {
+              const rowData = omit(row, [
+                'table_catalog',
+                'table_name',
+                'table_schema',
+              ])
+              rowData.data_type =
+                postgresColumnTypes[rowData.data_type] ?? rowData.data_type
+              return rowData
+            }),
           }
         })
       } catch (error) {
