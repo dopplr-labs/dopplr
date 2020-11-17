@@ -3,6 +3,7 @@ import { Empty, Tabs } from 'antd'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import QueryTab from './components/query-tab'
+import HistoryTab from './components/history-tab'
 
 export default function Queries() {
   const [measureContainer, containerBounds] = useMeasure()
@@ -27,14 +28,7 @@ export default function Queries() {
       >
         <Tabs className="flex-1 queries-tab" size="small" centered>
           <Tabs.TabPane tab="History" key="history">
-            <div className="flex items-center justify-center h-full">
-              <Empty
-                description={
-                  <span className="text-xs">Run your first query</span>
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
+            <HistoryTab />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Saved" key="saved">
             <div className="flex items-center justify-center h-full">
