@@ -22,7 +22,7 @@ export async function runQuery({
 }
 
 export async function fetchSchema(id: number) {
-  const { data } = await client.post<{
+  const { data } = await client.get<{
     success: boolean
     data: SchemaResult[]
   }>(`/resources/schema/${id}`)

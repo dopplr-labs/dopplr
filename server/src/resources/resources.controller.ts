@@ -69,14 +69,25 @@ export class ResourcesController {
   async testResource(
     @Body() testResourceDto: TestResourceDto,
   ): Promise<{ success: boolean; message: string }> {
-    return this.resourcesService.testResource(testResourceDto)
+    const success = await this.resourcesService.testResource(testResourceDto)
+    return { success, message: 'database connected successfully' }
   }
 
-  @Post('schema/:id')
+  @Post('test-saved/:id')
+  @HttpCode(200)
+  async testSavedResource(
+    @Param('id') id: number,
+  ): Promise<{ success: boolean; message: string }> {
+    const success = await this.resourcesService.testSavedResource(id)
+    return { success, message: 'database connected successfully' }
+  }
+
+  @Get('schema/:id')
   @HttpCode(200)
   async fetchSchema(
     @Param('id') id: number,
   ): Promise<{ success: boolean; data: any[] }> {
-    return this.resourcesService.fetchSchema(id)
+    const data = await this.resourcesService.fetchSchema(id)
+    return { success: true, data }
   }
 }

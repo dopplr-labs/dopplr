@@ -6,10 +6,6 @@ export class RunQueryDto {
   @IsNumber()
   resource: number
 
-  @IsOptional()
-  @IsString()
-  name?: string
-
   @IsString()
   query: string
 }
