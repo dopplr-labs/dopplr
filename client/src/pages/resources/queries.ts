@@ -44,6 +44,21 @@ export async function testResourceConnection({
   return data
 }
 
+export async function testSavedResource(
+  resource: number,
+): Promise<{
+  success: boolean
+  message: string
+}> {
+  const { data } = await client.post<{ success: boolean; message: string }>(
+    '/resources/test-saved',
+    {
+      resource,
+    },
+  )
+  return data
+}
+
 export async function createResource({
   name,
   type,

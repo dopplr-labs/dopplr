@@ -75,12 +75,15 @@ export default function ResultsTable({
                 title: <span title={field.name}>{field.name}</span>,
                 dataIndex: field.name,
                 width: 120,
+                // eslint-disable-next-line react/display-name
+                render: (value: any) => (
+                  <span className="text-xs">{String(value)}</span>
+                ),
               }))}
               dataSource={data?.rows.map((row: any, index: number) => ({
                 key: (index + 1).toString(),
                 ...row,
               }))}
-              rowClassName="text-xs font-sans"
               size="small"
               // @ts-ignore
               onHeaderRow={() => ({

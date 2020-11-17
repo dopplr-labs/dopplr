@@ -21,6 +21,11 @@ export class QueriesService {
     private resourcesService: ResourcesService,
   ) {}
 
+  /**
+   * Get all the history queries
+   *
+   * @param paginationDto - Pagination configuration
+   */
   async getAllHistory(
     paginationDto: PaginationDto,
   ): Promise<PaginationData<Query>> {
@@ -57,6 +62,11 @@ export class QueriesService {
     }
   }
 
+  /**
+   * Get all the saved queries
+   *
+   * @param paginationDto - Pagination configuration
+   */
   async getAllSavedQueries(
     paginationDto: PaginationDto,
   ): Promise<PaginationData<Query>> {
@@ -93,6 +103,11 @@ export class QueriesService {
     }
   }
 
+  /**
+   * Get data for a particular resource
+   *
+   * @param id - Id of the resource
+   */
   async getQuery(id: number): Promise<Query> {
     const query = await this.queryRepository.findOne({ id })
     if (!query) {
@@ -101,7 +116,12 @@ export class QueriesService {
     return query
   }
 
-  async createQuery(saveQueryDto: SaveQueryDto): Promise<Query> {
+  /**
+   * Save the query
+   *
+   * @param saveQueryDto - Data of the query to be saved
+   */
+  async saveQuery(saveQueryDto: SaveQueryDto): Promise<Query> {
     const { resource: resourceId } = saveQueryDto
     const resource = await this.resourcesService.getResource(resourceId)
     return this.queryRepository.save({
@@ -111,6 +131,11 @@ export class QueriesService {
     })
   }
 
+  /**
+   * Run a query for a particular resource
+   *
+   * @param runQueryDto - Data of the query to be run
+   */
   async runQuery(runQueryDto: RunQueryDto): Promise<QueryResult> {
     const { resource: resourceId, query } = runQueryDto
     const resource = await this.resourcesService.getResource(resourceId, false)
@@ -134,6 +159,12 @@ export class QueriesService {
     throw new InternalServerErrorException('database type not yet implemented')
   }
 
+  /**
+   * Update the saved query
+   *
+   * @param id - Id of the **saved** query to be updated
+   * @param updateQueryDto - Updated data of the query
+   */
   async updateQuery(
     id: number,
     updateQueryDto: UpdateQueryDto,
@@ -162,12 +193,20 @@ export class QueriesService {
     }
   }
 
+  /**
+   * Delete a particular query
+   *
+   * @param id - Id of the query to be deleted
+   */
   async deleteQuery(id: number): Promise<Query> {
     const query = await this.getQuery(id)
     await this.queryRepository.remove([query])
     return query
   }
 
+  /**
+   * Clear the entire history or unsaved queries
+   */
   async clearHistory(): Promise<boolean> {
     try {
       await this.queryRepository.delete({ isSaved: false })

@@ -73,12 +73,12 @@ export class ResourcesController {
     return { success, message: 'database connected successfully' }
   }
 
-  @Post('test-saved/:id')
+  @Post('test-saved')
   @HttpCode(200)
   async testSavedResource(
-    @Param('id') id: number,
+    @Body('resource') resourceId: number,
   ): Promise<{ success: boolean; message: string }> {
-    const success = await this.resourcesService.testSavedResource(id)
+    const success = await this.resourcesService.testSavedResource(resourceId)
     return { success, message: 'database connected successfully' }
   }
 

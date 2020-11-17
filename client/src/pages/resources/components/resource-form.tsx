@@ -8,7 +8,7 @@ import { Resource } from 'types/resource'
 import {
   deleteResource,
   fetchResource,
-  testResourceConnection,
+  testSavedResource,
   updateResource,
 } from '../queries'
 
@@ -97,29 +97,13 @@ export default function ResourceForm() {
   }, [removeResource, resourceId])
 
   const pingConnection = useCallback(async () => {
-    const {
-      name,
-      host,
-      port,
-      database,
-      username,
-      password,
-    } = form.getFieldsValue()
     try {
-      const response = await testResourceConnection({
-        name,
-        type: 'postgres',
-        host,
-        port,
-        database,
-        username,
-        password,
-      })
+      const response = await testSavedResource(Number.parseInt(resourceId, 10))
       message.success(response.message)
     } catch (error) {
       message.error(error.message)
     }
-  }, [form])
+  }, [resourceId])
 
   const formContent = useMemo(() => {
     if (isLoading) {
@@ -270,7 +254,7 @@ export default function ResourceForm() {
               },
             ]}
           >
-            <Input.Password />
+            <Input.Password visibilityToggle={false} />
           </Form.Item>
           <div className="flex p-4 -mx-4 -mb-4 space-x-4 bg-gray-50">
             <Link to="/resources">

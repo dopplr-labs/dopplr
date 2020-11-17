@@ -55,7 +55,7 @@ export class QueriesController {
   async saveQuery(
     @Body() saveQueryDto: SaveQueryDto,
   ): Promise<{ success: boolean; data: QueryType }> {
-    const data = await this.queriesService.createQuery(saveQueryDto)
+    const data = await this.queriesService.saveQuery(saveQueryDto)
     return { success: true, data }
   }
 

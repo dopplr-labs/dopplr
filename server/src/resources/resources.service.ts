@@ -48,7 +48,7 @@ export class ResourcesService {
    */
   getAllResources(): Promise<Resource[]> {
     return this.resourcesRepository
-      .find()
+      .find({ order: { createdAt: 'ASC' } })
       .then(resources => resources.map(this.encryptResource))
   }
 
@@ -101,7 +101,7 @@ export class ResourcesService {
    * Test whether the configuration for a resource is valid or not
    * by connecting to the corresponding database
    *
-   * @param id - Id of the resource to be tested
+   * @param resource - Resource to be tested
    */
   async testResource(resource: TestResourceDto): Promise<boolean> {
     if (resource.type === 'postgres') {
@@ -120,6 +120,12 @@ export class ResourcesService {
     throw new InternalServerErrorException('database type not yet implemented')
   }
 
+  /**
+   * Test whether the configuration for a resource is valid or not
+   * by connecting to the corresponding database
+   *
+   * @param id - Id of the resource to be tested
+   */
   async testSavedResource(id: number) {
     const resource = await this.getResource(id, false)
     return this.testResource(resource)
