@@ -6,10 +6,6 @@ export class RunQueryDto {
   @IsNumber()
   resource: number
 
-  @IsOptional()
-  @IsString()
-  name?: string
-
   @IsString()
   query: string
 }
@@ -26,8 +22,17 @@ export class SaveQueryDto {
   query: string
 }
 
-export class FilterHistoryDto {
+export class UpdateQueryDto {
+  @IsOptional()
   @Transform(parseInt)
   @IsNumber()
-  resource: number
+  resource?: number
+
+  @IsOptional()
+  @IsString()
+  name?: string
+
+  @IsOptional()
+  @IsString()
+  query?: string
 }

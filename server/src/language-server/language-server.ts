@@ -326,7 +326,7 @@ export class SqlLanguageServer {
   }
 
   loadCompletionCache = async (resourceId: number) => {
-    const resource = await this.resourcesService.getResource(resourceId)
+    const resource = await this.resourcesService.getResource(resourceId, false)
     this.dbConnection = new PgClient({
       host: resource.host,
       port: resource.port,

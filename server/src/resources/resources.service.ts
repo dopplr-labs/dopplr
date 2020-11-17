@@ -14,6 +14,8 @@ import {
   UpdateResourceDto,
 } from './resources.dto'
 
+const ENCRYPTED_PASSWORD_STRING = '---encrypted-password---'
+
 @Injectable()
 export class ResourcesService {
   constructor(
@@ -21,24 +23,33 @@ export class ResourcesService {
     private resourcesRepository: ResourceRepository,
   ) {}
 
+  encryptResource(resource: Resource): Resource {
+    return {
+      ...resource,
+      password: ENCRYPTED_PASSWORD_STRING,
+    }
+  }
+
   /**
    * Returns the resource data
    *
    * @param id - Id of the resource
    */
-  async getResource(id: number): Promise<Resource> {
+  async getResource(id: number, encrypt: boolean = true): Promise<Resource> {
     const resource = await this.resourcesRepository.findOne({ id })
     if (!resource) {
       throw new NotFoundException('resource not found')
     }
-    return resource
+    return encrypt ? this.encryptResource(resource) : resource
   }
 
   /**
    * Returns all the resources
    */
   getAllResources(): Promise<Resource[]> {
-    return this.resourcesRepository.find()
+    return this.resourcesRepository
+      .find({ order: { createdAt: 'ASC' } })
+      .then(resources => resources.map(this.encryptResource))
   }
 
   /**
@@ -49,7 +60,9 @@ export class ResourcesService {
   async createResource(
     createResourceDto: CreateResourceDto,
   ): Promise<Resource> {
-    return this.resourcesRepository.save(createResourceDto)
+    return this.resourcesRepository
+      .save(createResourceDto)
+      .then(resource => this.encryptResource(resource))
   }
 
   /**
@@ -62,9 +75,15 @@ export class ResourcesService {
     id: number,
     updateResourceDto: UpdateResourceDto,
   ): Promise<Resource> {
+    const { password } = updateResourceDto
+    const updatedData = {
+      ...updateResourceDto,
+      password: password !== ENCRYPTED_PASSWORD_STRING ? password : undefined,
+    }
     return this.resourcesRepository
-      .update({ id }, updateResourceDto)
+      .update({ id }, updatedData)
       .then(() => this.getResource(id))
+      .then(resource => this.encryptResource(resource))
   }
 
   /**
@@ -75,24 +94,22 @@ export class ResourcesService {
   async deleteResource(id: number): Promise<Resource> {
     const resource = await this.getResource(id)
     await this.resourcesRepository.remove([resource])
-    return resource
+    return this.encryptResource(resource)
   }
 
   /**
    * Test whether the configuration for a resource is valid or not
    * by connecting to the corresponding database
    *
-   * @param id - Id of the resource to be tested
+   * @param resource - Resource to be tested
    */
-  async testResource(
-    resource: TestResourceDto,
-  ): Promise<{ success: boolean; message: string }> {
+  async testResource(resource: TestResourceDto): Promise<boolean> {
     if (resource.type === 'postgres') {
       const pool = createPostgresConnectionPool(resource)
 
       try {
         await pool.query('SELECT NOW()')
-        return { success: true, message: 'database connected successfully' }
+        return true
       } catch (error) {
         throw new InternalServerErrorException(error)
       } finally {
@@ -104,12 +121,23 @@ export class ResourcesService {
   }
 
   /**
+   * Test whether the configuration for a resource is valid or not
+   * by connecting to the corresponding database
+   *
+   * @param id - Id of the resource to be tested
+   */
+  async testSavedResource(id: number) {
+    const resource = await this.getResource(id, false)
+    return this.testResource(resource)
+  }
+
+  /**
    * Fetch schema for a particular resource
    *
    * @param id - Id of the resource whose schema is to be fetched
    */
-  async fetchSchema(id: number): Promise<{ success: boolean; data: any[] }> {
-    const resource = await this.getResource(id)
+  async fetchSchema(id: number): Promise<any[]> {
+    const resource = await this.getResource(id, false)
 
     if (resource.type === 'postgres') {
       const pool = createPostgresConnectionPool(resource)
@@ -126,17 +154,15 @@ export class ResourcesService {
             ),
           ),
         )
-        return {
-          success: true,
-          data: tables.map((table, index) => {
-            return {
-              table,
-              columns: tableRowQueries[index].rows.map(row =>
-                omit(row, ['table_catalog', 'table_name', 'table_schema']),
-              ),
-            }
-          }),
-        }
+
+        return tables.map((table, index) => {
+          return {
+            table,
+            columns: tableRowQueries[index].rows.map(row =>
+              omit(row, ['table_catalog', 'table_name', 'table_schema']),
+            ),
+          }
+        })
       } catch (error) {
         throw new InternalServerErrorException(error)
       } finally {

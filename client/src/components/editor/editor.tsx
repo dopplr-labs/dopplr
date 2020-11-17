@@ -116,9 +116,6 @@ const Editor = forwardRef(
             fontFamily: 'JetBrains Mono',
             fontSize: 12,
             lineHeight: 18,
-            padding: {
-              top: 8,
-            },
             glyphMargin: false,
             minimap: {
               enabled: false,

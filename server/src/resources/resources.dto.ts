@@ -53,9 +53,6 @@ export class UpdateResourceDto {
 }
 
 export class TestResourceDto {
-  @IsString()
-  name: string
-
   @IsIn(['postgres'])
   type: string
 
