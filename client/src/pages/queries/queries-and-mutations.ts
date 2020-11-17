@@ -28,3 +28,8 @@ export async function fetchSchema(id: number) {
   }>(`/resources/schema/${id}`)
   return data.data
 }
+
+export async function fetchHistory(id: number) {
+  const { data } = await client.get(`/queries?resource=${id}`)
+  return data
+}
