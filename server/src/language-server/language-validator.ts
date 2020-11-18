@@ -13,7 +13,7 @@ export class Validator {
    *  - Starting Column
    */
 
-  public static *prepareSql(sql: string): IterableIterator<ISqlDetails> {
+  public static * prepareSql(sql: string): IterableIterator<ISqlDetails> {
     const lines = sql.split(/\r?\n/)
     let startLine = 0
     let startColumn = 0
@@ -89,7 +89,7 @@ export class Validator {
     }
   }
 
-  public static *sqlSplit(sql: string) {
+  public static * sqlSplit(sql: string) {
     const bookends = [';', '"', '""', "'", "''", '--', '/*', '*/']
     let lastBookendFound = null
     let start = 0
