@@ -78,7 +78,7 @@ export default function QueryTab({ width, className, style }: QueryTabProps) {
         />
 
         <ResizableBox
-          className="relative flex-shrink-0 h-full py-4 border-gray-200"
+          className="relative flex-shrink-0 h-full py-4 border-gray-100"
           axis="x"
           width={schemaContainerWidth}
           resizeHandles={['w']}

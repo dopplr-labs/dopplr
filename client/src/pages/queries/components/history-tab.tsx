@@ -14,27 +14,32 @@ export default function HistoryTab() {
 
   const historyContent = useMemo(() => {
     if (isLoading) {
-      return range(10).map((val) => (
-        <div
-          key={val}
-          className="w-full h-4 bg-gray-200 rounded animate-pulse"
-          style={{ opacity: 1 - val / 10 }}
-        />
-      ))
+      return (
+        <div className="p-4 space-y-4">
+          {range(10).map((val) => (
+            <div
+              key={val}
+              className="w-full h-4 bg-gray-200 rounded animate-pulse"
+              style={{ opacity: 1 - val / 10 }}
+            />
+          ))}
+        </div>
+      )
     }
+
     if (history) {
       return (
-        <ul>
+        <div>
           {history.map((query: any) => (
             <li
               key={query.id}
-              className="flex items-center justify-between px-4 py-2 space-x-3 text-xs group hover:bg-gray-100"
+              className="flex items-center justify-between px-4 py-2 space-x-3 text-xs group hover:bg-blue-50 hover:text-blue-500"
             >
               <span className="flex-1">{query.query}</span>
               <DeleteOutlined className="invisible group-hover:visible" />
             </li>
           ))}
-        </ul>
+        </div>
       )
     }
 
@@ -54,7 +59,7 @@ export default function HistoryTab() {
 
   return (
     <Scrollbars className="h-full" autoHide>
-      <div className="space-y-4">{historyContent}</div>
+      {historyContent}
     </Scrollbars>
   )
 }
