@@ -29,7 +29,7 @@ export async function fetchSchema(id: number) {
   return data.data
 }
 
-export async function fetchHistory(id: number) {
-  const { data } = await client.get(`/queries?resource=${id}`)
-  return data
+export async function fetchHistory() {
+  const { data } = await client.get('/queries/history')
+  return data.data.items
 }
