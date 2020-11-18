@@ -51,9 +51,13 @@ export default function SchemaTab({ resourceId }: { resourceId: number }) {
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="">
               {filteredSchema?.map((table: any) => (
-                <SchemaTable key={table.table} table={table} />
+                <SchemaTable
+                  key={table.table}
+                  table={table}
+                  resourceId={resourceId}
+                />
               ))}
             </div>
           )}
