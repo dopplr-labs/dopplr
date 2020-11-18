@@ -103,7 +103,7 @@ export default function QueryEditor({
           />
         </div>
         <ResizableBox
-          className="relative flex-shrink-0 p-4 border-t"
+          className="relative flex-shrink-0 p-4"
           width={editorWidth}
           height={tableContainerHeight}
           onResize={(event, { size: { height } }) => {

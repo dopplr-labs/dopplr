@@ -17,7 +17,7 @@ export default function Queries() {
         onResize={(event, { size: { width } }) => {
           setSidebarWidth(width)
         }}
-        className="relative flex flex-col flex-shrink-0 h-full overflow-y-auto border-r"
+        className="relative flex flex-col flex-shrink-0 h-full overflow-y-auto"
         axis="x"
         resizeHandles={['e']}
         minConstraints={[200, containerBounds.height]}
@@ -26,7 +26,7 @@ export default function Queries() {
           <div className="absolute top-0 right-0 w-px h-full bg-gray-200 col-resize-handle" />
         )}
       >
-        <Tabs className="flex-1 queries-tab" size="small" centered>
+        <Tabs className="flex-1 mt-1 queries-tab" size="small" centered>
           <Tabs.TabPane tab="History" key="history">
             <HistoryTab />
           </Tabs.TabPane>
@@ -43,10 +43,9 @@ export default function Queries() {
         </Tabs>
       </ResizableBox>
 
-      <div className="flex flex-col flex-1 pt-4 tabs-container">
+      <div className="flex flex-col flex-1 tabs-container">
         <Tabs
           type="editable-card"
-          tabBarExtraContent={{ left: <div className="w-4" /> }}
           className="h-full queries-tab"
           tabBarStyle={{ marginBottom: 0 }}
         >
