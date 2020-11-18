@@ -7,8 +7,9 @@ import { useQuery } from 'react-query'
 import { fetchHistory } from '../queries-and-mutations'
 
 export default function HistoryTab() {
-  const { isLoading, data: history, error } = useQuery(['history'], () =>
-    fetchHistory(10),
+  const { isLoading, data: history, error } = useQuery(
+    ['history'],
+    fetchHistory,
   )
 
   const historyContent = useMemo(() => {
