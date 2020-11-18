@@ -33,7 +33,9 @@ export default function SchemaTable({ table }: { table: SchemaResult }) {
               <span className="col-span-2 text-gray-800 truncate">
                 {column.column_name}
               </span>
-              <span className="col-span-1 truncate">{column.data_type}</span>
+              <span className="col-span-1 text-right truncate">
+                {column.data_type}
+              </span>
             </li>
           ))}
         </ul>
