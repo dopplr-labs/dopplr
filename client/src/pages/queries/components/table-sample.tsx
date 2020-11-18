@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Modal, Result, Table } from 'antd'
 import { range } from 'lodash-es'
-import { useMutation } from 'react-query'
-import { runQuery } from '../queries-and-mutations'
+import { useQuery } from 'react-query'
+import { fetchSampleData } from '../queries-and-mutations'
 
 export type TableSampleProps = {
   visible: boolean
@@ -17,14 +17,10 @@ export default function TableSample({
   resourceId,
   tableName,
 }: TableSampleProps) {
-  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
-
-  useEffect(() => {
-    runQueryMutation({
-      resource: resourceId,
-      query: `SELECT * FROM ${tableName} LIMIT 10`,
-    })
-  }, [resourceId, runQueryMutation, tableName])
+  const { isLoading, data, error } = useQuery(
+    ['sample-table', resourceId, tableName],
+    () => fetchSampleData(resourceId, tableName),
+  )
 
   const modalContent = useMemo(() => {
     if (isLoading) {
@@ -74,10 +70,14 @@ export default function TableSample({
 
   return (
     <Modal
-      title={`${tableName} sample`}
+      title={
+        <span>
+          <span className="text-blue-500">{tableName}</span> sample
+        </span>
+      }
       visible={visible}
       onCancel={onCancel}
-      width={720}
+      width="60vw"
     >
       {modalContent}
     </Modal>
