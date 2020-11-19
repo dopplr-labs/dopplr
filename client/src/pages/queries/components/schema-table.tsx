@@ -3,6 +3,7 @@ import {
   DownOutlined,
   EllipsisOutlined,
   RightOutlined,
+  TableOutlined,
 } from '@ant-design/icons'
 import { Dropdown, Menu } from 'antd'
 import { ColumnsField, SchemaResult } from 'types/schema'
@@ -27,12 +28,14 @@ export default function SchemaTable({
       <Menu>
         <Menu.Item
           key="0"
+          className="flex items-center space-x-2 text-xs"
           onClick={(event) => {
             event.domEvent.stopPropagation()
             setShow(true)
           }}
         >
-          View Sample
+          <TableOutlined />
+          <span>View Sample</span>
         </Menu.Item>
       </Menu>
     )
@@ -89,7 +92,7 @@ export default function SchemaTable({
       </div>
       <TableSample
         visible={show}
-        onCancel={handleModalClose}
+        handleModalClose={handleModalClose}
         resourceId={resourceId}
         tableName={schema.table}
       />
