@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react'
 import { Empty, Result } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
-import { range } from 'lodash-es'
+import dayjs from 'dayjs'
+import { groupBy, range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
 import { useQuery } from 'react-query'
 import { fetchHistory } from '../queries-and-mutations'
+import DayHistory from './day-history'
 
 export default function HistoryTab() {
   const { isLoading, data: history, error } = useQuery(
@@ -28,19 +29,26 @@ export default function HistoryTab() {
     }
 
     if (history) {
-      return (
-        <div>
-          {history.map((query: any) => (
-            <li
-              key={query.id}
-              className="flex items-center justify-between px-4 py-2 space-x-3 text-xs group hover:bg-blue-50 hover:text-blue-500"
-            >
-              <span className="flex-1">{query.query}</span>
-              <DeleteOutlined className="invisible group-hover:visible" />
-            </li>
-          ))}
-        </div>
-      )
+      const groupedHistory = groupBy(history, (item) => {
+        const today = dayjs().format('DD MMMM')
+        const yesterday = dayjs().subtract(1, 'day').format('DD MMMM')
+        const formattedCreatedDay = dayjs(item.createdAt).format('DD MMMM')
+        if (formattedCreatedDay === today) {
+          return 'Today'
+        }
+        if (formattedCreatedDay === yesterday) {
+          return 'Yesterday'
+        }
+        return formattedCreatedDay
+      })
+
+      return Object.keys(groupedHistory).map((date) => (
+        <DayHistory
+          key={date}
+          date={date}
+          singleDayHistory={groupedHistory[date]}
+        />
+      ))
     }
 
     if (error) {
