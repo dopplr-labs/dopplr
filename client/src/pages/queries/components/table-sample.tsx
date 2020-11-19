@@ -20,6 +20,9 @@ export default function TableSample({
   const { isLoading, data, error } = useQuery(
     ['sample-table', resourceId, tableName],
     () => fetchSampleData(resourceId, tableName),
+    {
+      enabled: visible,
+    },
   )
 
   const modalContent = useMemo(() => {
