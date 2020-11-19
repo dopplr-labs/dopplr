@@ -40,7 +40,12 @@ export default function SideBar() {
   const location = useLocation()
 
   return (
-    <div className="flex flex-col items-center justify-start w-16 h-full pt-4 shadow gap-y-4">
+    <div className="flex flex-col items-center justify-start w-16 h-full pt-4 shadow bg-cool-gray-900 gap-y-4">
+      <img
+        src={require('images/logo-transparent.svg')}
+        alt="Dopplr"
+        className="w-6 h-6 mb-4"
+      />
       {pages.map((page) => {
         const pageSelected = page.routes.some(
           (path) => !!matchPath(path, location.pathname),
@@ -72,8 +77,8 @@ function PageIcon({
         className={clsx(
           'flex rounded-md px-3 py-2 text-sm cursor-pointer focus:outline-none',
           selected
-            ? 'bg-blue-50 text-blue-500'
-            : 'hover:text-gray-700 hover:bg-gray-100',
+            ? 'bg-cool-gray-700 text-white'
+            : 'hover:text-white text-cool-gray-500',
         )}
       >
         {children}

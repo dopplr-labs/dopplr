@@ -7,7 +7,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common'
+import { SampleTableDto } from 'src/queries/queries.dto'
 import { Resource } from './resource.entity'
 import {
   CreateResourceDto,
@@ -24,6 +26,12 @@ export class ResourcesController {
   async getAllResources(): Promise<{ success: boolean; data: Resource[] }> {
     const resources = await this.resourcesService.getAllResources()
     return { success: true, data: resources }
+  }
+
+  @Get('sample-data')
+  async fetchSampleData(@Query() sampleTableDto: SampleTableDto) {
+    const data = await this.resourcesService.fetchSampleData(sampleTableDto)
+    return { success: true, data }
   }
 
   @Get(':id')

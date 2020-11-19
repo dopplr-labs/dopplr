@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { omit } from 'lodash'
+import { SampleTableDto } from 'src/queries/queries.dto'
 import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { postgresColumnTypes } from 'src/utils/postgres-column-types'
 import { Resource } from './resource.entity'
@@ -171,6 +172,24 @@ export class ResourcesService {
             }),
           }
         })
+      } catch (error) {
+        throw new InternalServerErrorException(error)
+      } finally {
+        pool.end()
+      }
+    }
+
+    throw new InternalServerErrorException('database type not yet implemented')
+  }
+
+  async fetchSampleData(sampleTableDto: SampleTableDto) {
+    const { resource: resourceId, tableName } = sampleTableDto
+    const resource = await this.getResource(resourceId, false)
+
+    if (resource.type === 'postgres') {
+      const pool = createPostgresConnectionPool(resource)
+      try {
+        return await pool.query(`SELECT * FROM ${tableName} LIMIT 10;`)
       } catch (error) {
         throw new InternalServerErrorException(error)
       } finally {

@@ -36,3 +36,12 @@ export class UpdateQueryDto {
   @IsString()
   query?: string
 }
+
+export class SampleTableDto {
+  @Transform(parseInt)
+  @IsNumber()
+  resource: number
+
+  @IsString()
+  tableName: string
+}

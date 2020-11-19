@@ -15,10 +15,19 @@
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.0",
     "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.3.0",
     "typescript": "^4.0.3"
   },
   "author": {
     "name": "Dopplr Maintainers"
+  },
+  "scripts": {
+    "lint": "eslint client/src/**/*.ts client/src/**/*.tsx client/*.js server/src/**/*.ts --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
   },
   "license": "MIT",
   "config": {

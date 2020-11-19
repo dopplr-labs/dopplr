@@ -1,7 +1,7 @@
 @import '~antd/lib/style/themes/default';
 @import '~antd/dist/antd.less';
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700&display=swap');
 
 @font-face {
   font-family: 'JetBrains Mono';
@@ -106,7 +106,6 @@ svg {
 }
 
 body {
-  @apply antialiased;
 }
 
 .ant-btn {
@@ -135,7 +134,7 @@ body {
     @apply relative overflow-hidden;
 
     &::after {
-      @apply absolute top-0 left-0 right-0 h-px bg-blue-500;
+      @apply absolute top-0 left-0 right-0 border-t-2 border-blue-500;
       content: '';
     }
   }

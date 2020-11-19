@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { Empty, Tabs } from 'antd'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
+import { ClockCircleOutlined, SaveOutlined } from '@ant-design/icons'
 import QueryTab from './components/query-tab'
+import HistoryTab from './components/history-tab'
 
 export default function Queries() {
   const [measureContainer, containerBounds] = useMeasure()
@@ -16,7 +18,7 @@ export default function Queries() {
         onResize={(event, { size: { width } }) => {
           setSidebarWidth(width)
         }}
-        className="relative flex flex-col flex-shrink-0 h-full overflow-y-auto border-r"
+        className="relative flex flex-col flex-shrink-0 h-full overflow-y-auto"
         axis="x"
         resizeHandles={['e']}
         minConstraints={[200, containerBounds.height]}
@@ -25,18 +27,32 @@ export default function Queries() {
           <div className="absolute top-0 right-0 w-px h-full bg-gray-200 col-resize-handle" />
         )}
       >
-        <Tabs className="flex-1 queries-tab" size="small" centered>
-          <Tabs.TabPane tab="History" key="history">
-            <div className="flex items-center justify-center h-full">
-              <Empty
-                description={
-                  <span className="text-xs">Run your first query</span>
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
+        <Tabs
+          className="flex-1 mt-1 queries-tab"
+          size="small"
+          centered
+          tabBarGutter={16}
+        >
+          <Tabs.TabPane
+            tab={
+              <span className="px-4">
+                <ClockCircleOutlined />
+                <span>History</span>
+              </span>
+            }
+            key="history"
+          >
+            <HistoryTab />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Saved" key="saved">
+          <Tabs.TabPane
+            key="saved"
+            tab={
+              <span className="px-4">
+                <SaveOutlined />
+                <span>Saved</span>
+              </span>
+            }
+          >
             <div className="flex items-center justify-center h-full">
               <Empty
                 description={
@@ -49,10 +65,9 @@ export default function Queries() {
         </Tabs>
       </ResizableBox>
 
-      <div className="flex flex-col flex-1 pt-4 tabs-container">
+      <div className="flex flex-col flex-1 tabs-container">
         <Tabs
           type="editable-card"
-          tabBarExtraContent={{ left: <div className="w-4" /> }}
           className="h-full queries-tab"
           tabBarStyle={{ marginBottom: 0 }}
         >
