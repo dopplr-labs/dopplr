@@ -6,14 +6,14 @@ import { fetchSampleData } from '../queries-and-mutations'
 
 export type TableSampleProps = {
   visible: boolean
-  onCancel: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
+  handleModalClose: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
   resourceId: number
   tableName: string
 }
 
 export default function TableSample({
   visible,
-  onCancel,
+  handleModalClose,
   resourceId,
   tableName,
 }: TableSampleProps) {
@@ -79,7 +79,8 @@ export default function TableSample({
         </span>
       }
       visible={visible}
-      onCancel={onCancel}
+      onCancel={handleModalClose}
+      onOk={handleModalClose}
       width="60vw"
     >
       {modalContent}
