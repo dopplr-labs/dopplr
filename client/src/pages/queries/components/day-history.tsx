@@ -1,12 +1,7 @@
-import React, { useState, useMemo } from 'react'
-import { Dropdown, Menu } from 'antd'
-import {
-  DownOutlined,
-  EllipsisOutlined,
-  RightOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons'
+import React, { useState } from 'react'
+import { DownOutlined, RightOutlined } from '@ant-design/icons'
 import { History } from 'types/history'
+import HistoryQuery from './history-query'
 
 export type DayHistoryProps = {
   singleDayHistory: History[]
@@ -18,17 +13,6 @@ export default function DayHistory({
   date,
 }: DayHistoryProps) {
   const [show, setShow] = useState(true)
-
-  const historyMenu = useMemo(() => {
-    return (
-      <Menu>
-        <Menu.Item key="0" className="flex items-center space-x-2 text-xs">
-          <DeleteOutlined />
-          <span>Clear Query</span>
-        </Menu.Item>
-      </Menu>
-    )
-  }, [])
 
   return (
     <div className="border-b">
@@ -44,17 +28,7 @@ export default function DayHistory({
       {show ? (
         <ul>
           {singleDayHistory.map((query) => (
-            <li
-              key={query.id}
-              className="flex items-center justify-between py-2 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-gray-50 group"
-            >
-              <span>{query.query}</span>
-              <Dropdown overlay={historyMenu} trigger={['click']}>
-                <button className="invisible px-1 focus:outline-none group-hover:visible">
-                  <EllipsisOutlined className="text-lg" />
-                </button>
-              </Dropdown>
-            </li>
+            <HistoryQuery key={query.id} query={query} />
           ))}
         </ul>
       ) : null}
