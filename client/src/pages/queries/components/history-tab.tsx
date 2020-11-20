@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Empty, Result } from 'antd'
+import { Button, Empty, Result } from 'antd'
 import dayjs from 'dayjs'
 import { groupBy, range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
@@ -42,13 +42,21 @@ export default function HistoryTab() {
         return formattedCreatedDay
       })
 
-      return Object.keys(groupedHistory).map((date) => (
-        <DayHistory
-          key={date}
-          date={date}
-          singleDayHistory={groupedHistory[date]}
-        />
-      ))
+      return (
+        <>
+          <div className="flex px-3 pb-1">
+            <span className="flex-1" />
+            <Button type="link">clear all</Button>
+          </div>
+          {Object.keys(groupedHistory).map((date) => (
+            <DayHistory
+              key={date}
+              date={date}
+              singleDayHistory={groupedHistory[date]}
+            />
+          ))}
+        </>
+      )
     }
 
     if (error) {
