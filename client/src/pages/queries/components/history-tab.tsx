@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react'
-import { Button, Empty, Result } from 'antd'
+import React, { useCallback, useMemo } from 'react'
+import { Button, Empty, Modal, Result } from 'antd'
 import dayjs from 'dayjs'
 import { groupBy, range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
-import { useQuery } from 'react-query'
-import { fetchHistory } from '../queries-and-mutations'
+import { queryCache, useMutation, useQuery } from 'react-query'
+import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
 import DayHistory from './day-history'
 
 export default function HistoryTab() {
@@ -12,6 +12,25 @@ export default function HistoryTab() {
     ['history'],
     fetchHistory,
   )
+
+  const [clearAllHistory] = useMutation(clearHistoryQuery, {
+    onMutate: () => {
+      queryCache.removeQueries(['history'])
+    },
+  })
+
+  const confirmDeleteHistory = useCallback(() => {
+    Modal.confirm({
+      title: 'Clear all histroy?',
+      content: 'This action cannot be reverted',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        clearAllHistory()
+      },
+    })
+  }, [clearAllHistory])
 
   const historyContent = useMemo(() => {
     if (isLoading) {
@@ -28,7 +47,7 @@ export default function HistoryTab() {
       )
     }
 
-    if (history) {
+    if (history && history.length > 0) {
       const groupedHistory = groupBy(history, (item) => {
         const today = dayjs().format('DD MMMM')
         const yesterday = dayjs().subtract(1, 'day').format('DD MMMM')
@@ -44,9 +63,11 @@ export default function HistoryTab() {
 
       return (
         <>
-          <div className="flex px-3 pb-1">
+          <div className="flex px-3 -mt-2">
             <span className="flex-1" />
-            <Button type="link">clear all</Button>
+            <Button type="link" onClick={confirmDeleteHistory}>
+              clear all
+            </Button>
           </div>
           {Object.keys(groupedHistory).map((date) => (
             <DayHistory
@@ -71,7 +92,7 @@ export default function HistoryTab() {
         />
       </div>
     )
-  }, [isLoading, history, error])
+  }, [isLoading, history, error, confirmDeleteHistory])
 
   return (
     <Scrollbars className="h-full" autoHide>
