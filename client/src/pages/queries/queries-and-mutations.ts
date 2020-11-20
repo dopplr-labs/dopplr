@@ -45,3 +45,12 @@ export async function deleteQuery(id: number) {
   const { data } = await client.delete(`/queries/${id}`)
   return data.data
 }
+
+export async function clearHistoryQuery() {
+  const { data } = await client.delete<{
+    success: boolean
+    data: boolean
+    message: string
+  }>('/queries/history')
+  return data
+}
