@@ -201,7 +201,7 @@ export class QueriesService {
   async deleteQuery(id: number): Promise<Query> {
     const query = await this.getQuery(id)
     await this.queryRepository.remove([query])
-    return query
+    return { ...query, id }
   }
 
   /**
