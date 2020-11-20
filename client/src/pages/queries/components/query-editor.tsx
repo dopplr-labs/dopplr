@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useMutation } from 'react-query'
-import { Button, Select } from 'antd'
+import { Button, Input, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
@@ -30,6 +30,9 @@ export default function QueryEditor({
   style,
 }: QueryEditorProps) {
   const [query, setQuery] = useState('')
+  const [queryName, setQueryName] = useState('Untitled Query')
+  const [editQueryName, setEditQueryName] = useState(false)
+
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
@@ -69,8 +72,31 @@ export default function QueryEditor({
           ))}
         </Select>
         <div className="w-px h-full bg-gray-200" />
-        <div className="text-sm text-gray-800">Untitled query</div>
-        <div className="flex-1" />
+        {editQueryName ? (
+          <Input
+            className="flex-1"
+            autoFocus
+            value={queryName}
+            onFocus={(event) => {
+              event.target.select()
+            }}
+            onChange={({ target: { value } }) => {
+              setQueryName(value)
+            }}
+            onPressEnter={() => {
+              setEditQueryName(false)
+            }}
+          />
+        ) : (
+          <div
+            className="flex-1 text-sm text-gray-800 cursor-pointer"
+            onClick={() => {
+              setEditQueryName(true)
+            }}
+          >
+            {queryName}
+          </div>
+        )}
         <Button icon={<CodeOutlined />} onClick={handleQueryFormat}>
           Beautify
         </Button>
