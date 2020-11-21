@@ -7,8 +7,19 @@ import QueryTab from './components/query-tab'
 import HistoryTab from './components/history-tab'
 
 export default function Queries() {
+  const [queryName, setQueryName] = useState('Untitled Query')
+  const [historyKey, setHistoryKey] = useState(0)
+
   const [measureContainer, containerBounds] = useMeasure()
   const [sidebarWidth, setSidebarWidth] = useState(288)
+
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setQueryName(event.target.value)
+  }
+
+  function handleKeyIncrement() {
+    setHistoryKey((prevState) => prevState + 1)
+  }
 
   return (
     <div className="flex flex-1 h-full" ref={measureContainer}>
@@ -42,7 +53,7 @@ export default function Queries() {
             }
             key="history"
           >
-            <HistoryTab />
+            <HistoryTab key={historyKey.toString()} />
           </Tabs.TabPane>
           <Tabs.TabPane
             key="saved"
@@ -72,10 +83,15 @@ export default function Queries() {
           tabBarStyle={{ marginBottom: 0 }}
         >
           <Tabs.TabPane
-            tab={<span className="text-xs">Untitled Query</span>}
+            tab={<span className="text-xs">{queryName}</span>}
             className="w-full"
           >
-            <QueryTab width={containerBounds.width - sidebarWidth} />
+            <QueryTab
+              queryName={queryName}
+              width={containerBounds.width - sidebarWidth}
+              onChange={handleNameChange}
+              handleKeyIncrement={handleKeyIncrement}
+            />
           </Tabs.TabPane>
         </Tabs>
       </div>

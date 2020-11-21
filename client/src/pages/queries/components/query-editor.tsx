@@ -13,27 +13,36 @@ import { runQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
 type QueryEditorProps = {
+  queryName: string
   editorWidth: number
+  handleKeyIncrement: () => void
   resources: Resource[]
   selectedResource: number
   onResourceChange: (selectedResource: number) => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
   style?: React.CSSProperties
 }
 
 export default function QueryEditor({
+  queryName,
   editorWidth,
+  handleKeyIncrement,
   resources,
   selectedResource,
   onResourceChange,
+  onChange,
   className,
   style,
 }: QueryEditorProps) {
   const [query, setQuery] = useState('')
-  const [queryName, setQueryName] = useState('Untitled Query')
   const [editQueryName, setEditQueryName] = useState(false)
 
-  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
+  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery, {
+    onSuccess: () => {
+      handleKeyIncrement()
+    },
+  })
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
   }
@@ -80,9 +89,7 @@ export default function QueryEditor({
             onFocus={(event) => {
               event.target.select()
             }}
-            onChange={({ target: { value } }) => {
-              setQueryName(value)
-            }}
+            onChange={onChange}
             onPressEnter={() => {
               setEditQueryName(false)
             }}
