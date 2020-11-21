@@ -54,3 +54,20 @@ export async function clearHistoryQuery() {
   }>('/queries/history')
   return data
 }
+
+export async function saveQuery({
+  resourceId,
+  query,
+  name,
+}: {
+  resourceId: number
+  query: string
+  name: string
+}) {
+  const { data } = await client.post('/queries/save', {
+    resource: resourceId,
+    query,
+    name,
+  })
+  return data.data
+}
