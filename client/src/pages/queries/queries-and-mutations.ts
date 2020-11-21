@@ -55,6 +55,11 @@ export async function clearHistoryQuery() {
   return data
 }
 
+export async function fetchSavedQueries() {
+  const { data } = await client.get('/queries/saved')
+  return data.data.items
+}
+
 export async function saveQuery({
   resourceId,
   query,
