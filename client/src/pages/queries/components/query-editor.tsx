@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useMutation } from 'react-query'
-import { Button, Input, Select } from 'antd'
+import { Button, Input, message, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
@@ -9,7 +9,7 @@ import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { usePrevious } from 'hooks/use-previous'
-import { runQuery } from '../queries-and-mutations'
+import { runQuery, saveQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
 type QueryEditorProps = {
@@ -45,6 +45,15 @@ export default function QueryEditor({
   })
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
+  }
+
+  const [saveQueryMutation] = useMutation(saveQuery, {
+    onSuccess: () => {
+      message.success('Query saved successfully')
+    },
+  })
+  function handleSaveQuery() {
+    saveQueryMutation({ resourceId: selectedResource, query, name: queryName })
   }
 
   const editor = useRef<MonacoEditor | null>(null)
@@ -107,7 +116,9 @@ export default function QueryEditor({
         <Button icon={<CodeOutlined />} onClick={handleQueryFormat}>
           Beautify
         </Button>
-        <Button icon={<SaveOutlined />}>Save</Button>
+        <Button icon={<SaveOutlined />} onClick={handleSaveQuery}>
+          Save
+        </Button>
         <Button
           type="primary"
           icon={<CaretRightFilled />}
