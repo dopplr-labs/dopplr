@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Empty, Tabs } from 'antd'
+import { Tabs } from 'antd'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { ClockCircleOutlined, SaveOutlined } from '@ant-design/icons'
 import QueryTab from './components/query-tab'
 import HistoryTab from './components/history-tab'
+import SavedTab from './components/saved-tab'
 
 export default function Queries() {
   const [queryName, setQueryName] = useState('Untitled Query')
@@ -64,14 +65,7 @@ export default function Queries() {
               </span>
             }
           >
-            <div className="flex items-center justify-center h-full">
-              <Empty
-                description={
-                  <span className="text-xs">Run your first query</span>
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
+            <SavedTab />
           </Tabs.TabPane>
         </Tabs>
       </ResizableBox>
