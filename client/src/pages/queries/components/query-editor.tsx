@@ -102,6 +102,9 @@ export default function QueryEditor({
             onPressEnter={() => {
               setEditQueryName(false)
             }}
+            onBlur={() => {
+              setEditQueryName(false)
+            }}
           />
         ) : (
           <div
