@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useMutation } from 'react-query'
-import { Button, Select } from 'antd'
+import { Button, Input, message, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
@@ -9,30 +9,51 @@ import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { usePrevious } from 'hooks/use-previous'
-import { runQuery } from '../queries-and-mutations'
+import { runQuery, saveQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
 type QueryEditorProps = {
+  queryName: string
   editorWidth: number
+  handleKeyIncrement: () => void
   resources: Resource[]
   selectedResource: number
   onResourceChange: (selectedResource: number) => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
   style?: React.CSSProperties
 }
 
 export default function QueryEditor({
+  queryName,
   editorWidth,
+  handleKeyIncrement,
   resources,
   selectedResource,
   onResourceChange,
+  onChange,
   className,
   style,
 }: QueryEditorProps) {
   const [query, setQuery] = useState('')
-  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery)
+  const [editQueryName, setEditQueryName] = useState(false)
+
+  const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery, {
+    onSuccess: () => {
+      handleKeyIncrement()
+    },
+  })
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
+  }
+
+  const [saveQueryMutation] = useMutation(saveQuery, {
+    onSuccess: () => {
+      message.success('Query saved successfully')
+    },
+  })
+  function handleSaveQuery() {
+    saveQueryMutation({ resourceId: selectedResource, query, name: queryName })
   }
 
   const editor = useRef<MonacoEditor | null>(null)
@@ -69,12 +90,38 @@ export default function QueryEditor({
           ))}
         </Select>
         <div className="w-px h-full bg-gray-200" />
-        <div className="text-sm text-gray-800">Untitled query</div>
-        <div className="flex-1" />
+        {editQueryName ? (
+          <Input
+            className="flex-1"
+            autoFocus
+            value={queryName}
+            onFocus={(event) => {
+              event.target.select()
+            }}
+            onChange={onChange}
+            onPressEnter={() => {
+              setEditQueryName(false)
+            }}
+            onBlur={() => {
+              setEditQueryName(false)
+            }}
+          />
+        ) : (
+          <div
+            className="flex-1 text-sm text-gray-800 cursor-pointer"
+            onClick={() => {
+              setEditQueryName(true)
+            }}
+          >
+            {queryName}
+          </div>
+        )}
         <Button icon={<CodeOutlined />} onClick={handleQueryFormat}>
           Beautify
         </Button>
-        <Button icon={<SaveOutlined />}>Save</Button>
+        <Button icon={<SaveOutlined />} onClick={handleSaveQuery}>
+          Save
+        </Button>
         <Button
           type="primary"
           icon={<CaretRightFilled />}

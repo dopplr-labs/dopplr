@@ -1,16 +1,36 @@
-import React, { useMemo } from 'react'
-import { Empty, Result } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
-import { range } from 'lodash-es'
+import React, { useCallback, useMemo } from 'react'
+import { Button, Empty, Modal, Result } from 'antd'
+import dayjs from 'dayjs'
+import { groupBy, range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
-import { useQuery } from 'react-query'
-import { fetchHistory } from '../queries-and-mutations'
+import { queryCache, useMutation, useQuery } from 'react-query'
+import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
+import DayHistory from './day-history'
 
 export default function HistoryTab() {
   const { isLoading, data: history, error } = useQuery(
     ['history'],
     fetchHistory,
   )
+
+  const [clearAllHistory] = useMutation(clearHistoryQuery, {
+    onMutate: () => {
+      queryCache.removeQueries(['history'])
+    },
+  })
+
+  const confirmDeleteHistory = useCallback(() => {
+    Modal.confirm({
+      title: 'Clear all histroy?',
+      content: 'This action cannot be reverted',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        clearAllHistory()
+      },
+    })
+  }, [clearAllHistory])
 
   const historyContent = useMemo(() => {
     if (isLoading) {
@@ -27,19 +47,36 @@ export default function HistoryTab() {
       )
     }
 
-    if (history) {
+    if (history && history.length > 0) {
+      const groupedHistory = groupBy(history, (item) => {
+        const today = dayjs().format('DD MMMM')
+        const yesterday = dayjs().subtract(1, 'day').format('DD MMMM')
+        const formattedCreatedDay = dayjs(item.createdAt).format('DD MMMM')
+        if (formattedCreatedDay === today) {
+          return 'Today'
+        }
+        if (formattedCreatedDay === yesterday) {
+          return 'Yesterday'
+        }
+        return formattedCreatedDay
+      })
+
       return (
-        <div>
-          {history.map((query: any) => (
-            <li
-              key={query.id}
-              className="flex items-center justify-between px-4 py-2 space-x-3 text-xs group hover:bg-blue-50 hover:text-blue-500"
-            >
-              <span className="flex-1">{query.query}</span>
-              <DeleteOutlined className="invisible group-hover:visible" />
-            </li>
+        <>
+          <div className="flex px-3 -mt-2">
+            <span className="flex-1" />
+            <Button type="link" onClick={confirmDeleteHistory}>
+              clear all
+            </Button>
+          </div>
+          {Object.keys(groupedHistory).map((date) => (
+            <DayHistory
+              key={date}
+              date={date}
+              singleDayHistory={groupedHistory[date]}
+            />
           ))}
-        </div>
+        </>
       )
     }
 
@@ -55,7 +92,7 @@ export default function HistoryTab() {
         />
       </div>
     )
-  }, [isLoading, history, error])
+  }, [isLoading, history, error, confirmDeleteHistory])
 
   return (
     <Scrollbars className="h-full" autoHide>

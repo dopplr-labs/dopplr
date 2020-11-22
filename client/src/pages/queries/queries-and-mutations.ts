@@ -40,3 +40,39 @@ export async function fetchSampleData(resourceId: number, tableName: string) {
   )
   return data.data
 }
+
+export async function deleteQuery(id: number) {
+  const { data } = await client.delete(`/queries/${id}`)
+  return data.data
+}
+
+export async function clearHistoryQuery() {
+  const { data } = await client.delete<{
+    success: boolean
+    data: boolean
+    message: string
+  }>('/queries/history')
+  return data
+}
+
+export async function fetchSavedQueries() {
+  const { data } = await client.get('/queries/saved')
+  return data.data.items
+}
+
+export async function saveQuery({
+  resourceId,
+  query,
+  name,
+}: {
+  resourceId: number
+  query: string
+  name: string
+}) {
+  const { data } = await client.post('/queries/save', {
+    resource: resourceId,
+    query,
+    name,
+  })
+  return data.data
+}

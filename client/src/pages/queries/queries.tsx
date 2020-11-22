@@ -1,14 +1,26 @@
 import React, { useState } from 'react'
-import { Empty, Tabs } from 'antd'
+import { Tabs } from 'antd'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { ClockCircleOutlined, SaveOutlined } from '@ant-design/icons'
 import QueryTab from './components/query-tab'
 import HistoryTab from './components/history-tab'
+import SavedTab from './components/saved-tab'
 
 export default function Queries() {
+  const [queryName, setQueryName] = useState('Untitled Query')
+  const [historyKey, setHistoryKey] = useState(0)
+
   const [measureContainer, containerBounds] = useMeasure()
   const [sidebarWidth, setSidebarWidth] = useState(288)
+
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setQueryName(event.target.value)
+  }
+
+  function handleKeyIncrement() {
+    setHistoryKey((prevState) => prevState + 1)
+  }
 
   return (
     <div className="flex flex-1 h-full" ref={measureContainer}>
@@ -42,7 +54,7 @@ export default function Queries() {
             }
             key="history"
           >
-            <HistoryTab />
+            <HistoryTab key={historyKey.toString()} />
           </Tabs.TabPane>
           <Tabs.TabPane
             key="saved"
@@ -53,14 +65,7 @@ export default function Queries() {
               </span>
             }
           >
-            <div className="flex items-center justify-center h-full">
-              <Empty
-                description={
-                  <span className="text-xs">Run your first query</span>
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </div>
+            <SavedTab />
           </Tabs.TabPane>
         </Tabs>
       </ResizableBox>
@@ -72,10 +77,15 @@ export default function Queries() {
           tabBarStyle={{ marginBottom: 0 }}
         >
           <Tabs.TabPane
-            tab={<span className="text-xs">Untitled Query</span>}
+            tab={<span className="text-xs">{queryName}</span>}
             className="w-full"
           >
-            <QueryTab width={containerBounds.width - sidebarWidth} />
+            <QueryTab
+              queryName={queryName}
+              width={containerBounds.width - sidebarWidth}
+              onChange={handleNameChange}
+              handleKeyIncrement={handleKeyIncrement}
+            />
           </Tabs.TabPane>
         </Tabs>
       </div>
