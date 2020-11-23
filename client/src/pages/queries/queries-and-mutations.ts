@@ -29,9 +29,9 @@ export async function fetchSchema(id: number) {
   return data.data
 }
 
-export async function fetchHistory() {
-  const { data } = await client.get('/queries/history')
-  return data.data.items
+export async function fetchHistory(key: string, page = 1) {
+  const { data } = await client.get(`/queries/history?page=${page}`)
+  return data.data
 }
 
 export async function fetchSampleData(resourceId: number, tableName: string) {
