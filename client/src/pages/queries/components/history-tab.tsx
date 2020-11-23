@@ -1,16 +1,18 @@
 import React, { useCallback, useMemo } from 'react'
-import { Button, Empty, Modal, Result } from 'antd'
+import { Button, Empty, Modal, Result, Spin } from 'antd'
 import dayjs from 'dayjs'
 import { groupBy, range } from 'lodash-es'
+import InfiniteScroll from 'react-infinite-scroller'
 import Scrollbars from 'react-custom-scrollbars'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { queryCache, useInfiniteQuery, useMutation } from 'react-query'
 import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
 import DayHistory from './day-history'
 
 export default function HistoryTab() {
-  const { isLoading, data: history, error } = useQuery(
+  const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['history'],
     fetchHistory,
+    { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
   )
 
   const [clearAllHistory] = useMutation(clearHistoryQuery, {
@@ -47,7 +49,12 @@ export default function HistoryTab() {
       )
     }
 
-    if (history && history.length > 0) {
+    if (data && data.length > 0) {
+      // using reduce to flatten array from 2d to 1d
+      const history = data
+        .map((page) => page.items)
+        .reduce((prev, curr) => prev.concat(curr))
+
       const groupedHistory = groupBy(history, (item) => {
         const today = dayjs().format('DD MMMM')
         const yesterday = dayjs().subtract(1, 'day').format('DD MMMM')
@@ -69,13 +76,25 @@ export default function HistoryTab() {
               clear all
             </Button>
           </div>
-          {Object.keys(groupedHistory).map((date) => (
-            <DayHistory
-              key={date}
-              date={date}
-              singleDayHistory={groupedHistory[date]}
-            />
-          ))}
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={() => fetchMore()}
+            hasMore={data ? data[data.length - 1].meta.hasMore : false}
+            loader={
+              <div className="flex items-center justify-center py-2" key={0}>
+                <Spin tip="Loading..." size="small" />
+              </div>
+            }
+            useWindow={false}
+          >
+            {Object.keys(groupedHistory).map((date) => (
+              <DayHistory
+                key={date}
+                date={date}
+                singleDayHistory={groupedHistory[date]}
+              />
+            ))}
+          </InfiniteScroll>
         </>
       )
     }
@@ -92,7 +111,7 @@ export default function HistoryTab() {
         />
       </div>
     )
-  }, [isLoading, history, error, confirmDeleteHistory])
+  }, [isLoading, data, error, fetchMore, confirmDeleteHistory])
 
   return (
     <Scrollbars className="h-full" autoHide>
