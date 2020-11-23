@@ -3,6 +3,7 @@ import {
   BarChartOutlined,
   CodeOutlined,
   DatabaseOutlined,
+  SettingOutlined,
 } from '@ant-design/icons'
 import { NavLink } from 'react-router-dom'
 
@@ -31,6 +32,13 @@ const pages = [
     icon: <BarChartOutlined />,
     defaultRoute: '/dashboards',
     routes: ['/dashboards', '/dashboards/:dashboardId?'],
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    icon: <SettingOutlined className="text-xl" />,
+    defaultRoute: '/settings',
+    routes: ['/settings'],
   },
 ]
 

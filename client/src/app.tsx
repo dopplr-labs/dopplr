@@ -14,6 +14,7 @@ import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor
 import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
+import Settings from 'pages/settings'
 import client from 'utils/client'
 
 async function fetchHealthStatus() {
@@ -51,6 +52,7 @@ export function App() {
             <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
           </Route>
           <Route element={<Dashboards />} path="dashboards" />
+          <Route element={<Settings />} path="settings" />
         </Route>
       </Routes>
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
