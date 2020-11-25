@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useMutation } from 'react-query'
+import { queryCache, useMutation, useQuery } from 'react-query'
 import { Button, Input, message, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
@@ -9,7 +9,11 @@ import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { usePrevious } from 'hooks/use-previous'
-import { runQuery, saveQuery } from '../queries-and-mutations'
+import {
+  fetchSavedQueries,
+  runQuery,
+  saveQuery,
+} from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
 type QueryEditorProps = {
@@ -47,8 +51,14 @@ export default function QueryEditor({
     runQueryMutation({ resource: selectedResource, query })
   }
 
+  const { data: savedQueries } = useQuery(['saved-queries'], fetchSavedQueries)
+
   const [saveQueryMutation] = useMutation(saveQuery, {
-    onSuccess: () => {
+    onSuccess: (savedQuery) => {
+      queryCache.setQueryData(
+        ['saved-queries'],
+        savedQueries ? [savedQuery, ...savedQueries] : [savedQuery],
+      )
       message.success('Query saved successfully')
     },
   })
