@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { queryCache, useMutation } from 'react-query'
+import React, { useEffect, useState } from 'react'
+import { useMutation, queryCache } from 'react-query'
 import { Button, Input, message, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
-import MonacoEditor from 'react-monaco-editor'
 import Editor from 'components/editor'
 import clsx from 'clsx'
 import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { usePrevious } from 'hooks/use-previous'
+import sqlFormatter from 'sql-formatter'
 import { runQuery, saveQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
@@ -37,8 +37,8 @@ export default function QueryEditor({
   const [editQueryName, setEditQueryName] = useState(false)
 
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery, {
-    onSuccess: async () => {
-      await queryCache.refetchQueries(['history'])
+    onSuccess: () => {
+      queryCache.refetchQueries(['history'])
     },
   })
   function handleRunQuery() {
@@ -46,8 +46,8 @@ export default function QueryEditor({
   }
 
   const [saveQueryMutation] = useMutation(saveQuery, {
-    onSuccess: async () => {
-      await queryCache.refetchQueries(['saved-queries'])
+    onSuccess: () => {
+      queryCache.refetchQueries(['saved-queries'])
       message.success('Query saved successfully')
     },
   })
@@ -55,9 +55,10 @@ export default function QueryEditor({
     saveQueryMutation({ resourceId: selectedResource, query, name: queryName })
   }
 
-  const editor = useRef<MonacoEditor | null>(null)
   function handleQueryFormat() {
-    editor.current?.editor?.getAction('editor.action.formatDocument').run()
+    setQuery((prevState) =>
+      sqlFormatter.format(prevState.replace(/\r\n/g, '\n')),
+    )
   }
 
   const [measureContainer, containerBounds] = useMeasure()
@@ -143,9 +144,6 @@ export default function QueryEditor({
             resourceId={selectedResource}
             value={query}
             setValue={setQuery}
-            ref={(monacoEditor) => {
-              editor.current = monacoEditor
-            }}
           />
         </div>
         <ResizableBox
