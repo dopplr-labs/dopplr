@@ -9,17 +9,12 @@ import SavedTab from './components/saved-tab'
 
 export default function Queries() {
   const [queryName, setQueryName] = useState('Untitled Query')
-  const [historyKey, setHistoryKey] = useState(0)
 
   const [measureContainer, containerBounds] = useMeasure()
   const [sidebarWidth, setSidebarWidth] = useState(288)
 
   function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setQueryName(event.target.value)
-  }
-
-  function handleKeyIncrement() {
-    setHistoryKey((prevState) => prevState + 1)
   }
 
   return (
@@ -54,7 +49,7 @@ export default function Queries() {
             }
             key="history"
           >
-            <HistoryTab key={historyKey.toString()} />
+            <HistoryTab />
           </Tabs.TabPane>
           <Tabs.TabPane
             key="saved"
@@ -84,7 +79,6 @@ export default function Queries() {
               queryName={queryName}
               width={containerBounds.width - sidebarWidth}
               onChange={handleNameChange}
-              handleKeyIncrement={handleKeyIncrement}
             />
           </Tabs.TabPane>
         </Tabs>
