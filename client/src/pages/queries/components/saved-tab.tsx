@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react'
 import { range } from 'lodash-es'
-import { useQuery } from 'react-query'
-import { Empty, Result, Typography } from 'antd'
+import { useInfiniteQuery } from 'react-query'
+import InfiniteScroll from 'react-infinite-scroller'
+import { Empty, Result, Spin, Typography } from 'antd'
 import Scrollbars from 'react-custom-scrollbars'
 import { fetchSavedQueries } from '../queries-and-mutations'
 
 export default function SavedTab() {
-  const { isLoading, data: savedQueries, error } = useQuery(
+  const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['saved-queries'],
     fetchSavedQueries,
+    { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
   )
 
   const savedTabContent = useMemo(() => {
@@ -26,9 +28,23 @@ export default function SavedTab() {
       )
     }
 
-    if (savedQueries) {
+    if (data && data.length > 0) {
+      const savedQueries = data
+        .map((page) => page.items)
+        .reduce((prev, curr) => prev.concat(curr))
+
       return (
-        <>
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={() => fetchMore()}
+          hasMore={data[data.length - 1].meta.hasMore}
+          loader={
+            <div className="flex items-center justify-center py-2" key={0}>
+              <Spin tip="Loading..." size="small" />
+            </div>
+          }
+          useWindow={false}
+        >
           {savedQueries.map((query: any) => (
             <div
               key={query.id}
@@ -49,7 +65,7 @@ export default function SavedTab() {
               </Typography.Paragraph>
             </div>
           ))}
-        </>
+        </InfiniteScroll>
       )
     }
 
@@ -65,7 +81,7 @@ export default function SavedTab() {
         />
       </div>
     )
-  }, [isLoading, savedQueries, error])
+  }, [isLoading, data, error, fetchMore])
 
   return (
     <Scrollbars className="h-full" autoHide>
