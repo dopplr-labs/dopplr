@@ -1,20 +1,27 @@
 import React from 'react'
-import { Button, Result } from 'antd'
-import { Link } from 'react-router-dom'
+import { Input } from 'antd'
+import { AudioOutlined } from '@ant-design/icons'
+
+const { Search } = Input
+
+const onSearch = (value: string): void => console.log(value)
 
 export default function Settings() {
   return (
-    <div>
-      <Result
-        status="404"
-        title="Under Construction"
-        subTitle="Sorry, the page doesn't exist. Come back later"
-        extra={
-          <Link to="/">
-            <Button type="primary">Back to Home</Button>
-          </Link>
-        }
-      />
+    <div className="flex flex-1 h-full justify-center bg-gray-200">
+      <div className="flex flex-col w-1/2 min-w-min-content my-4 shadow-lg">
+        <div className="mx-2 mt-2">
+          <Search
+            placeholder="input search text"
+            onSearch={onSearch}
+            enterButton
+          />
+        </div>
+        <div className="flex flex-1 mx-2 mt-2 mb-2">
+          <div className="w-56 bg-gray-200">Heading</div>
+          <div className="flex-1 overflow-y-scroll bg-gray-300">Actual settings</div>
+        </div>
+      </div>
     </div>
   )
 }
