@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { queryCache, useMutation } from 'react-query'
 import { Button, Input, message, Select } from 'antd'
 import { CaretRightFilled, SaveOutlined, CodeOutlined } from '@ant-design/icons'
 import MonacoEditor from 'react-monaco-editor'
@@ -9,17 +9,12 @@ import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
 import { ResizableBox } from 'react-resizable'
 import { usePrevious } from 'hooks/use-previous'
-import {
-  fetchSavedQueries,
-  runQuery,
-  saveQuery,
-} from '../queries-and-mutations'
+import { runQuery, saveQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 
 type QueryEditorProps = {
   queryName: string
   editorWidth: number
-  handleKeyIncrement: () => void
   resources: Resource[]
   selectedResource: number
   onResourceChange: (selectedResource: number) => void
@@ -31,7 +26,6 @@ type QueryEditorProps = {
 export default function QueryEditor({
   queryName,
   editorWidth,
-  handleKeyIncrement,
   resources,
   selectedResource,
   onResourceChange,
@@ -43,22 +37,17 @@ export default function QueryEditor({
   const [editQueryName, setEditQueryName] = useState(false)
 
   const [runQueryMutation, { isLoading, data, error }] = useMutation(runQuery, {
-    onSuccess: () => {
-      handleKeyIncrement()
+    onSuccess: async () => {
+      await queryCache.refetchQueries(['history'])
     },
   })
   function handleRunQuery() {
     runQueryMutation({ resource: selectedResource, query })
   }
 
-  const { data: savedQueries } = useQuery(['saved-queries'], fetchSavedQueries)
-
   const [saveQueryMutation] = useMutation(saveQuery, {
-    onSuccess: (savedQuery) => {
-      queryCache.setQueryData(
-        ['saved-queries'],
-        savedQueries ? [savedQuery, ...savedQueries] : [savedQuery],
-      )
+    onSuccess: async () => {
+      await queryCache.refetchQueries(['saved-queries'])
       message.success('Query saved successfully')
     },
   })
