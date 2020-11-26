@@ -79,7 +79,7 @@ export default function HistoryTab() {
           <InfiniteScroll
             pageStart={0}
             loadMore={() => fetchMore()}
-            hasMore={data ? data[data.length - 1].meta.hasMore : false}
+            hasMore={data[data.length - 1].meta.hasMore}
             loader={
               <div className="flex items-center justify-center py-2" key={0}>
                 <Spin tip="Loading..." size="small" />
