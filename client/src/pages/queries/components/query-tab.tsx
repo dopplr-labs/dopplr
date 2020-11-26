@@ -12,7 +12,6 @@ import SchemaTab from './schema-tab'
 type QueryTabProps = {
   queryName: string
   width: number
-  handleKeyIncrement: () => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   className?: string
   style?: React.CSSProperties
@@ -21,7 +20,6 @@ type QueryTabProps = {
 export default function QueryTab({
   queryName,
   width,
-  handleKeyIncrement,
   onChange,
   className,
   style,
@@ -82,7 +80,6 @@ export default function QueryTab({
         <QueryEditor
           className="flex-1"
           editorWidth={width - schemaContainerWidth}
-          handleKeyIncrement={handleKeyIncrement}
           resources={resources}
           queryName={queryName}
           onChange={onChange}
