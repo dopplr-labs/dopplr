@@ -5,7 +5,7 @@ import {
   EllipsisOutlined,
   SaveOutlined,
 } from '@ant-design/icons'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { queryCache, useInfiniteQuery, useMutation } from 'react-query'
 import { History } from 'types/history'
 import {
   deleteQuery,
@@ -19,7 +19,10 @@ export default function HistoryQuery({ query }: { query: History }) {
 
   const [form] = Form.useForm()
 
-  const { data: savedQueries } = useQuery(['saved-queries'], fetchSavedQueries)
+  const { data: savedQueries } = useInfiniteQuery(
+    ['saved-queries'],
+    fetchSavedQueries,
+  )
 
   const [saveQueryMutation] = useMutation(saveQuery, {
     onSuccess: (savedQuery) => {
