@@ -5,13 +5,9 @@ import {
   EllipsisOutlined,
   SaveOutlined,
 } from '@ant-design/icons'
-import { queryCache, useInfiniteQuery, useMutation } from 'react-query'
+import { queryCache, useMutation } from 'react-query'
 import { History } from 'types/history'
-import {
-  deleteQuery,
-  fetchSavedQueries,
-  saveQuery,
-} from '../queries-and-mutations'
+import { deleteQuery, saveQuery } from '../queries-and-mutations'
 
 export default function HistoryQuery({ query }: { query: History }) {
   const history: History[] | undefined = queryCache.getQueryData(['history'])
@@ -19,17 +15,9 @@ export default function HistoryQuery({ query }: { query: History }) {
 
   const [form] = Form.useForm()
 
-  const { data: savedQueries } = useInfiniteQuery(
-    ['saved-queries'],
-    fetchSavedQueries,
-  )
-
   const [saveQueryMutation] = useMutation(saveQuery, {
-    onSuccess: (savedQuery) => {
-      queryCache.setQueryData(
-        ['saved-queries'],
-        savedQueries ? [savedQuery, ...savedQueries] : [savedQuery],
-      )
+    onSuccess: async () => {
+      await queryCache.refetchQueries(['saved-queries'])
       message.success('Query saved successfully')
     },
   })
@@ -40,6 +28,7 @@ export default function HistoryQuery({ query }: { query: History }) {
       query: query.query,
       name: queryName,
     })
+    setShow(false)
   }
 
   function handleModalCancel() {
@@ -48,7 +37,6 @@ export default function HistoryQuery({ query }: { query: History }) {
 
   function handleModalOk() {
     form.submit()
-    setShow(false)
   }
 
   const [deleteQueryMutation] = useMutation(deleteQuery, {
