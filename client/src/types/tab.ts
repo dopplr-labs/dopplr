@@ -15,6 +15,7 @@ export type UnsavedTabData = {
 
 export type UnsavedTab = {
   id: string
+  name: string
   type: TabType.UNSAVED
   data: UnsavedTabData
 }
@@ -25,6 +26,7 @@ export type HistoryTabData = History & {
 
 export type HistoryTab = {
   id: string
+  name: string
   type: TabType.HISTORY
   data: HistoryTabData
 }
@@ -35,6 +37,7 @@ export type SavedQueryTabData = SavedQuery & {
 
 export type SavedQueryTab = {
   id: string
+  name: string
   type: TabType.SAVED_QUERY
   data: SavedQueryTabData
 }

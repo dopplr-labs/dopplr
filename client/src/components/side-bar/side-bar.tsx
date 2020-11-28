@@ -39,7 +39,7 @@ export default function SideBar() {
   const location = useLocation()
 
   return (
-    <div className="flex flex-col items-center justify-start w-24 h-full border-r">
+    <div className="flex flex-col items-center justify-start w-24 h-full bg-gray-800 border-r">
       {pages.map((page) => {
         const pageSelected = page.routes.some(
           (path) => !!matchPath(path, location.pathname),
@@ -50,8 +50,8 @@ export default function SideBar() {
               className={clsx(
                 'flex flex-col items-center justify-center w-full py-3 cursor-pointer',
                 pageSelected
-                  ? 'bg-blue-50 text-blue-500 border-l-2 border-blue-500'
-                  : 'text-gray-600',
+                  ? 'bg-gray-700 text-white border-l-2 border-blue-500'
+                  : 'text-gray-400',
               )}
             >
               {cloneElement(page.icon, { className: 'text-xl' })}

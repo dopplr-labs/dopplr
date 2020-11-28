@@ -9,7 +9,9 @@ import { ColumnsField } from 'types/schema'
 import { fetchSchema } from '../queries-and-mutations'
 import SchemaTable from './schema-table'
 
-export default function SchemaTab({ resourceId }: { resourceId: number }) {
+type SchemaTabProps = { resourceId: number }
+
+export default function SchemaTab({ resourceId }: SchemaTabProps) {
   const { isLoading, data: schema } = useQuery(['schema', resourceId], () =>
     fetchSchema(resourceId),
   )
