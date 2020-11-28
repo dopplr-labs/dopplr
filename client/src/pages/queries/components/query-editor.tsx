@@ -147,7 +147,7 @@ export default function QueryEditor({
           />
         </div>
         <ResizableBox
-          className="relative flex-shrink-0 p-4"
+          className="relative flex-shrink-0 p-4 border-t"
           width={editorWidth}
           height={tableContainerHeight}
           onResize={(event, { size: { height } }) => {
@@ -156,7 +156,7 @@ export default function QueryEditor({
           axis="y"
           resizeHandles={['n']}
           handle={() => (
-            <div className="absolute top-0 left-0 right-0 h-px bg-gray-200 row-resize-handle" />
+            <div className="absolute top-0 left-0 right-0 h-1 transform -translate-y-1/2 bg-gray-200 opacity-0 row-resize-handle hover:opacity-50" />
           )}
         >
           <div className="h-full">

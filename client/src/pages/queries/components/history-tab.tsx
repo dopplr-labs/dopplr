@@ -4,7 +4,8 @@ import dayjs from 'dayjs'
 import { groupBy, range } from 'lodash-es'
 import InfiniteScroll from 'react-infinite-scroller'
 import Scrollbars from 'react-custom-scrollbars'
-import { queryCache, useInfiniteQuery, useMutation } from 'react-query'
+import { queryCache, useMutation, useInfiniteQuery } from 'react-query'
+import { DeleteOutlined } from '@ant-design/icons'
 import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
 import DayHistory from './day-history'
 
@@ -17,7 +18,7 @@ export default function HistoryTab() {
 
   const [clearAllHistory] = useMutation(clearHistoryQuery, {
     onMutate: () => {
-      queryCache.removeQueries(['history'])
+      queryCache.refetchQueries(['history'])
     },
   })
 
@@ -70,12 +71,6 @@ export default function HistoryTab() {
 
       return (
         <>
-          <div className="flex px-3 -mt-2">
-            <span className="flex-1" />
-            <Button type="link" onClick={confirmDeleteHistory}>
-              clear all
-            </Button>
-          </div>
           <InfiniteScroll
             pageStart={0}
             loadMore={() => fetchMore()}
@@ -111,11 +106,23 @@ export default function HistoryTab() {
         />
       </div>
     )
-  }, [isLoading, data, error, fetchMore, confirmDeleteHistory])
+  }, [isLoading, data, error, fetchMore])
 
   return (
-    <Scrollbars className="h-full" autoHide>
-      {historyContent}
-    </Scrollbars>
+    <div className="flex flex-col h-full">
+      <Scrollbars className="flex-1" autoHide>
+        {historyContent}
+      </Scrollbars>
+      <div className="border-t">
+        <Button
+          onClick={confirmDeleteHistory}
+          icon={<DeleteOutlined />}
+          type="link"
+          className="w-full"
+        >
+          Clear All
+        </Button>
+      </div>
+    </div>
   )
 }

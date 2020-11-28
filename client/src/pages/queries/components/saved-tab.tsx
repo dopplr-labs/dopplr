@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { range } from 'lodash-es'
 import { useInfiniteQuery } from 'react-query'
 import InfiniteScroll from 'react-infinite-scroller'
-import { Empty, Result, Spin, Typography } from 'antd'
+import { Empty, Result, Spin } from 'antd'
 import Scrollbars from 'react-custom-scrollbars'
 import { fetchSavedQueries } from '../queries-and-mutations'
 
@@ -48,21 +48,13 @@ export default function SavedTab() {
           {savedQueries.map((query: any) => (
             <div
               key={query.id}
-              className="px-3 py-2 space-y-2 font-mono text-xs border-b"
+              className="px-3 py-2 space-y-2 text-xs"
+              title={`${query.name}\n${query.query}`}
             >
-              <div className="font-bold text-blue-500">
+              <div className="font-medium text-blue-500">
                 <span>{query.name}</span>
               </div>
-              <Typography.Paragraph
-                ellipsis={{
-                  rows: 1,
-                  expandable: true,
-                  symbol: 'more',
-                }}
-                className="text-gray-800"
-              >
-                {query.query}
-              </Typography.Paragraph>
+              <div className="truncate">{query.query}</div>
             </div>
           ))}
         </InfiniteScroll>

@@ -49,17 +49,17 @@ export default function Resources() {
 
     if (resources) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {resources?.map((resource) => (
             <Link
               to={`/resources/${resource.id}`}
               key={resource.id}
-              className="flex items-center space-x-2 text-sm text-gray-800 cursor-pointer hover:text-blue-500"
+              className="flex items-center space-x-2 text-sm cursor-pointer hover:text-blue-500"
             >
               {resource.type === 'postgres' ? (
-                <Postgres className="w-5 h-5" />
+                <Postgres className="w-6 h-6" />
               ) : null}
-              <span>{resource.name}</span>
+              <span className="text-xs">{resource.name}</span>
             </Link>
           ))}
         </div>
@@ -71,12 +71,12 @@ export default function Resources() {
 
   return (
     <div className="flex flex-1 h-full">
-      <div className="flex flex-col w-64 h-full p-4 text-gray-800 border-r">
+      <div className="flex flex-col w-64 h-full p-4 border-r">
         <div className="flex items-center mb-2 space-x-2">
           <DatabaseOutlined className="text-lg" />
-          <span className="font-semibold">Resources</span>
+          <span className="font-medium text-gray-800">Resources</span>
         </div>
-        <div className="mb-4 text-xs text-gray-600">
+        <div className="mb-4 text-xs">
           Connect with your preferred database and fetch data to render in
           Tables
         </div>

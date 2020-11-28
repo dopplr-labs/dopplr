@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { Dropdown, Form, Input, Menu, message, Modal, Typography } from 'antd'
+import { Dropdown, Form, Input, Menu, message, Modal } from 'antd'
 import {
   DeleteOutlined,
   EllipsisOutlined,
@@ -78,11 +78,9 @@ export default function HistoryQuery({ query }: { query: History }) {
   return (
     <>
       <li className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-gray-50 group">
-        <Typography.Paragraph
-          ellipsis={{ rows: 1, expandable: true, symbol: 'more' }}
-        >
+        <div className="w-full text-xs truncate" title={query.query}>
           {query.query}
-        </Typography.Paragraph>
+        </div>
         <Dropdown overlay={historyMenu} trigger={['click']}>
           <button className="invisible px-1 focus:outline-none group-hover:visible">
             <EllipsisOutlined className="text-lg" />

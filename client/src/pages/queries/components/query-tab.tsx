@@ -48,12 +48,12 @@ export default function QueryTab({
         style={style}
       >
         <div className="flex-1 py-4 space-y-4">
-          <div className="w-full bg-gray-200 rounded-md h-80 animate-pulse" />
-          <div className="w-full h-40 bg-gray-200 rounded-md animate-pulse" />
+          <div className="w-full bg-gray-200 rounded h-80 animate-pulse" />
+          <div className="w-full h-40 bg-gray-200 rounded animate-pulse" />
         </div>
         <div className="py-4 space-y-4 w-80">
-          <div className="w-full h-8 bg-gray-200 rounded-md animate-pulse" />
-          <div className="w-full h-8 bg-gray-200 rounded-md animate-pulse" />
+          <div className="w-full h-8 bg-gray-200 rounded animate-pulse" />
+          <div className="w-full h-8 bg-gray-200 rounded animate-pulse" />
         </div>
       </div>
     )
@@ -88,12 +88,12 @@ export default function QueryTab({
         />
 
         <ResizableBox
-          className="relative flex-shrink-0 h-full py-4 border-gray-100"
+          className="relative flex-shrink-0 h-full py-4 border-l border-gray-100"
           axis="x"
           width={schemaContainerWidth}
           resizeHandles={['w']}
           handle={() => (
-            <div className="absolute top-0 left-0 w-px h-full bg-gray-200 col-resize-handle" />
+            <div className="absolute top-0 left-0 w-1 h-full transform -translate-x-1/2 bg-gray-200 opacity-0 col-resize-handle hover:opacity-50" />
           )}
           height={containerBounds.height}
           minConstraints={[240, containerBounds.height]}

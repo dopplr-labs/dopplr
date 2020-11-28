@@ -67,8 +67,11 @@
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "monaco-editor-webpack-plugin": "^2.0.0",
-    "postcss": "^8.1.1",
+    "postcss": "^8.1.10",
     "react-app-rewired": "^2.1.6",
-    "tailwindcss": "^1.9.4"
+    "tailwindcss": "^2.0.1"
+  },
+  "peerDependencies": {
+    "postcss": "^8.0.0"
   }
 }

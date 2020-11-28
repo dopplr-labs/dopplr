@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { DownOutlined, RightOutlined } from '@ant-design/icons'
-import { History } from 'types/history'
+import { History } from 'types/query'
 import HistoryQuery from './history-query'
 
 export type DayHistoryProps = {
@@ -15,9 +15,9 @@ export default function DayHistory({
   const [show, setShow] = useState(true)
 
   return (
-    <div className="border-b">
+    <div>
       <div
-        className="flex items-center px-3 py-2 space-x-1 font-mono text-xs font-bold text-blue-500 cursor-pointer hover:bg-blue-50"
+        className="flex items-center px-3 py-2 space-x-1 text-xs font-medium text-blue-500 cursor-pointer hover:bg-blue-50"
         onClick={() => {
           setShow((prevState) => !prevState)
         }}
