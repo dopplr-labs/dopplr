@@ -9,6 +9,7 @@ import Resources from 'pages/resources'
 import Queries from 'pages/queries'
 import Dashboards from 'pages/dashboards'
 import Home from 'pages/home'
+import QueryTabs from 'components/query-tabs'
 
 async function fetchHealthStatus() {
   const { data } = await axios.get('/health/knock-knock', {
@@ -33,14 +34,16 @@ export function App() {
 
   return (
     <>
-      <Routes>
-        <Route element={<AppShell />} path="/">
-          <Route element={<Home />} path="/" />
-          <Route element={<Resources />} path="resources*" />
-          <Route element={<Queries />} path="queries" />
-          <Route element={<Dashboards />} path="dashboards" />
-        </Route>
-      </Routes>
+      <QueryTabs>
+        <Routes>
+          <Route element={<AppShell />} path="/">
+            <Route element={<Home />} path="/" />
+            <Route element={<Resources />} path="resources*" />
+            <Route element={<Queries />} path="queries" />
+            <Route element={<Dashboards />} path="dashboards" />
+          </Route>
+        </Routes>
+      </QueryTabs>
       {process.env.NODE_ENV === 'development' ? <ReactQueryDevtools /> : null}
     </>
   )

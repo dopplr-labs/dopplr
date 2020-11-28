@@ -49,17 +49,20 @@ export type UpdateTab = {
     | {
         id: string
         type: TabType.UNSAVED
-        data: UnsavedTabData
+        name?: string
+        data: Partial<UnsavedTabData>
       }
     | {
         id: string
         type: TabType.HISTORY
-        data: HistoryTabData
+        name?: string
+        data: Partial<HistoryTabData>
       }
     | {
         id: string
         type: TabType.SAVED_QUERY
-        data: SavedQueryTabData
+        name?: string
+        data: Partial<SavedQueryTabData>
       }
 }
 
@@ -83,20 +86,32 @@ export function reducer(state: State, action: Action): State {
       return {
         tabs: [
           ...state.tabs,
-          { id: newTabId, type: TabType.UNSAVED, data: { query: '' } },
+          {
+            id: newTabId,
+            type: TabType.UNSAVED,
+            data: { query: '' },
+            name: 'Untitled Query',
+          },
         ],
         activeTabId: newTabId,
       }
     }
 
     case ActionTypes.CLOSE_TAB: {
-      return {
-        tabs: state.tabs.filter((tab) => tab.id !== action.payload.tabId),
-        activeTabId:
-          state.activeTabId === action.payload.tabId
-            ? state.tabs[state.tabs.length - 1]?.id
-            : state.activeTabId,
+      const tabIndex = state.tabs.findIndex(
+        (tab) => tab.id === action.payload.tabId,
+      )
+      if (tabIndex !== -1) {
+        const nextTabIndex = tabIndex !== 0 ? tabIndex - 1 : tabIndex + 1
+        return {
+          tabs: state.tabs.filter((tab) => tab.id !== action.payload.tabId),
+          activeTabId:
+            state.activeTabId === action.payload.tabId
+              ? state.tabs[nextTabIndex]?.id
+              : state.activeTabId,
+        }
       }
+      return state
     }
 
     case ActionTypes.FOCUS_TAB: {
@@ -109,7 +124,17 @@ export function reducer(state: State, action: Action): State {
     case ActionTypes.OPEN_IN_TAB: {
       const newTabId = uid()
       return {
-        tabs: [...state.tabs, { id: newTabId, ...action.payload }],
+        tabs: [
+          ...state.tabs,
+          {
+            id: newTabId,
+            name:
+              action.payload.type === TabType.HISTORY
+                ? action.payload.data.query.slice(0, 10)
+                : action.payload.data.name,
+            ...action.payload,
+          },
+        ],
         activeTabId: newTabId,
       }
     }
@@ -118,7 +143,13 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         tabs: state.tabs.map((tab) =>
-          tab.id === action.payload.id ? action.payload : tab,
+          tab.id === action.payload.id
+            ? ({
+                ...tab,
+                ...action.payload,
+                data: { ...tab.data, ...action.payload.data },
+              } as Tab)
+            : tab,
         ),
       }
     }
