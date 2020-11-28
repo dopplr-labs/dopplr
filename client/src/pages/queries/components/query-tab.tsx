@@ -1,45 +1,43 @@
+import React, { useContext, useEffect } from 'react'
 import { Result } from 'antd'
 import clsx from 'clsx'
+import { QueryTabsContext } from 'contexts/query-tabs-context'
 import { fetchResources } from 'pages/resources/queries'
-import React, { useState } from 'react'
 import { useQuery } from 'react-query'
-import useMeasure from 'react-use-measure'
-import { ResizableBox } from 'react-resizable'
-import 'react-resizable/css/styles.css'
+import { Tab, TabType } from 'types/tab'
 import QueryEditor from './query-editor'
-import SchemaTab from './schema-tab'
 
 type QueryTabProps = {
-  queryName: string
   width: number
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  tab: Tab
   className?: string
   style?: React.CSSProperties
 }
 
 export default function QueryTab({
-  queryName,
   width,
-  onChange,
+  tab,
   className,
   style,
 }: QueryTabProps) {
-  const [measureContainer, containerBounds] = useMeasure()
-  const [schemaContainerWidth, setSchemaContainerWidth] = useState(320)
-
-  const [selectedResource, setSelectedResource] = useState<number>()
+  const { id, type, data: tabData } = tab
+  const { updateTab } = useContext(QueryTabsContext)
 
   const { isLoading, data: resources, error } = useQuery(
     ['resources'],
     fetchResources,
-    {
-      onSettled: (data) => {
-        if (data && data.length > 0 && !selectedResource) {
-          setSelectedResource(data[0].id)
-        }
-      },
-    },
   )
+
+  useEffect(() => {
+    if (
+      resources &&
+      resources.length > 0 &&
+      !tabData.resource &&
+      type === TabType.UNSAVED
+    ) {
+      updateTab({ id, type, data: { resource: resources[0] } })
+    }
+  }, [resources, tabData.resource, type, id, updateTab])
 
   if (isLoading) {
     return (
@@ -70,40 +68,15 @@ export default function QueryTab({
     )
   }
 
-  if (resources && selectedResource) {
+  if (resources && tab) {
     return (
-      <div
-        className={clsx('flex h-full', className)}
-        style={style}
-        ref={measureContainer}
-      >
+      <div className={clsx('flex h-full', className)} style={style}>
         <QueryEditor
           className="flex-1"
-          editorWidth={width - schemaContainerWidth}
+          editorWidth={width}
           resources={resources}
-          queryName={queryName}
-          onChange={onChange}
-          selectedResource={selectedResource}
-          onResourceChange={setSelectedResource}
+          tab={tab}
         />
-
-        <ResizableBox
-          className="relative flex-shrink-0 h-full py-4 border-l border-gray-100"
-          axis="x"
-          width={schemaContainerWidth}
-          resizeHandles={['w']}
-          handle={() => (
-            <div className="absolute top-0 left-0 w-1 h-full transform -translate-x-1/2 bg-gray-200 opacity-0 col-resize-handle hover:opacity-50" />
-          )}
-          height={containerBounds.height}
-          minConstraints={[240, containerBounds.height]}
-          maxConstraints={[480, containerBounds.height]}
-          onResize={(event, { size: { width } }) => {
-            setSchemaContainerWidth(width)
-          }}
-        >
-          <SchemaTab resourceId={selectedResource} />
-        </ResizableBox>
       </div>
     )
   }

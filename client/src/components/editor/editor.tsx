@@ -57,7 +57,7 @@ function createLanguageClient(
 type EditorProps = {
   resourceId: number
   value: string
-  setValue: React.Dispatch<React.SetStateAction<string>>
+  setValue: (udpatedValue: string) => void
   className?: string
   style?: React.CSSProperties
 }
