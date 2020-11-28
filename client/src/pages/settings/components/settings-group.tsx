@@ -1,23 +1,19 @@
 import React from 'react'
 import { List } from 'antd'
-import SettingsCard from './settings-card'
+import SettingsSubgroup from './settings-subgroup'
+import {Group} from '../settings'
 
 type AppProps = {
-  header: string
-  data: object[]
+  groupData: Group
 }
 
-export default function SettingsGroup({ header, data }: AppProps) {
+export default function SettingsGroup({ groupData }: AppProps) {
   return (
-    <List
-      size="large"
-      header={<div>{header}</div>}
-      dataSource={data}
-      renderItem={(item) => (
-        <List.Item>
-          <SettingsCard />
-        </List.Item>
-      )}
-    />
+    <>
+      <div className="p-2 text-xl border-2 border-gray-300 hover:bg-gray-300">{groupData.header}</div>
+      {groupData.subGroups.map((item) => (
+        <SettingsSubgroup subgroupData={item} />
+      ))}
+    </>
   )
 }
