@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { range } from 'lodash-es'
 import { useInfiniteQuery } from 'react-query'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Empty, Result, Spin } from 'antd'
 import Scrollbars from 'react-custom-scrollbars'
+import { QueryTabsContext } from 'contexts/query-tabs-context'
+import { TabType } from 'types/tab'
 import { fetchSavedQueries } from '../queries-and-mutations'
 
 export default function SavedTab() {
@@ -12,6 +14,8 @@ export default function SavedTab() {
     fetchSavedQueries,
     { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
   )
+
+  const { openInTab } = useContext(QueryTabsContext)
 
   const savedTabContent = useMemo(() => {
     if (isLoading) {
@@ -48,8 +52,14 @@ export default function SavedTab() {
           {savedQueries.map((query: any) => (
             <div
               key={query.id}
-              className="px-3 py-2 space-y-2 text-xs"
+              className="px-3 py-2 space-y-2 text-xs cursor-pointer hover:bg-gray-100"
               title={`${query.name}\n${query.query}`}
+              onClick={() => {
+                openInTab({
+                  type: TabType.SAVED_QUERY,
+                  data: query,
+                })
+              }}
             >
               <div className="font-medium text-blue-500">
                 <span>{query.name}</span>
@@ -73,7 +83,7 @@ export default function SavedTab() {
         />
       </div>
     )
-  }, [isLoading, data, error, fetchMore])
+  }, [isLoading, data, error, fetchMore, openInTab])
 
   return (
     <Scrollbars className="h-full" autoHide>
