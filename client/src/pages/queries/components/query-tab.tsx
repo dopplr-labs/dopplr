@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react'
 import { Result } from 'antd'
 import clsx from 'clsx'
-import { QueryTabsContext } from 'contexts/query-tabs-context'
 import { fetchResources } from 'pages/resources/queries'
 import { useQuery } from 'react-query'
 import { Tab, TabType } from 'types/tab'
+import { QueryTabsContext } from '../contexts/query-tabs-context'
 import QueryEditor from './query-editor'
 
 type QueryTabProps = {

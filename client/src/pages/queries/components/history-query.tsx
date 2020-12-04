@@ -7,8 +7,8 @@ import {
 } from '@ant-design/icons'
 import { queryCache, useMutation } from 'react-query'
 import { History } from 'types/history'
-import { QueryTabsContext } from 'contexts/query-tabs-context'
 import { HistoryTabData, TabType } from 'types/tab'
+import { QueryTabsContext } from '../contexts/query-tabs-context'
 import { deleteQuery } from '../queries-and-mutations'
 import SaveQueryModal from './save-query-modal'
 
@@ -36,8 +36,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
         <Menu.Item
           key="0"
           className="flex items-center space-x-2 text-xs"
-          onClick={(event) => {
-            event.domEvent.stopPropagation()
+          onClick={() => {
             setSaveModalVisible(true)
           }}
         >
@@ -47,8 +46,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
         <Menu.Item
           key="1"
           className="flex items-center space-x-2 text-xs"
-          onClick={(event) => {
-            event.domEvent.stopPropagation()
+          onClick={() => {
             deleteQueryMutation(query.id)
           }}
         >
@@ -73,11 +71,17 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
         <div className="w-full text-xs truncate" title={query.query}>
           {query.query}
         </div>
-        <Dropdown overlay={historyMenu} trigger={['click']}>
-          <button className="invisible px-1 focus:outline-none group-hover:visible">
-            <EllipsisOutlined className="text-lg" />
-          </button>
-        </Dropdown>
+        <span
+          onClick={(event) => {
+            event.stopPropagation()
+          }}
+        >
+          <Dropdown overlay={historyMenu} trigger={['click']}>
+            <button className="invisible px-1 focus:outline-none group-hover:visible">
+              <EllipsisOutlined className="text-lg" />
+            </button>
+          </Dropdown>
+        </span>
       </li>
       <SaveQueryModal
         visible={saveModalVisible}

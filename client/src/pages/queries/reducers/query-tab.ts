@@ -79,6 +79,13 @@ function uid() {
   return Date.now().toString(36)
 }
 
+function trimName(name: string) {
+  if (name.length > 10) {
+    return `${name.slice(0, 10)}...`
+  }
+  return name
+}
+
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case ActionTypes.CREATE_NEW_TAB: {
@@ -130,7 +137,7 @@ export function reducer(state: State, action: Action): State {
             id: newTabId,
             name:
               action.payload.type === TabType.HISTORY
-                ? action.payload.data.query.slice(0, 10)
+                ? trimName(action.payload.data.query)
                 : action.payload.data.name,
             ...action.payload,
           },

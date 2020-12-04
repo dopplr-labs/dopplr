@@ -6,13 +6,13 @@ import InfiniteScroll from 'react-infinite-scroller'
 import Scrollbars from 'react-custom-scrollbars'
 import { queryCache, useMutation, useInfiniteQuery } from 'react-query'
 import { DeleteOutlined } from '@ant-design/icons'
-import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
+import { clearHistoryQuery, fetchHistories } from '../queries-and-mutations'
 import DayHistory from './day-history'
 
 export default function HistoriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['history'],
-    fetchHistory,
+    fetchHistories,
     { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
   )
 

@@ -5,13 +5,16 @@ import axios from 'axios'
 import { message } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import AppShell from 'components/app-shell'
-import Resources from 'pages/resources'
-import Queries from 'pages/queries'
-import Dashboards from 'pages/dashboards'
 import Home from 'pages/home'
+import Resources from 'pages/resources'
 import ResourcesList from 'pages/resources/components/resources-list'
 import CreateResource from 'pages/resources/components/create-resource'
 import ResourceDetail from 'pages/resources/components/resource-detail'
+import Queries from 'pages/queries'
+import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor-tab'
+import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
+import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
+import Dashboards from 'pages/dashboards'
 
 async function fetchHealthStatus() {
   const { data } = await axios.get('/health/knock-knock', {
@@ -44,7 +47,11 @@ export function App() {
             <Route path="new/:resourceType" element={<CreateResource />} />
             <Route path=":resourceId" element={<ResourceDetail />} />
           </Route>
-          <Route element={<Queries />} path="queries" />
+          <Route element={<Queries />} path="queries">
+            <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
+            <Route path="history/:historyId" element={<HistoryEditorTab />} />
+            <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
+          </Route>
           <Route element={<Dashboards />} path="dashboards" />
         </Route>
       </Routes>
