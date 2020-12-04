@@ -73,7 +73,7 @@ export default function CreateResource() {
   return (
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
       <div className="flex items-start w-full max-w-screen-md mx-auto space-x-8">
-        <div className="flex-1 p-4 overflow-hidden bg-white rounded shadow">
+        <div className="flex-1 p-4 overflow-hidden bg-white shadow">
           <Form
             layout="horizontal"
             form={form}

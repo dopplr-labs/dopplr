@@ -2,8 +2,8 @@ import React, { useContext } from 'react'
 import { Empty, Tabs } from 'antd'
 import { QueryTabsContext } from 'contexts/query-tabs-context'
 import HorizontalPane from 'components/horizontal-pane'
-import HistoryTab from './components/history-tab'
-import SavedTab from './components/saved-tab'
+import HistoriesTab from './components/histories-tab'
+import SavedQueriesTab from './components/saved-queries-tab'
 import QueryTab from './components/query-tab'
 import SchemaTab from './components/schema-tab'
 
@@ -39,10 +39,10 @@ export default function Queries() {
             )}
           </Tabs.TabPane>
           <Tabs.TabPane tab="History" key="history">
-            <HistoryTab />
+            <HistoriesTab />
           </Tabs.TabPane>
           <Tabs.TabPane key="saved" tab="Saved">
-            <SavedTab />
+            <SavedQueriesTab />
           </Tabs.TabPane>
         </Tabs>
       </HorizontalPane>

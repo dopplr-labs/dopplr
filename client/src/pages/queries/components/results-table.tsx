@@ -96,7 +96,7 @@ export default function ResultsTable({
     return (
       <div className="flex items-center justify-center h-full space-x-1 text-gray-400">
         <span>Click</span>
-        <span className="inline-flex items-center px-2 space-x-1 border rounded">
+        <span className="inline-flex items-center px-2 space-x-1 border">
           <CaretRightFilled />
           <span>Run</span>
         </span>

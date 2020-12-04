@@ -9,7 +9,7 @@ import { DeleteOutlined } from '@ant-design/icons'
 import { clearHistoryQuery, fetchHistory } from '../queries-and-mutations'
 import DayHistory from './day-history'
 
-export default function HistoryTab() {
+export default function HistoriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['history'],
     fetchHistory,
@@ -42,7 +42,7 @@ export default function HistoryTab() {
           {range(10).map((val) => (
             <div
               key={val}
-              className="w-full h-4 bg-gray-200 rounded animate-pulse"
+              className="w-full h-4 bg-gray-200 animate-pulse"
               style={{ opacity: 1 - val / 10 }}
             />
           ))}

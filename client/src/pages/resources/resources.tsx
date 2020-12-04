@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Result } from 'antd'
-import { Link, Route, Routes, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { queryCache, useQuery } from 'react-query'
 import { range } from 'lodash-es'
 import { Postgres } from 'components/icons'
 import { fetchResources } from './queries'
-import ResourcesList from './components/resources-list'
-import CreateResource from './components/create-resource'
-import ResourceForm from './components/resource-form'
 
 export default function Resources() {
   const { pathname } = useLocation()
@@ -35,7 +32,7 @@ export default function Resources() {
           {range(5).map((val) => (
             <div
               key={val}
-              className="w-full h-4 bg-gray-200 rounded animate-pulse"
+              className="w-full h-4 bg-gray-200 animate-pulse"
               style={{ opacity: 1 - val / 5 }}
             />
           ))}
@@ -94,11 +91,7 @@ export default function Resources() {
         {resourcesList}
       </div>
 
-      <Routes>
-        <Route path="/" element={<ResourcesList />} />
-        <Route path="new/:resourceType" element={<CreateResource />} />
-        <Route path=":resourceId" element={<ResourceForm />} />
-      </Routes>
+      <Outlet />
     </div>
   )
 }

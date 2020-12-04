@@ -15,7 +15,7 @@ export default function ResourceCard({
   return (
     <div
       className={clsx(
-        'group flex flex-col items-start justify-between relative p-4 border rounded',
+        'group flex flex-col items-start justify-between relative p-4 border',
         comingSoon
           ? 'opacity-50'
           : 'hover:shadow-lg hover:border-blue-500 cursor-pointer',

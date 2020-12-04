@@ -8,7 +8,7 @@ import { QueryTabsContext } from 'contexts/query-tabs-context'
 import { TabType } from 'types/tab'
 import { fetchSavedQueries } from '../queries-and-mutations'
 
-export default function SavedTab() {
+export default function SavedQueriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['saved-queries'],
     fetchSavedQueries,
@@ -24,7 +24,7 @@ export default function SavedTab() {
           {range(10).map((val) => (
             <div
               key={val}
-              className="w-full h-4 bg-gray-200 rounded animate-pulse"
+              className="w-full h-4 bg-gray-200 animate-pulse"
               style={{ opacity: 1 - val / 10 }}
             />
           ))}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import axios from 'axios'
@@ -9,7 +9,9 @@ import Resources from 'pages/resources'
 import Queries from 'pages/queries'
 import Dashboards from 'pages/dashboards'
 import Home from 'pages/home'
-import QueryTabs from 'components/query-tabs'
+import ResourcesList from 'pages/resources/components/resources-list'
+import CreateResource from 'pages/resources/components/create-resource'
+import ResourceDetail from 'pages/resources/components/resource-detail'
 
 async function fetchHealthStatus() {
   const { data } = await axios.get('/health/knock-knock', {
@@ -18,33 +20,37 @@ async function fetchHealthStatus() {
   return data
 }
 
+const SHOW_QUERY_DEV_TOOL = false
+
 export function App() {
-  const { data, error } = useQuery('health', fetchHealthStatus, {
+  useQuery('health', fetchHealthStatus, {
     refetchOnWindowFocus: false,
     enabled: process.env.NODE_ENV === 'development',
-  })
-
-  useEffect(() => {
-    if (data) {
+    onSuccess: () => {
       message.success('Server working fine')
-    } else if (error) {
+    },
+    onError: () => {
       message.error('Server not working')
-    }
-  }, [data, error])
+    },
+  })
 
   return (
     <>
-      <QueryTabs>
-        <Routes>
-          <Route element={<AppShell />} path="/">
-            <Route element={<Home />} path="/" />
-            <Route element={<Resources />} path="resources*" />
-            <Route element={<Queries />} path="queries" />
-            <Route element={<Dashboards />} path="dashboards" />
+      <Routes>
+        <Route element={<AppShell />} path="/">
+          <Route element={<Home />} path="/" />
+          <Route element={<Resources />} path="resources">
+            <Route path="/" element={<ResourcesList />} />
+            <Route path="new/:resourceType" element={<CreateResource />} />
+            <Route path=":resourceId" element={<ResourceDetail />} />
           </Route>
-        </Routes>
-      </QueryTabs>
-      {process.env.NODE_ENV === 'development' ? <ReactQueryDevtools /> : null}
+          <Route element={<Queries />} path="queries" />
+          <Route element={<Dashboards />} path="dashboards" />
+        </Route>
+      </Routes>
+      {process.env.NODE_ENV === 'development' && SHOW_QUERY_DEV_TOOL ? (
+        <ReactQueryDevtools />
+      ) : null}
     </>
   )
 }

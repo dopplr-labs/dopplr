@@ -40,12 +40,12 @@ export default function QueryTab({ tab, className, style }: QueryTabProps) {
         style={style}
       >
         <div className="flex-1 py-4 space-y-4">
-          <div className="w-full bg-gray-200 rounded h-80 animate-pulse" />
-          <div className="w-full h-40 bg-gray-200 rounded animate-pulse" />
+          <div className="w-full bg-gray-200 h-80 animate-pulse" />
+          <div className="w-full h-40 bg-gray-200 animate-pulse" />
         </div>
         <div className="py-4 space-y-4 w-80">
-          <div className="w-full h-8 bg-gray-200 rounded animate-pulse" />
-          <div className="w-full h-8 bg-gray-200 rounded animate-pulse" />
+          <div className="w-full h-8 bg-gray-200 animate-pulse" />
+          <div className="w-full h-8 bg-gray-200 animate-pulse" />
         </div>
       </div>
     )
