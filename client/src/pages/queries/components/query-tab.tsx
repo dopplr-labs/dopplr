@@ -8,18 +8,12 @@ import { Tab, TabType } from 'types/tab'
 import QueryEditor from './query-editor'
 
 type QueryTabProps = {
-  width: number
   tab: Tab
   className?: string
   style?: React.CSSProperties
 }
 
-export default function QueryTab({
-  width,
-  tab,
-  className,
-  style,
-}: QueryTabProps) {
+export default function QueryTab({ tab, className, style }: QueryTabProps) {
   const { id, type, data: tabData } = tab
   const { updateTab } = useContext(QueryTabsContext)
 
@@ -71,12 +65,7 @@ export default function QueryTab({
   if (resources && tab) {
     return (
       <div className={clsx('flex h-full', className)} style={style}>
-        <QueryEditor
-          className="flex-1"
-          editorWidth={width}
-          resources={resources}
-          tab={tab}
-        />
+        <QueryEditor className="flex-1" resources={resources} tab={tab} />
       </div>
     )
   }
