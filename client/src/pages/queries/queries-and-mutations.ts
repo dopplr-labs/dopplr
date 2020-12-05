@@ -30,7 +30,18 @@ export async function fetchSchema(id: number) {
 }
 
 export async function fetchHistories(key: string, page = 1) {
-  const { data } = await client.get(`/queries/history?page=${page}`)
+  const { data } = await client.get<{
+    success: boolean
+    data: {
+      items: History[]
+      meta: {
+        hasMore: boolean
+        totalItems: number
+        currentPage: number
+        nextPage: number
+      }
+    }
+  }>(`/queries/history?page=${page}`)
   return data.data
 }
 

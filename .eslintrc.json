@@ -44,6 +44,7 @@
     "indent": "off",
     "no-console": "warn",
     "no-useless-constructor": "off",
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "func-call-spacing": "off"
   }
 }

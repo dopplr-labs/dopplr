@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Dropdown, Menu } from 'antd'
 import {
   DeleteOutlined,
@@ -7,8 +7,7 @@ import {
 } from '@ant-design/icons'
 import { queryCache, useMutation } from 'react-query'
 import { History } from 'types/history'
-import { HistoryTabData, TabType } from 'types/tab'
-import { QueryTabsContext } from '../contexts/query-tabs-context'
+import { Link } from 'react-router-dom'
 import { deleteQuery } from '../queries-and-mutations'
 import SaveQueryModal from './save-query-modal'
 
@@ -27,8 +26,6 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
       )
     },
   })
-
-  const { openInTab } = useContext(QueryTabsContext)
 
   const historyMenu = useMemo(() => {
     return (
@@ -59,20 +56,16 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
 
   return (
     <>
-      <li
+      <Link
         className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-gray-50 group"
-        onClick={() => {
-          openInTab({
-            type: TabType.HISTORY,
-            data: query as HistoryTabData,
-          })
-        }}
+        to={`/queries/history/${query.id}`}
       >
         <div className="w-full text-xs truncate" title={query.query}>
           {query.query}
         </div>
         <span
           onClick={(event) => {
+            event.preventDefault()
             event.stopPropagation()
           }}
         >
@@ -82,7 +75,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
             </button>
           </Dropdown>
         </span>
-      </li>
+      </Link>
       <SaveQueryModal
         visible={saveModalVisible}
         onRequestClose={handleModalRequestClose}

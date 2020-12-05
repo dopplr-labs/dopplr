@@ -1,167 +1,87 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { Tabs } from 'antd'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { v4 } from 'uuid'
+import usePersistedSetState from 'hooks/use-persisted-state'
 import HorizontalPane from 'components/horizontal-pane'
-import { Empty, Tabs } from 'antd'
-import { matchRoutes, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { queryCache } from 'react-query'
-import usePersistedReducer from 'hooks/use-persisted-reducer'
-import { usePrevious } from 'hooks/use-previous'
-import { HistoryTabData, SavedQueryTabData, TabType } from 'types/tab'
-import {
-  OpenInTabOptions,
-  QueryTabsContext,
-  UpdateTabOptions,
-} from './contexts/query-tabs-context'
 import HistoriesTab from './components/histories-tab'
 import SavedQueriesTab from './components/saved-queries-tab'
-import SchemaTab from './components/schema-tab'
-import { ActionTypes, reducer } from './reducers/query-tab'
-import { fetchHistory } from './queries-and-mutations'
+import { TabsContext } from './contexts/tabs-context'
+
+type Tab = {
+  route: string
+  name?: string
+  hasUnsavedChanges?: boolean
+}
 
 export default function Queries() {
-  const [state, dispatch] = usePersistedReducer({
-    reducer,
-    key: 'query-tabs',
-    initialState: { tabs: [] },
-  })
+  const [tabs, setTabs] = usePersistedSetState<Tab[]>('queries-tab', [])
 
-  const createNewTab = useCallback(() => {
-    dispatch({ type: ActionTypes.CREATE_NEW_TAB })
-  }, [dispatch])
-
-  const openInTab = useCallback(
-    (options: OpenInTabOptions) => {
-      dispatch({ type: ActionTypes.OPEN_IN_TAB, payload: options })
-    },
-    [dispatch],
-  )
-
-  const updateTab = useCallback(
-    (options: UpdateTabOptions) => {
-      dispatch({ type: ActionTypes.UPDATE_TAB, payload: options })
-    },
-    [dispatch],
-  )
-
-  const closeTab = useCallback(
-    (tabId: string) => {
-      dispatch({ type: ActionTypes.CLOSE_TAB, payload: { tabId } })
-    },
-    [dispatch],
-  )
-
-  const focusTab = useCallback(
-    (tabId: string) => {
-      dispatch({ type: ActionTypes.FOCUS_TAB, payload: { tabId } })
-    },
-    [dispatch],
-  )
-
-  const { tabs, activeTabId } = state
+  const location = useLocation()
+  const activeTabRoute = location.pathname
 
   useEffect(() => {
-    if (state.tabs.length > 0) {
-      if (!activeTabId) {
-        focusTab(state.tabs[0].id)
-      }
-    } else {
-      createNewTab()
+    const tabForActiveRoute = tabs.find((tab) => tab.route === activeTabRoute)
+    if (!tabForActiveRoute) {
+      setTabs((prevTabs) => [...prevTabs, { route: activeTabRoute }])
     }
-  }, [state.tabs, focusTab, createNewTab, activeTabId])
-
-  const activeTab = tabs.find((tab) => tab.id === state.activeTabId)
+  }, [activeTabRoute, tabs, setTabs])
 
   const navigate = useNavigate()
 
-  const prevActiveTabId = usePrevious(activeTabId)
-  useEffect(() => {
-    if (activeTabId !== prevActiveTabId) {
-      if (activeTabId && activeTab) {
-        const { type, id: tabId } = activeTab
-        switch (type) {
-          case TabType.HISTORY: {
-            navigate(`history/${(activeTab.data as HistoryTabData).id}`)
-            break
-          }
-          case TabType.SAVED_QUERY: {
-            navigate(`saved/${(activeTab.data as SavedQueryTabData).id}`)
-            break
-          }
-          case TabType.UNSAVED: {
-            navigate(`new/${tabId}`)
-            break
-          }
-        }
-      } else {
-        navigate('')
-      }
-    }
-  }, [activeTabId, prevActiveTabId, activeTab, navigate])
+  function createNewTab() {
+    const newTabId = v4()
+    const newTabRoute = `/queries/new/${newTabId}`
+    navigate(newTabRoute)
+  }
 
-  const location = useLocation()
-  useEffect(() => {
-    const matchedRoute = matchRoutes(
-      [
-        // @ts-ignore
-        { path: 'new/:tabId', caseSensitive: false, tabType: TabType.UNSAVED },
-        // @ts-ignore
-        {
-          path: 'history/:historyId',
-          caseSensitive: false,
-          // @ts-ignore
-          tabType: TabType.HISTORY,
-        },
-        // @ts-ignore
-        {
-          path: 'saved/:queryId',
-          caseSensitive: false,
-          // @ts-ignore
-          tabType: TabType.SAVED_QUERY,
-        },
-      ],
-      location.pathname,
-      'queries',
-    )
-    if (matchedRoute?.length) {
-      const {
-        // @ts-ignore
-        route: { tabType },
-        params,
-      } = matchedRoute[0]
-      if (tabType === TabType.UNSAVED) {
-      } else if (tabType === TabType.HISTORY) {
-        const tabPresent = tabs.find(
-          (tab) =>
-            tab.type === TabType.HISTORY &&
-            tab.data.id === Number.parseInt(params.historyId, 10),
-        )
-        if (tabPresent) {
-          focusTab(tabPresent.id)
+  function closeTab(tabRoute: string) {
+    if (tabRoute === activeTabRoute) {
+      const tabIndex = tabs.findIndex((tab) => tab.route === tabRoute)
+      if (tabIndex !== -1) {
+        const nextTabIndex = tabIndex !== 0 ? tabIndex - 1 : tabIndex + 1
+        const nextTabRoute = tabs[nextTabIndex]?.route
+        if (nextTabRoute) {
+          navigate(nextTabRoute)
         } else {
-          queryCache
-            .fetchQuery(['history', params.historyId], () =>
-              fetchHistory(params.historyId),
-            )
-            .then((historyData) => {
-              openInTab({ type: TabType.HISTORY, data: historyData })
-            })
+          createNewTab()
         }
-      } else if (tabType === TabType.SAVED_QUERY) {
       }
     }
-  }, [location.pathname, tabs, focusTab, openInTab])
+
+    setTabs((prevTabs) => prevTabs.filter((tab) => tab.route !== tabRoute))
+  }
+
+  function focusTab(tabRoute: string) {
+    navigate(tabRoute)
+  }
+
+  const updateTabName = useCallback(
+    (tabRoute: string, tabName: string) => {
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.route === tabRoute ? { ...tab, name: tabName } : tab,
+        ),
+      )
+    },
+    [setTabs],
+  )
+
+  const updateTabUnsavedState = useCallback(
+    (tabRoute: string, unsavedState: boolean) => {
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.route === tabRoute
+            ? { ...tab, hasUnsavedChanges: unsavedState }
+            : tab,
+        ),
+      )
+    },
+    [setTabs],
+  )
 
   return (
-    <QueryTabsContext.Provider
-      value={{
-        tabs,
-        activeTabId,
-        createNewTab,
-        openInTab,
-        closeTab,
-        updateTab,
-        focusTab,
-      }}
-    >
+    <TabsContext.Provider value={{ updateTabName, updateTabUnsavedState }}>
       <div className="flex flex-1 h-full">
         <HorizontalPane
           initialWidth={320}
@@ -172,19 +92,10 @@ export default function Queries() {
         >
           <Tabs className="flex-1 queries-tab mt-0.5" size="small" centered>
             <Tabs.TabPane tab="Schema" key="schema">
-              {activeTab?.data.resource?.id ? (
-                <SchemaTab resourceId={activeTab?.data.resource?.id} />
-              ) : (
-                <Empty
-                  className="flex flex-col items-center justify-center h-full my-0"
-                  description={
-                    <span className="text-xs">
-                      Select a resource to view its schema
-                    </span>
-                  }
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              )}
+              <div
+                className="w-full h-full overflow-hidden"
+                id="schema-container"
+              />
             </Tabs.TabPane>
             <Tabs.TabPane tab="History" key="history">
               <HistoriesTab />
@@ -198,7 +109,7 @@ export default function Queries() {
           <Tabs
             type="editable-card"
             className="editors-tab"
-            activeKey={activeTabId}
+            activeKey={activeTabRoute}
             onChange={focusTab}
             onEdit={(tabKey, action) => {
               if (action === 'add') {
@@ -210,8 +121,17 @@ export default function Queries() {
           >
             {tabs.map((tab) => (
               <Tabs.TabPane
-                key={tab.id}
-                tab={<span className="text-xs">{tab.name}</span>}
+                key={tab.route}
+                tab={
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs">
+                      {tab.name ?? 'Untitled Query'}
+                    </span>
+                    {tab.hasUnsavedChanges ? (
+                      <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                    ) : null}
+                  </div>
+                }
               />
             ))}
           </Tabs>
@@ -220,6 +140,6 @@ export default function Queries() {
           </div>
         </div>
       </div>
-    </QueryTabsContext.Provider>
+    </TabsContext.Provider>
   )
 }

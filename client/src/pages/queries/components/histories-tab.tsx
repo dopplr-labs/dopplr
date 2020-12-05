@@ -13,7 +13,16 @@ export default function HistoriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['history'],
     fetchHistories,
-    { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
+    {
+      getFetchMore: (lastGroup) => lastGroup.meta.nextPage,
+      onSuccess: (pages) => {
+        pages.forEach((page) => {
+          page.items.forEach((history) => {
+            queryCache.setQueryData(['history', history.id], history)
+          })
+        })
+      },
+    },
   )
 
   const [clearAllHistory] = useMutation(clearHistoryQuery, {

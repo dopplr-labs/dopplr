@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react'
 import { getDataFromLocalStorage } from 'utils/local-storage'
 
-const usePersistedReducer = <T extends React.Reducer<any, any>>({
+export function usePersistedReducer<T extends React.Reducer<any, any>>({
   reducer,
   initialState,
   initializer,
@@ -11,7 +11,7 @@ const usePersistedReducer = <T extends React.Reducer<any, any>>({
   initialState: React.ReducerState<T>
   initializer?: undefined
   key: string
-}): [React.ReducerState<T>, React.Dispatch<React.ReducerAction<T>>] => {
+}): [React.ReducerState<T>, React.Dispatch<React.ReducerAction<T>>] {
   const [state, dispatch] = useReducer(
     reducer,
     getDataFromLocalStorage(key, initialState),

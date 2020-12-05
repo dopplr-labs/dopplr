@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import { message } from 'antd'
@@ -37,6 +37,8 @@ export function App() {
     },
   })
 
+  const location = useLocation()
+
   return (
     <>
       <Routes>
@@ -48,9 +50,18 @@ export function App() {
             <Route path=":resourceId" element={<ResourceDetail />} />
           </Route>
           <Route element={<Queries />} path="queries">
-            <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
-            <Route path="history/:historyId" element={<HistoryEditorTab />} />
-            <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
+            <Route
+              path="new/:tabId"
+              element={<UnsavedQueryEditorTab key={location.pathname} />}
+            />
+            <Route
+              path="history/:historyId"
+              element={<HistoryEditorTab key={location.pathname} />}
+            />
+            <Route
+              path="saved/:queryId"
+              element={<SavedQueryEditorTab key={location.pathname} />}
+            />
           </Route>
           <Route element={<Dashboards />} path="dashboards" />
         </Route>
