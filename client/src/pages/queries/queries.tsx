@@ -1,38 +1,26 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Empty, Tabs } from 'antd'
-import useMeasure from 'react-use-measure'
-import { ResizableBox } from 'react-resizable'
 import { QueryTabsContext } from 'contexts/query-tabs-context'
+import HorizontalPane from 'components/horizontal-pane'
 import HistoryTab from './components/history-tab'
 import SavedTab from './components/saved-tab'
 import QueryTab from './components/query-tab'
 import SchemaTab from './components/schema-tab'
 
 export default function Queries() {
-  const [measureContainer, containerBounds] = useMeasure()
-  const [sidebarWidth, setSidebarWidth] = useState(320)
-
   const { tabs, activeTabId, focusTab, createNewTab, closeTab } = useContext(
     QueryTabsContext,
   )
   const activeTab = tabs.find((tab) => tab.id === activeTabId)
 
   return (
-    <div className="flex flex-1 h-full" ref={measureContainer}>
-      <ResizableBox
-        width={sidebarWidth}
-        height={containerBounds.height}
-        onResize={(event, { size: { width } }) => {
-          setSidebarWidth(width)
-        }}
-        className="relative z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
-        axis="x"
-        resizeHandles={['e']}
-        minConstraints={[280, containerBounds.height]}
-        maxConstraints={[400, containerBounds.height]}
-        handle={() => (
-          <div className="absolute top-0 right-0 w-1 h-full transform translate-x-1/2 bg-gray-200 opacity-0 col-resize-handle hover:opacity-50" />
-        )}
+    <div className="flex flex-1 h-full">
+      <HorizontalPane
+        initialWidth={320}
+        maxConstraint={400}
+        minConstraint={280}
+        buffer={80}
+        className="z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
       >
         <Tabs className="flex-1 queries-tab mt-0.5" size="small" centered>
           <Tabs.TabPane tab="Schema" key="schema">
@@ -57,7 +45,7 @@ export default function Queries() {
             <SavedTab />
           </Tabs.TabPane>
         </Tabs>
-      </ResizableBox>
+      </HorizontalPane>
       <div className="flex flex-col flex-1 overflow-hidden">
         <Tabs
           type="editable-card"
@@ -80,12 +68,7 @@ export default function Queries() {
           ))}
         </Tabs>
         <div className="flex-1">
-          {activeTab ? (
-            <QueryTab
-              width={containerBounds.width - sidebarWidth}
-              tab={activeTab}
-            />
-          ) : null}
+          {activeTab ? <QueryTab tab={activeTab} /> : null}
         </div>
       </div>
     </div>
