@@ -6,13 +6,15 @@ import {
   SaveOutlined,
   CodeOutlined,
   PlusOutlined,
+  UpOutlined,
+  DownOutlined,
 } from '@ant-design/icons'
 import Editor from 'components/editor'
 import clsx from 'clsx'
 import { Resource } from 'types/resource'
 import useMeasure from 'react-use-measure'
-import { ResizableBox } from 'react-resizable'
 import sqlFormatter from 'sql-formatter'
+import VerticalPane from 'components/vertical-pane'
 import { Tab, TabType } from 'types/tab'
 import { QueryTabsContext } from 'contexts/query-tabs-context'
 import { SavedQuery } from 'types/query'
@@ -22,7 +24,6 @@ import QueryName from './query-name'
 import SaveQueryModal from './save-query-modal'
 
 type QueryEditorProps = {
-  editorWidth: number
   resources: Resource[]
   tab: Tab
   className?: string
@@ -30,7 +31,6 @@ type QueryEditorProps = {
 }
 
 export default function QueryEditor({
-  editorWidth,
   resources,
   tab,
   className,
@@ -88,7 +88,6 @@ export default function QueryEditor({
   }
 
   const [measureContainer, containerBounds] = useMeasure()
-  const [tableContainerHeight, setTableContainerHeight] = useState(480)
 
   const [saveModalVisible, setSaveModalVisible] = useState(false)
 
@@ -173,36 +172,67 @@ export default function QueryEditor({
           </Button>
         </div>
 
-        <div className="flex-1" ref={measureContainer}>
-          <div
-            style={{
-              width: editorWidth,
-              height: containerBounds.height - tableContainerHeight,
-            }}
-          >
+        <div className="flex flex-col flex-1" ref={measureContainer}>
+          {/* <div className="flex-1 w-full">
             <Editor
               resourceId={resource.id}
               value={query}
               setValue={updateQuery}
             />
-          </div>
-          <ResizableBox
-            className="relative flex-shrink-0 p-4 border-t"
-            width={editorWidth}
-            height={tableContainerHeight}
-            onResize={(event, { size: { height } }) => {
-              setTableContainerHeight(height)
-            }}
-            axis="y"
-            resizeHandles={['n']}
-            handle={() => (
-              <div className="absolute top-0 left-0 right-0 h-1 transform -translate-y-1/2 bg-gray-200 opacity-0 row-resize-handle hover:opacity-50" />
+          </div> */}
+          <VerticalPane
+            initialHeight={480}
+            maxHeight={containerBounds.height}
+            maxConstraint={containerBounds.height - 160}
+            buffer={80}
+            render={({
+              paneHeight,
+              isFullScreen,
+              dragHandle,
+              toggleFullScreen,
+            }) => (
+              <>
+                {!isFullScreen ? (
+                  <div
+                    className="w-full"
+                    style={{ height: containerBounds.height - paneHeight }}
+                  >
+                    <Editor
+                      resourceId={resource.id}
+                      value={query}
+                      setValue={updateQuery}
+                    />
+                  </div>
+                ) : null}
+                <div
+                  className="relative border-t"
+                  style={{ height: paneHeight }}
+                >
+                  {dragHandle}
+                  <div className="flex justify-end px-4 py-2">
+                    <button
+                      onClick={toggleFullScreen}
+                      className="focus:outline-none"
+                    >
+                      {isFullScreen ? <DownOutlined /> : <UpOutlined />}
+                    </button>
+                  </div>
+                  <div className="h-full px-4">
+                    <ResultsTable
+                      data={data}
+                      isLoading={isLoading}
+                      error={error}
+                    />
+                  </div>
+                </div>
+              </>
             )}
-          >
-            <div className="h-full">
-              <ResultsTable data={data} isLoading={isLoading} error={error} />
-            </div>
-          </ResizableBox>
+          />
+          {/* <div className="h-full"> */}
+          {/* <div className="h-full px-4">
+            <ResultsTable data={data} isLoading={isLoading} error={error} />
+          </div> */}
+          {/* </div> */}
         </div>
       </div>
       <SaveQueryModal
