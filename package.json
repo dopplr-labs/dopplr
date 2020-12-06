@@ -4,8 +4,8 @@
   "description": "Dopplr is analytical tool for creating beautiful dashboards from sql queries",
   "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "2.24.0",
-    "@typescript-eslint/parser": "2.24.0",
+    "@typescript-eslint/eslint-plugin": "4.0.1",
+    "@typescript-eslint/parser": "4.0.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "6.8.0",
     "eslint-config-standard": "^14.1.1",

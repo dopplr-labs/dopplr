@@ -1,0 +1,77 @@
+import React from 'react'
+import { Form, Input, message, Modal } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import { queryCache, useMutation } from 'react-query'
+import { SavedQuery } from 'types/query'
+import { saveQuery } from '../queries-and-mutations'
+
+type SaveQueryModalProps = {
+  visible: boolean
+  onRequestClose: () => void
+  resourceId: number
+  query: string
+  onSave?: (savedQuery: SavedQuery) => void
+}
+
+export default function SaveQueryModal({
+  visible,
+  onRequestClose,
+  resourceId,
+  query,
+  onSave,
+}: SaveQueryModalProps) {
+  const [form] = useForm()
+
+  const [saveQueryMutation] = useMutation(saveQuery, {
+    onSuccess: async (savedQuery) => {
+      onRequestClose()
+      onSave?.(savedQuery)
+      await queryCache.refetchQueries(['saved-queries'])
+      message.success('Query saved successfully')
+    },
+  })
+
+  function handleFinish() {
+    const { queryName } = form.getFieldsValue()
+    saveQueryMutation({
+      resourceId,
+      query,
+      name: queryName,
+    })
+  }
+
+  function handleOk() {
+    form.submit()
+  }
+
+  function handleCancel() {
+    onRequestClose()
+  }
+
+  return (
+    <Modal
+      visible={visible}
+      title="Save query"
+      onOk={handleOk}
+      onCancel={handleCancel}
+      destroyOnClose
+    >
+      <Form
+        layout="vertical"
+        form={form}
+        requiredMark={false}
+        onFinish={handleFinish}
+      >
+        <Form.Item
+          label="Query Name"
+          name="queryName"
+          rules={[
+            { required: true, message: 'Please enter name for your query' },
+          ]}
+        >
+          <Input autoFocus />
+        </Form.Item>
+      </Form>
+    </Modal>
+  )
+}

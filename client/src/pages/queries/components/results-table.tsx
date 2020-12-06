@@ -1,16 +1,12 @@
-import {
-  CaretRightFilled,
-  DownloadOutlined,
-  SearchOutlined,
-} from '@ant-design/icons'
-import { Button, Input, Result, Table } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { CaretRightFilled } from '@ant-design/icons'
+import { Result, Table } from 'antd'
 import clsx from 'clsx'
 import { range } from 'lodash-es'
-import React, { useMemo, useState } from 'react'
 import useMeasure from 'react-use-measure'
 import { QueryResult } from 'types/query'
 
-const PAGINATION_CONTAINER_HEIGHT = 56
+const PAGINATION_CONTAINER_HEIGHT = 96
 
 type ResultsTableProps = {
   data?: QueryResult
@@ -28,7 +24,6 @@ export default function ResultsTable({
   style,
 }: ResultsTableProps) {
   const [measureContainer, containerBounds] = useMeasure()
-  const [measureActionsContainer, actionsContainerBounds] = useMeasure()
   const [tableHeaderSize, setTableHeaderSize] = useState<number | undefined>(
     undefined,
   )
@@ -57,17 +52,6 @@ export default function ResultsTable({
     if (data) {
       return (
         <>
-          <div
-            className="flex items-center justify-end flex-shrink-0 mb-4 gap-x-4"
-            ref={measureActionsContainer}
-          >
-            <Input
-              placeholder="Search Table"
-              className="w-64"
-              prefix={<SearchOutlined />}
-            />
-            <Button icon={<DownloadOutlined />}>Download</Button>
-          </div>
           <div>
             <Table
               columns={data?.fields.map((field) => ({
@@ -98,7 +82,6 @@ export default function ResultsTable({
                 y:
                   tableHeaderSize && containerBounds.height
                     ? containerBounds.height -
-                      actionsContainerBounds.height -
                       tableHeaderSize -
                       PAGINATION_CONTAINER_HEIGHT
                     : 0,
@@ -113,22 +96,14 @@ export default function ResultsTable({
     return (
       <div className="flex items-center justify-center h-full space-x-1 text-gray-400">
         <span>Click</span>
-        <span className="inline-flex items-center px-2 space-x-1 border rounded">
+        <span className="inline-flex items-center px-2 space-x-1 border">
           <CaretRightFilled />
           <span>Run</span>
         </span>
         <span>to run query</span>
       </div>
     )
-  }, [
-    data,
-    isLoading,
-    error,
-    measureActionsContainer,
-    actionsContainerBounds,
-    containerBounds,
-    tableHeaderSize,
-  ])
+  }, [data, isLoading, error, containerBounds, tableHeaderSize])
 
   return (
     <div

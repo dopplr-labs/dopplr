@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { QueryResult } from 'types/query'
+import { History, QueryResult, SavedQuery } from 'types/query'
 import { SchemaResult } from 'types/schema'
 
 const client = Axios.create({ baseURL: process.env.REACT_APP_API_BASE_URL })
@@ -29,9 +29,20 @@ export async function fetchSchema(id: number) {
   return data.data
 }
 
-export async function fetchHistory() {
-  const { data } = await client.get('/queries/history')
-  return data.data.items
+export async function fetchHistories(key: string, page = 1) {
+  const { data } = await client.get<{
+    success: boolean
+    data: {
+      items: History[]
+      meta: {
+        hasMore: boolean
+        totalItems: number
+        currentPage: number
+        nextPage: number
+      }
+    }
+  }>(`/queries/history?page=${page}`)
+  return data.data
 }
 
 export async function fetchSampleData(resourceId: number, tableName: string) {
@@ -55,9 +66,20 @@ export async function clearHistoryQuery() {
   return data
 }
 
-export async function fetchSavedQueries() {
-  const { data } = await client.get('/queries/saved')
-  return data.data.items
+export async function fetchSavedQueries(key: string, page = 1) {
+  const { data } = await client.get<{
+    success: boolean
+    data: {
+      items: SavedQuery[]
+      meta: {
+        hasMore: boolean
+        totalItems: number
+        currentPage: number
+        nextPage: number
+      }
+    }
+  }>(`/queries/saved?page=${page}`)
+  return data.data
 }
 
 export async function saveQuery({
@@ -74,5 +96,52 @@ export async function saveQuery({
     query,
     name,
   })
+  return data.data
+}
+
+export async function fetchHistory(queryId: number) {
+  const { data } = await client.get<{ data: History }>(`/queries/${queryId}`)
+  return data.data
+}
+
+export async function fetchSavedQuery(queryId: number) {
+  const { data } = await client.get<{ data: SavedQuery }>(`/queries/${queryId}`)
+  return data.data
+}
+
+export async function updateQuery({
+  queryId,
+  name,
+  query,
+  resource,
+}: {
+  queryId: number
+  name?: string
+  query?: string
+  resource?: number
+}) {
+  const updateQueryData: {
+    name?: string
+    query?: string
+    resource?: number
+  } = {}
+
+  if (typeof name !== 'undefined') {
+    updateQueryData.name = name
+  }
+
+  if (typeof query !== 'undefined') {
+    updateQueryData.query = query
+  }
+
+  if (typeof resource !== 'undefined') {
+    updateQueryData.resource = resource
+  }
+
+  const { data } = await client.patch<{ data: SavedQuery }>(
+    `/queries/${queryId}`,
+    updateQueryData,
+  )
+
   return data.data
 }

@@ -1,7 +1,7 @@
 @import '~antd/lib/style/themes/default';
 @import '~antd/dist/antd.less';
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 @font-face {
   font-family: 'JetBrains Mono';
@@ -96,10 +96,7 @@
 @tailwind components;
 
 @font-family: theme('fontFamily.sans');
-@primary-color: #3f83f8;
-@border-radius-base: theme('borderRadius.default');
-@font-size-base: 13px;
-@font-size-sm: 11px;
+@primary-color: #0ea5e9;
 
 svg {
   vertical-align: inherit;
@@ -129,14 +126,22 @@ body {
   }
 }
 
-.tabs-container {
+.editors-tab {
   .ant-tabs-tab-active {
     @apply relative overflow-hidden;
 
     &::after {
-      @apply absolute top-0 left-0 right-0 border-t-2 border-blue-500;
+      @apply absolute bottom-0 left-0 right-0 border-t-2 border-blue-500;
       content: '';
     }
+  }
+
+  .ant-tabs-nav {
+    @apply mb-0;
+  }
+
+  .ant-tabs-nav-add {
+    @apply h-10;
   }
 }
 

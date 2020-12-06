@@ -171,11 +171,13 @@ export class QueriesService {
   ): Promise<Query> {
     const { resource, ...restData } = updateQueryDto
 
+    const updatedQueryData: any = { ...restData }
+
     let resourceEntity
     if (typeof resource !== 'undefined') {
       resourceEntity = await this.resourcesService.getResource(resource)
+      updatedQueryData.resource = resourceEntity
     }
-    const updatedQueryData = { ...restData, resource: resourceEntity }
 
     const query = await this.getQuery(id)
     if (!query.isSaved) {

@@ -74,7 +74,7 @@ export class QueriesController {
     data: boolean
     message: string
   }> {
-    const data = await this.queriesService.clearHistory()
+    await this.queriesService.clearHistory()
     return {
       success: true,
       data: false,

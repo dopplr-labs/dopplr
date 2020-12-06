@@ -12,7 +12,7 @@ import {
   updateResource,
 } from '../queries'
 
-export default function ResourceForm() {
+export default function ResourceDetail() {
   const { resourceId } = useParams() as { resourceId: string }
 
   const navigate = useNavigate()
@@ -119,8 +119,8 @@ export default function ResourceForm() {
             Connect your Postgres database to run queries and create dashboard
           </div>
           <div className="flex mb-6 space-x-32">
-            <div className="w-24 h-8 bg-gray-200 rounded animate-pulse" />
-            <div className="flex-1 h-8 bg-gray-200 rounded animate-pulse" />
+            <div className="w-24 h-8 bg-gray-200 animate-pulse" />
+            <div className="flex-1 h-8 bg-gray-200 animate-pulse" />
           </div>
           <div className="mb-6 border-b" />
           <div>
@@ -135,20 +135,20 @@ export default function ResourceForm() {
           {range(5).map((val) => (
             <div key={val} className="flex mb-6 space-x-32">
               <div
-                className="w-24 h-8 bg-gray-200 rounded animate-pulse"
+                className="w-24 h-8 bg-gray-200 animate-pulse"
                 style={{ opacity: 1 - val / 5 }}
               />
               <div
-                className="flex-1 h-8 bg-gray-200 rounded animate-pulse"
+                className="flex-1 h-8 bg-gray-200 animate-pulse"
                 style={{ opacity: 1 - val / 5 }}
               />
             </div>
           ))}
           <div className="flex p-4 -mx-4 -mb-4 space-x-4 bg-gray-50">
-            <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
+            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
             <div className="flex-1" />
-            <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
-            <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
+            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
+            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
           </div>
         </div>
       )
@@ -292,7 +292,7 @@ export default function ResourceForm() {
   return (
     <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
       <div className="flex items-start w-full max-w-screen-md mx-auto space-x-8">
-        <div className="flex-1 p-4 overflow-hidden bg-white rounded-md shadow">
+        <div className="flex-1 p-4 overflow-hidden bg-white shadow">
           {formContent}
         </div>
       </div>

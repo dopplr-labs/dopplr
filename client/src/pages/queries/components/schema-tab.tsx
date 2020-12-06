@@ -9,7 +9,9 @@ import { ColumnsField } from 'types/schema'
 import { fetchSchema } from '../queries-and-mutations'
 import SchemaTable from './schema-table'
 
-export default function SchemaTab({ resourceId }: { resourceId: number }) {
+type SchemaTabProps = { resourceId: number }
+
+export default function SchemaTab({ resourceId }: SchemaTabProps) {
   const { isLoading, data: schema } = useQuery(['schema', resourceId], () =>
     fetchSchema(resourceId),
   )
@@ -45,7 +47,7 @@ export default function SchemaTab({ resourceId }: { resourceId: number }) {
               {range(10).map((val) => (
                 <div
                   key={val}
-                  className="w-full h-4 bg-gray-200 rounded animate-pulse"
+                  className="w-full h-4 bg-gray-200 animate-pulse"
                   style={{ opacity: 1 - val / 10 }}
                 />
               ))}
