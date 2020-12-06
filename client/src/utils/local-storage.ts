@@ -6,9 +6,12 @@ export const getDataFromLocalStorage = <T extends any>(
   if (window && window.localStorage) {
     const data = window.localStorage.getItem(key)
     if (data) {
-      return JSON.parse(data) as T
+      try {
+        return JSON.parse(data) as T
+      } catch (error) {
+        return initialValue
+      }
     }
-    return initialValue
   }
 
   return initialValue

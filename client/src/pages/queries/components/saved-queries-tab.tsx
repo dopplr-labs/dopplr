@@ -1,16 +1,29 @@
 import React, { useMemo } from 'react'
 import { range } from 'lodash-es'
-import { useInfiniteQuery } from 'react-query'
+import { queryCache, useInfiniteQuery } from 'react-query'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Empty, Result, Spin } from 'antd'
 import Scrollbars from 'react-custom-scrollbars'
+import { Link } from 'react-router-dom'
 import { fetchSavedQueries } from '../queries-and-mutations'
 
 export default function SavedQueriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
     ['saved-queries'],
     fetchSavedQueries,
-    { getFetchMore: (lastGroup) => lastGroup.meta.nextPage },
+    {
+      getFetchMore: (lastGroup) => lastGroup.meta.nextPage,
+      onSuccess: (pages) => {
+        pages.forEach((page) => {
+          page.items.forEach((savedQuery) => {
+            queryCache.setQueryData(
+              ['saved-queries', savedQuery.id],
+              savedQuery,
+            )
+          })
+        })
+      },
+    },
   )
 
   const savedTabContent = useMemo(() => {
@@ -46,16 +59,17 @@ export default function SavedQueriesTab() {
           useWindow={false}
         >
           {savedQueries.map((query: any) => (
-            <div
+            <Link
+              to={`saved/${query.id}`}
               key={query.id}
-              className="px-3 py-2 space-y-2 text-xs cursor-pointer hover:bg-gray-100"
+              className="block px-3 py-2 space-y-2 text-xs cursor-pointer hover:bg-gray-100"
               title={`${query.name}\n${query.query}`}
             >
               <div className="font-medium text-blue-500">
                 <span>{query.name}</span>
               </div>
               <div className="truncate">{query.query}</div>
-            </div>
+            </Link>
           ))}
         </InfiniteScroll>
       )

@@ -67,7 +67,18 @@ export async function clearHistoryQuery() {
 }
 
 export async function fetchSavedQueries(key: string, page = 1) {
-  const { data } = await client.get(`/queries/saved?page=${page}`)
+  const { data } = await client.get<{
+    success: boolean
+    data: {
+      items: SavedQuery[]
+      meta: {
+        hasMore: boolean
+        totalItems: number
+        currentPage: number
+        nextPage: number
+      }
+    }
+  }>(`/queries/saved?page=${page}`)
   return data.data
 }
 
@@ -95,5 +106,42 @@ export async function fetchHistory(queryId: number) {
 
 export async function fetchSavedQuery(queryId: number) {
   const { data } = await client.get<{ data: SavedQuery }>(`/queries/${queryId}`)
+  return data.data
+}
+
+export async function updateQuery({
+  queryId,
+  name,
+  query,
+  resource,
+}: {
+  queryId: number
+  name?: string
+  query?: string
+  resource?: number
+}) {
+  const updateQueryData: {
+    name?: string
+    query?: string
+    resource?: number
+  } = {}
+
+  if (typeof name !== 'undefined') {
+    updateQueryData.name = name
+  }
+
+  if (typeof query !== 'undefined') {
+    updateQueryData.query = query
+  }
+
+  if (typeof resource !== 'undefined') {
+    updateQueryData.resource = resource
+  }
+
+  const { data } = await client.patch<{ data: SavedQuery }>(
+    `/queries/${queryId}`,
+    updateQueryData,
+  )
+
   return data.data
 }
