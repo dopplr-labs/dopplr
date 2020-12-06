@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
 import { Button, Empty, Result, Select } from 'antd'
 import {
@@ -13,8 +13,8 @@ import Editor from 'components/editor'
 import useMeasure from 'react-use-measure'
 import sqlFormatter from 'sql-formatter'
 import VerticalPane from 'components/vertical-pane'
-import { QueryResult } from 'types/query'
-import { useLocation } from 'react-router-dom'
+import { QueryResult, SavedQuery } from 'types/query'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { fetchResources } from 'pages/resources/queries'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { createPortal } from 'react-dom'
@@ -24,24 +24,38 @@ import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
 
-export default function UnsavedQueryEditorTab() {
+function useUpdateTabOnQueryChange({
+  tabRoute,
+  query,
+}: {
+  tabRoute: string
+  query: string
+}) {
+  const { updateTab } = useContext(TabsContext)
+  useEffect(
+    function updateTabOnQueryChange() {
+      const tabName = query.length > 15 ? `${query.slice(0, 12)}...` : query
+      const unsavedState = !!query
+      updateTab({ tabRoute, name: tabName, unsavedState })
+    },
+    [query, tabRoute, updateTab],
+  )
+}
+
+function Tab() {
   const { pathname: tabRoute } = useLocation()
 
   const [query, setQuery] = usePersistedSetState(`${tabRoute}-query`, '')
+  useUpdateTabOnQueryChange({ tabRoute, query })
+
   const [selectedResourceId, setSelectedResourceId] = usePersistedSetState<
     number | null
   >(`${tabRoute}-resource`, null)
-  const [
-    queryResult,
-    setQueryResult,
-  ] = usePersistedSetState<QueryResult | null>(`${tabRoute}-query-result`, null)
-
   const {
     isLoading: isLoadingResource,
     data: resources,
     error: resourcesError,
   } = useQuery(['resources'], fetchResources)
-
   useEffect(
     function selectFirstResourceOnResourceFetch() {
       if (resources?.length && selectedResourceId === null) {
@@ -52,8 +66,12 @@ export default function UnsavedQueryEditorTab() {
   )
 
   const [
+    queryResult,
+    setQueryResult,
+  ] = usePersistedSetState<QueryResult | null>(`${tabRoute}-query-result`, null)
+  const [
     runQueryMutation,
-    { isLoading, error: queryResultError },
+    { isLoading: isRunningQuery, error: queryResultError },
   ] = useMutation(runQuery, {
     onSuccess: (runQueryResult) => {
       queryCache.refetchQueries(['history'])
@@ -61,40 +79,20 @@ export default function UnsavedQueryEditorTab() {
     },
   })
 
-  const { updateTabName } = useContext(TabsContext)
-
-  function handleRunQuery() {
-    if (selectedResourceId) {
-      runQueryMutation({ resource: selectedResourceId, query })
-    }
-  }
-
-  function updateQuery(updatedQuery: string) {
-    const tabName =
-      updatedQuery.length > 15
-        ? `${updatedQuery.slice(0, 12)}...`
-        : updatedQuery
-    updateTabName(tabRoute, tabName)
-    setQuery(updatedQuery)
-  }
-
-  function handleFormatQuery() {
-    updateQuery(sqlFormatter.format(query.replace(/\r\n/g, '\n')))
+  const [saveModalVisible, setSaveModalVisible] = useState(false)
+  const navigate = useNavigate()
+  const { updateTab } = useContext(TabsContext)
+  function handleQuerySaveComplete(savedQuery: SavedQuery) {
+    navigate(`/queries/saved/${savedQuery.id}?replace=true`, { replace: true })
+    updateTab({
+      tabRoute,
+      name: savedQuery.name,
+      unsavedState: false,
+      newRoute: `/queries/saved/${savedQuery.id}`,
+    })
   }
 
   const [measureContainer, containerBounds] = useMeasure()
-
-  const [saveModalVisible, setSaveModalVisible] = useState(false)
-
-  function handleSaveQuery() {
-    setSaveModalVisible(true)
-  }
-
-  function handleModalRequestClose() {
-    setSaveModalVisible(false)
-  }
-
-  function handleQuerySaveComplete() {}
 
   if (isLoadingResource) {
     return (
@@ -157,18 +155,32 @@ export default function UnsavedQueryEditorTab() {
           </Select>
           <div className="flex-1" />
           <div className="flex-1" />
-          <Button icon={<CodeOutlined />} onClick={handleFormatQuery}>
+          <Button
+            icon={<CodeOutlined />}
+            onClick={() => {
+              setQuery(sqlFormatter.format(query.replace(/\r\n/g, '\n')))
+            }}
+          >
             Beautify
           </Button>
-          <Button icon={<SaveOutlined />} onClick={handleSaveQuery}>
+          <Button
+            icon={<SaveOutlined />}
+            onClick={() => {
+              setSaveModalVisible(true)
+            }}
+          >
             Save
           </Button>
           <Button
             type="primary"
             icon={<CaretRightFilled />}
-            loading={isLoading}
-            disabled={isLoading}
-            onClick={handleRunQuery}
+            loading={isRunningQuery}
+            disabled={isRunningQuery}
+            onClick={() => {
+              if (selectedResourceId) {
+                runQueryMutation({ resource: selectedResourceId, query })
+              }
+            }}
           >
             Run Query
           </Button>
@@ -195,7 +207,7 @@ export default function UnsavedQueryEditorTab() {
                     <Editor
                       resourceId={selectedResourceId}
                       value={query}
-                      setValue={updateQuery}
+                      setValue={setQuery}
                     />
                   </div>
                 ) : null}
@@ -215,7 +227,7 @@ export default function UnsavedQueryEditorTab() {
                   <div className="h-full px-4">
                     <ResultsTable
                       data={queryResult ?? undefined}
-                      isLoading={isLoading}
+                      isLoading={isRunningQuery}
                       error={queryResultError}
                     />
                   </div>
@@ -227,7 +239,9 @@ export default function UnsavedQueryEditorTab() {
       </div>
       <SaveQueryModal
         visible={saveModalVisible}
-        onRequestClose={handleModalRequestClose}
+        onRequestClose={() => {
+          setSaveModalVisible(false)
+        }}
         query={query}
         resourceId={selectedResourceId}
         onSave={handleQuerySaveComplete}
@@ -250,4 +264,10 @@ export default function UnsavedQueryEditorTab() {
       )}
     </>
   )
+}
+
+export default function UnsavedQueryEditorTab() {
+  const { pathname: tabRoute } = useLocation()
+
+  return useMemo(() => <Tab key={tabRoute} />, [tabRoute])
 }

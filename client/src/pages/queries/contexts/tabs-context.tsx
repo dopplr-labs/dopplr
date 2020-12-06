@@ -1,9 +1,12 @@
 import { createContext } from 'react'
 
 export const TabsContext = createContext<{
-  updateTabName: (tabRoute: string, name: string) => void
-  updateTabUnsavedState: (tabRoute: string, unsavedState: boolean) => void
+  updateTab: (updateTabProps: {
+    tabRoute: string
+    name?: string
+    unsavedState?: boolean
+    newRoute?: string
+  }) => void
 }>({
-  updateTabName: () => {},
-  updateTabUnsavedState: () => {},
+  updateTab: () => {},
 })

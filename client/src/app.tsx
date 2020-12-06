@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import { message } from 'antd'
@@ -23,12 +23,12 @@ async function fetchHealthStatus() {
   return data
 }
 
-const SHOW_QUERY_DEV_TOOL = false
+const SHOW_DEV_TOOLS = false
 
 export function App() {
   useQuery('health', fetchHealthStatus, {
     refetchOnWindowFocus: false,
-    enabled: process.env.NODE_ENV === 'development',
+    enabled: process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS,
     onSuccess: () => {
       message.success('Server working fine')
     },
@@ -36,8 +36,6 @@ export function App() {
       message.error('Server not working')
     },
   })
-
-  const location = useLocation()
 
   return (
     <>
@@ -50,23 +48,14 @@ export function App() {
             <Route path=":resourceId" element={<ResourceDetail />} />
           </Route>
           <Route element={<Queries />} path="queries">
-            <Route
-              path="new/:tabId"
-              element={<UnsavedQueryEditorTab key={location.pathname} />}
-            />
-            <Route
-              path="history/:historyId"
-              element={<HistoryEditorTab key={location.pathname} />}
-            />
-            <Route
-              path="saved/:queryId"
-              element={<SavedQueryEditorTab key={location.pathname} />}
-            />
+            <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
+            <Route path="history/:historyId" element={<HistoryEditorTab />} />
+            <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
           </Route>
           <Route element={<Dashboards />} path="dashboards" />
         </Route>
       </Routes>
-      {process.env.NODE_ENV === 'development' && SHOW_QUERY_DEV_TOOL ? (
+      {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />
       ) : null}
     </>
