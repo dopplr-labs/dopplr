@@ -88,12 +88,12 @@ export async function saveQuery({
   return data.data
 }
 
-export async function fetchHistory(queryId: string) {
+export async function fetchHistory(queryId: number) {
   const { data } = await client.get<{ data: History }>(`/queries/${queryId}`)
   return data.data
 }
 
-export async function fetchSavedQuery(queryId: string) {
+export async function fetchSavedQuery(queryId: number) {
   const { data } = await client.get<{ data: SavedQuery }>(`/queries/${queryId}`)
   return data.data
 }
