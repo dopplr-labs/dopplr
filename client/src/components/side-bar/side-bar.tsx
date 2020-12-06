@@ -4,8 +4,7 @@ import {
   CodeOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons'
-import clsx from 'clsx'
-import { Link, matchPath, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const pages = [
   {
@@ -36,28 +35,19 @@ const pages = [
 ]
 
 export default function SideBar() {
-  const location = useLocation()
-
   return (
-    <div className="flex flex-col items-center justify-start w-24 h-full bg-gray-800 border-r">
+    <div className="flex flex-col items-center justify-start w-24 h-full text-gray-400 bg-gray-800 border-r">
       {pages.map((page) => {
-        const pageSelected = page.routes.some(
-          (path) => !!matchPath(path, location.pathname),
-        )
         return (
-          <Link to={page.defaultRoute} key={page.id} className="w-full">
-            <div
-              className={clsx(
-                'flex flex-col items-center justify-center w-full py-3 cursor-pointer',
-                pageSelected
-                  ? 'bg-gray-700 text-white border-l-2 border-blue-500'
-                  : 'text-gray-400',
-              )}
-            >
-              {cloneElement(page.icon, { className: 'text-xl' })}
-              <div className="text-xs">{page.title}</div>
-            </div>
-          </Link>
+          <NavLink
+            to={page.defaultRoute}
+            key={page.id}
+            className="flex flex-col items-center justify-center w-full py-3 cursor-pointer"
+            activeClassName="bg-gray-700 border-l-2 border-blue-500 text-white"
+          >
+            {cloneElement(page.icon, { className: 'text-xl' })}
+            <div className="text-xs">{page.title}</div>
+          </NavLink>
         )
       })}
     </div>
