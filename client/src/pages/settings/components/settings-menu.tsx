@@ -1,22 +1,25 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Menu } from 'antd'
-import { CreditCardOutlined, AppstoreOutlined } from '@ant-design/icons'
+import { Group } from '../settings-type'
 
 const { SubMenu } = Menu
 
-export default function SettingsMenu() {
-  const [current, setCurrent] = useState()
+type AppProps = {
+  configGroups: Group[]
+}
 
+export default function SettingsMenu({ configGroups }: AppProps) {
   return (
     <Menu onClick={(e) => console.log(e)} mode="inline">
-      <SubMenu key="1" icon={<CreditCardOutlined />} title="Text Editor">
-        <Menu.Item key="1.1">Cursor</Menu.Item>
-        <Menu.Item key="1.2">Font</Menu.Item>
-        <Menu.Item key="1.3">Minimap</Menu.Item>
-      </SubMenu>
-      <SubMenu key="2" icon={<AppstoreOutlined />} title="Work Bench">
-        <Menu.Item key="2.1">Zen Mode</Menu.Item>
-      </SubMenu>
+      {configGroups.map((group) => (
+        <SubMenu key={group.title} title={group.title}>
+          {group.subGroups.map((subGroup) => (
+            <Menu.Item key={`${group.title}-${subGroup.title}`}>
+              {subGroup.title}
+            </Menu.Item>
+          ))}
+        </SubMenu>
+      ))}
     </Menu>
   )
 }

@@ -1,82 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Scrollbars } from 'react-custom-scrollbars'
 import { Input } from 'antd'
 import SettingsMenu from './components/settings-menu'
 import SettingsGroup from './components/settings-group'
+import { dummyData as ConfigGroups } from './settings-type'
 
 const { Search } = Input
 
 const onSearch = (value: string): void => console.log(value)
-
-export enum ConfigType {
-  Input = 1,
-  Dropdown,
-  Checkbox,
-}
-
-export type Config = { type: ConfigType; header: string; description: string }
-
-export type SubGroup = {
-  header: string
-  configs: Config[]
-}
-
-export type Group = {
-  header: string
-  subGroups: SubGroup[]
-}
-
-const groups: Group[] = [
-  {
-    header: 'Text Editor',
-    subGroups: [
-      {
-        header: 'Cursor',
-        configs: [
-          {
-            type: ConfigType.Input,
-            header: 'Cursor Blinking',
-            description: 'Control the cursor animation style',
-          },
-        ],
-      },
-      {
-        header: 'Font',
-        configs: [
-          {
-            type: ConfigType.Input,
-            header: 'Cursor Blinking',
-            description: 'Control the cursor animation style',
-          },
-        ],
-      },
-      {
-        header: 'Minimap',
-        configs: [
-          {
-            type: ConfigType.Input,
-            header: 'Cursor Blinking',
-            description: 'Control the cursor animation style',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    header: 'Work Bench',
-    subGroups: [
-      {
-        header: 'Zen Mode',
-        configs: [
-          {
-            type: ConfigType.Input,
-            header: 'Cursor Blinking',
-            description: 'Control the cursor animation style',
-          },
-        ],
-      },
-    ],
-  },
-]
 
 export default function Settings() {
   return (
@@ -90,13 +21,17 @@ export default function Settings() {
           />
         </div>
         <div className="flex flex-1 m-2">
-          <div className="w-56 mr-2 overflow-y-auto hidden xl:block">
-            <SettingsMenu />
+          <div className="w-56 mr-2 overflow-hidden hidden xl:block">
+            <Scrollbars className="h-full" autoHide universal>
+              <SettingsMenu configGroups={ConfigGroups} />
+            </Scrollbars>
           </div>
-          <div className="flex-1 overflow-y-auto">
-            {groups.map((item) => (
-              <SettingsGroup groupData={item} />
-            ))}
+          <div className="flex-1 overflow-hidden">
+            <Scrollbars className="h-full" autoHide universal>
+              {ConfigGroups.map((group) => (
+                <SettingsGroup group={group} />
+              ))}
+            </Scrollbars>
           </div>
         </div>
       </div>

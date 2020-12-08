@@ -1,21 +1,19 @@
 import React from 'react'
 import SettingsCard from './settings-card'
-import { SubGroup } from '../settings'
+import { SubGroup } from '../settings-type'
 
 type AppProps = {
-  subgroupData: SubGroup
+  subGroup: SubGroup
 }
 
-export default function SettingsSubgroup({ subgroupData }: AppProps) {
-  console.log(subgroupData)
-
+export default function SettingsSubgroup({ subGroup }: AppProps) {
   return (
     <>
       <div className="p-2 text-lg border-2 border-gray-300 hover:bg-gray-300">
-        {subgroupData.header}
+        {subGroup.title}
       </div>
-      {subgroupData.configs.map((item) => (
-        <SettingsCard configData={item} />
+      {subGroup.configs.map((config) => (
+        <SettingsCard config={config} />
       ))}
     </>
   )
