@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
-import axios from 'axios'
 import { message } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import AppShell from 'components/app-shell'
@@ -15,11 +14,10 @@ import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor
 import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
+import client from 'utils/client'
 
 async function fetchHealthStatus() {
-  const { data } = await axios.get('/health/knock-knock', {
-    baseURL: process.env.REACT_APP_API_BASE_URL,
-  })
+  const { data } = await client.get('/health/knock-knock')
   return data
 }
 
