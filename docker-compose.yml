@@ -34,6 +34,7 @@ services:
 
   # backend prod
   server_prod:
+    domainname: backend
     stdin_open: true
     build:
       context: ./server
@@ -67,12 +68,3 @@ services:
       REACT_APP_LANGUAGE_SERVER_WS: ws://localhost:3001
     depends_on:
       - server
-
-  # nginx as reverse proxy
-  prod:
-    stdin_open: true
-    build:
-      context: './nginx'
-      dockerfile: 'Dockerfile'
-    depends_on:
-      - server_prod
