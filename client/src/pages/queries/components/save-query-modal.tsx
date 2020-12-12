@@ -1,6 +1,5 @@
 import React from 'react'
 import { Form, Input, message, Modal } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
 import { queryCache, useMutation } from 'react-query'
 import { SavedQuery } from 'types/query'
 import { saveQuery } from '../queries-and-mutations'
@@ -20,7 +19,7 @@ export default function SaveQueryModal({
   query,
   onSave,
 }: SaveQueryModalProps) {
-  const [form] = useForm()
+  const [form] = Form.useForm()
 
   const [saveQueryMutation] = useMutation(saveQuery, {
     onSuccess: async (savedQuery) => {
