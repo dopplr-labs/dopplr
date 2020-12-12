@@ -4,8 +4,9 @@ import { queryCache, useInfiniteQuery } from 'react-query'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Empty, Result, Spin } from 'antd'
 import Scrollbars from 'react-custom-scrollbars'
-import { Link } from 'react-router-dom'
+import { SavedQuery } from 'types/query'
 import { fetchSavedQueries } from '../queries-and-mutations'
+import SingleSavedQuery from './single-saved-query'
 
 export default function SavedQueriesTab() {
   const { isLoading, data, fetchMore, error } = useInfiniteQuery(
@@ -58,18 +59,8 @@ export default function SavedQueriesTab() {
           }
           useWindow={false}
         >
-          {savedQueries.map((query: any) => (
-            <Link
-              to={`saved/${query.id}`}
-              key={query.id}
-              className="block px-3 py-2 space-y-2 text-xs cursor-pointer hover:bg-gray-100"
-              title={`${query.name}\n${query.query}`}
-            >
-              <div className="font-medium text-blue-500">
-                <span>{query.name}</span>
-              </div>
-              <div className="truncate">{query.query}</div>
-            </Link>
+          {savedQueries.map((query: SavedQuery) => (
+            <SingleSavedQuery query={query} key={query.id} />
           ))}
         </InfiniteScroll>
       )
