@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { History, QueryResult, SavedQuery } from 'types/query'
+import { History, QueryResult, SavedQuery, SavedQueryPage } from 'types/query'
 import { SchemaResult } from 'types/schema'
 
 const client = Axios.create({ baseURL: process.env.REACT_APP_API_BASE_URL })
@@ -69,15 +69,7 @@ export async function clearHistoryQuery() {
 export async function fetchSavedQueries(key: string, page = 1) {
   const { data } = await client.get<{
     success: boolean
-    data: {
-      items: SavedQuery[]
-      meta: {
-        hasMore: boolean
-        totalItems: number
-        currentPage: number
-        nextPage: number
-      }
-    }
+    data: SavedQueryPage
   }>(`/queries/saved?page=${page}`)
   return data.data
 }
