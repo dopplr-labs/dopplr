@@ -27,3 +27,13 @@ export type History = {
 export type SavedQuery = History & {
   name: string
 }
+
+export type SavedQueryPage = {
+  items: SavedQuery[]
+  meta: {
+    hasMore: boolean
+    totalItems: number
+    currentPage: number
+    nextPage: number
+  }
+}
