@@ -6,7 +6,7 @@ import {
   SaveOutlined,
 } from '@ant-design/icons'
 import { queryCache, useMutation } from 'react-query'
-import { History } from 'types/history'
+import { History, HistoryPage } from 'types/history'
 import { Link } from 'react-router-dom'
 import { deleteQuery } from '../queries-and-mutations'
 import SaveQueryModal from './save-query-modal'
@@ -21,9 +21,17 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
 
   const [deleteQueryMutation] = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
-      queryCache.setQueryData(['history'], (history: History[] | undefined) =>
-        history ? history.filter((data) => data.id !== deletedQueryId) : [],
+      queryCache.setQueryData(
+        ['history'],
+        (history: HistoryPage[] | undefined) =>
+          history
+            ? history.map((page) => ({
+                ...page,
+                items: page.items.filter((item) => item.id !== deletedQueryId),
+              }))
+            : [],
       )
+      queryCache.removeQueries(['history', deletedQueryId])
     },
   })
 
