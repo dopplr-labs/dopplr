@@ -1,4 +1,4 @@
-import { Resource } from './resource'
+import { History } from './history'
 
 export type QueryField = {
   name: string
@@ -14,14 +14,6 @@ export type QueryResult = {
   rows: any[]
   fields: QueryField[]
   rowCount: number
-}
-
-export type History = {
-  id: number
-  createdAt: string
-  updatedAt: string
-  query: string
-  resource: Resource
 }
 
 export type SavedQuery = History & {
