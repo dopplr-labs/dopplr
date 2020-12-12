@@ -1,8 +1,6 @@
-import Axios from 'axios'
 import { History, QueryResult, SavedQuery } from 'types/query'
 import { SchemaResult } from 'types/schema'
-
-const client = Axios.create({ baseURL: process.env.REACT_APP_API_BASE_URL })
+import client from 'utils/client'
 
 export async function runQuery({
   resource,

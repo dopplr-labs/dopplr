@@ -1,7 +1,5 @@
-import Axios from 'axios'
 import { Resource } from 'types/resource'
-
-const client = Axios.create({ baseURL: 'http://localhost:3001/' })
+import client from 'utils/client'
 
 export async function fetchResources(): Promise<Resource[]> {
   const { data } = await client.get<{ success: boolean; data: Resource[] }>(
