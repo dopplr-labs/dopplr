@@ -18,6 +18,7 @@ import { LanguageServer } from './language-server/language-server.module'
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+      ssl: process.env.NODE_ENV === 'production',
       synchronize: true,
     }),
     ResourcesModule,
