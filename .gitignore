@@ -1,3 +1,12 @@
-node_modules
 db-data
+
+node_modules
+
 .DS_Store
+
+# firebase
+.firebase
+
+# environment variables
+.env
+.env.*.local
