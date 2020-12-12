@@ -1,10 +1,11 @@
+import { Resource } from './resource'
+
 export type History = {
   id: number
   createdAt: string
+  updatedAt: string
   query: string
-  resource: {
-    id: number
-  }
+  resource: Resource
 }
 
 export type HistoryPage = {
