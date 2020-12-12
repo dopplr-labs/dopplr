@@ -28,16 +28,16 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
   ])
 
   const [deleteQueryMutation] = useMutation(deleteQuery, {
-    onMutate: (deletedQuery) => {
+    onMutate: (deletedQueryId) => {
       queryCache.setQueryData(
         ['saved-queries'],
         // using page because saved queries are fetched using useinfiniteQuery
         savedQueries?.map((page) => ({
           ...page,
-          items: page.items.filter((item) => item.id !== deletedQuery),
+          items: page.items.filter((item) => item.id !== deletedQueryId),
         })),
       )
-      queryCache.removeQueries(['saved-query', deletedQuery])
+      queryCache.removeQueries(['saved-query', deletedQueryId])
     },
   })
 
