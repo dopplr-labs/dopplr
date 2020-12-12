@@ -23,7 +23,8 @@
   },
   "scripts": {
     "lint": "eslint client/src/**/*.ts client/src/**/*.tsx client/*.js server/src/**/*.ts --fix",
-    "start:server": "cd server && npm run build && npm run start:prod"
+    "start:server": "cd server && npm run build && npm run start:prod",
+    "postinstall": "cd server && yarn install"
   },
   "husky": {
     "hooks": {
