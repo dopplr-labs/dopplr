@@ -20,12 +20,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { fetchResources } from 'pages/resources/queries'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { createPortal } from 'react-dom'
+import HorizontalPane from 'components/horizontal-pane'
 import { runQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
-import HorizontalPane from 'components/horizontal-pane'
 
 function useUpdateTabOnQueryChange({
   tabRoute,
