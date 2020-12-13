@@ -8,6 +8,8 @@ import {
   PlusOutlined,
   UpOutlined,
   DownOutlined,
+  BorderVerticleOutlined,
+  BorderHorizontalOutlined,
 } from '@ant-design/icons'
 import Editor from 'components/editor'
 import useMeasure from 'react-use-measure'
@@ -23,6 +25,7 @@ import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
+import HorizontalPane from 'components/horizontal-pane'
 
 function useUpdateTabOnQueryChange({
   tabRoute,
@@ -32,6 +35,7 @@ function useUpdateTabOnQueryChange({
   query: string
 }) {
   const { updateTab } = useContext(TabsContext)
+
   useEffect(
     function updateTabOnQueryChange() {
       const tabName = query.length > 15 ? `${query.slice(0, 12)}...` : query
@@ -44,6 +48,7 @@ function useUpdateTabOnQueryChange({
 
 function Tab() {
   const { pathname: tabRoute } = useLocation()
+  const [isTwoPane, setIsTwoPane] = useState(false)
 
   const [query, setQuery] = usePersistedSetState(`${tabRoute}-query`, '')
   useUpdateTabOnQueryChange({ tabRoute, query })
@@ -185,57 +190,100 @@ function Tab() {
             Run Query
           </Button>
         </div>
-
-        <div className="flex flex-col flex-1" ref={measureContainer}>
-          <VerticalPane
-            initialHeight={480}
-            maxHeight={containerBounds.height}
-            maxConstraint={containerBounds.height - 160}
-            buffer={80}
-            render={({
-              paneHeight,
-              isFullScreen,
-              dragHandle,
-              toggleFullScreen,
-            }) => (
-              <>
-                {!isFullScreen ? (
-                  <div
-                    className="w-full"
-                    style={{ height: containerBounds.height - paneHeight }}
-                  >
-                    <Editor
-                      resourceId={selectedResourceId}
-                      value={query}
-                      setValue={setQuery}
-                    />
-                  </div>
-                ) : null}
-                <div
-                  className="relative border-t"
-                  style={{ height: paneHeight }}
+        {isTwoPane ? (
+          <div className="flex flex-1">
+            <HorizontalPane
+              initialWidth={640}
+              maxConstraint={800}
+              minConstraint={320}
+              className="z-10 flex flex-col bg-white border-r h-ful"
+            >
+              <Editor
+                resourceId={selectedResourceId}
+                value={query}
+                setValue={setQuery}
+              />
+            </HorizontalPane>
+            <div className="flex-1">
+              <div className="flex justify-end px-4 py-2">
+                <button
+                  className="focus:outline-none"
+                  onClick={() => {
+                    setIsTwoPane(false)
+                  }}
                 >
-                  {dragHandle}
-                  <div className="flex justify-end px-4 py-2">
-                    <button
-                      onClick={toggleFullScreen}
-                      className="focus:outline-none"
+                  <BorderHorizontalOutlined />
+                </button>
+              </div>
+              <div className="h-full px-4">
+                <ResultsTable
+                  data={queryResult ?? undefined}
+                  isLoading={isRunningQuery}
+                  error={queryResultError}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col flex-1" ref={measureContainer}>
+            <VerticalPane
+              initialHeight={480}
+              maxHeight={containerBounds.height}
+              maxConstraint={containerBounds.height - 160}
+              buffer={80}
+              render={({
+                paneHeight,
+                isFullScreen,
+                dragHandle,
+                toggleFullScreen,
+              }) => (
+                <>
+                  {!isFullScreen ? (
+                    <div
+                      className="w-full"
+                      style={{ height: containerBounds.height - paneHeight }}
                     >
-                      {isFullScreen ? <DownOutlined /> : <UpOutlined />}
-                    </button>
+                      <Editor
+                        resourceId={selectedResourceId}
+                        value={query}
+                        setValue={setQuery}
+                      />
+                    </div>
+                  ) : null}
+                  <div
+                    className="relative border-t"
+                    style={{ height: paneHeight }}
+                  >
+                    {dragHandle}
+                    <div className="flex justify-end px-4 py-2 space-x-4">
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => {
+                          setIsTwoPane(true)
+                        }}
+                      >
+                        <BorderVerticleOutlined />
+                      </button>
+                      <button
+                        className="focus:outline-none"
+                        onClick={toggleFullScreen}
+                      >
+                        {isFullScreen ? <DownOutlined /> : <UpOutlined />}
+                      </button>
+                    </div>
+                    <div className="h-full px-4">
+                      <ResultsTable
+                        data={queryResult ?? undefined}
+                        isLoading={isRunningQuery}
+                        error={queryResultError}
+                      />
+                    </div>
                   </div>
-                  <div className="h-full px-4">
-                    <ResultsTable
-                      data={queryResult ?? undefined}
-                      isLoading={isRunningQuery}
-                      error={queryResultError}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-          />
-        </div>
+                </>
+              )}
+            />
+          </div>
+        )}
       </div>
       <SaveQueryModal
         visible={saveModalVisible}
