@@ -1,4 +1,4 @@
-import { Resource } from './resource'
+import { History } from './history'
 
 export type QueryField = {
   name: string
@@ -16,14 +16,16 @@ export type QueryResult = {
   rowCount: number
 }
 
-export type History = {
-  id: number
-  createdAt: string
-  updatedAt: string
-  query: string
-  resource: Resource
-}
-
 export type SavedQuery = History & {
   name: string
+}
+
+export type SavedQueryPage = {
+  items: SavedQuery[]
+  meta: {
+    hasMore: boolean
+    totalItems: number
+    currentPage: number
+    nextPage: number
+  }
 }

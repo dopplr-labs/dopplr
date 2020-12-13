@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { DownOutlined, RightOutlined } from '@ant-design/icons'
-import { History } from 'types/query'
+import { History } from 'types/history'
 import HistoryQuery from './history-query'
 
 export type DayHistoryProps = {
