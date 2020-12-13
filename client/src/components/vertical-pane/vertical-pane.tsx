@@ -53,10 +53,11 @@ export default function VerticalPane({
   const dragHandle = (
     <DraggableCore
       onDrag={(e, data) => {
-        if (paneHeight - data.y >= minConstraint) {
-          if (paneHeight - data.y <= maxConstraint) {
-            setPaneHeight((prevState) => prevState - data.y)
-          }
+        if (
+          paneHeight - data.y >= minConstraint &&
+          paneHeight - data.y <= maxConstraint
+        ) {
+          setPaneHeight((prevState) => prevState - data.y)
         }
 
         if (paneHeight - data.y >= maxConstraint + buffer && !isFullScreen) {
