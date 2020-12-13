@@ -23,19 +23,17 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
     setRenameModalVisible(false)
   }
 
-  const savedQueries: SavedQueryPage[] | undefined = queryCache.getQueryData([
-    'saved-queries',
-  ])
-
   const [deleteQueryMutation] = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
       queryCache.setQueryData(
         ['saved-queries'],
-        // using page because saved queries are fetched using useinfiniteQuery
-        savedQueries?.map((page) => ({
-          ...page,
-          items: page.items.filter((item) => item.id !== deletedQueryId),
-        })),
+        (savedQueries: SavedQueryPage[] | undefined) =>
+          savedQueries
+            ? savedQueries.map((page) => ({
+                ...page,
+                items: page.items.filter((item) => item.id !== deletedQueryId),
+              }))
+            : [],
       )
       queryCache.removeQueries(['saved-query', deletedQueryId])
     },

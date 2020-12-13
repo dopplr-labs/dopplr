@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Form, Input, message, Modal } from 'antd'
 import { queryCache, useMutation } from 'react-query'
 import { SavedQuery, SavedQueryPage } from 'types/query'
@@ -19,40 +19,31 @@ export default function RenameQueryModal({
 }: RenameQueryModalProps) {
   const [form] = Form.useForm()
 
-  useEffect(
-    function setQueryName() {
-      form.setFieldsValue({ queryName })
-    },
-    [form, queryName],
-  )
-
-  const savedQueries: SavedQueryPage[] | undefined = queryCache.getQueryData([
-    'saved-queries',
-  ])
-
-  const savedQuery: SavedQuery | undefined = queryCache.getQueryData([
-    'saved-query',
-    queryId,
-  ])
-
   const [updateQueryMutation] = useMutation(updateQuery, {
     onMutate: (updatedQuery) => {
       onRequestClose()
       queryCache.setQueryData(
         ['saved-queries'],
-        savedQueries?.map((page) => ({
-          ...page,
-          items: page.items.map((item) =>
-            item.id === updatedQuery.queryId
-              ? { ...item, name: updatedQuery.name }
-              : item,
-          ),
-        })),
+        (savedQueries: SavedQueryPage[] | undefined) =>
+          savedQueries
+            ? savedQueries.map((page) => ({
+                ...page,
+                items: page.items.map((item) =>
+                  item.id === updatedQuery.queryId
+                    ? { ...item, name: updatedQuery.name ?? item.name }
+                    : item,
+                ),
+              }))
+            : [],
       )
-      queryCache.setQueryData(['saved-query', queryId], {
-        ...savedQuery,
-        name: updatedQuery.name,
-      })
+      queryCache.setQueryData(
+        ['saved-query', queryId],
+        (savedQuery: SavedQuery | undefined) =>
+          ({
+            ...savedQuery,
+            name: updatedQuery?.name ?? savedQuery?.name,
+          } as SavedQuery),
+      )
     },
     onSuccess: () => {
       message.success('Query updated successfully')
@@ -88,6 +79,7 @@ export default function RenameQueryModal({
         form={form}
         requiredMark={false}
         onFinish={handleFinish}
+        initialValues={{ queryName }}
       >
         <Form.Item
           label="Query Name"
