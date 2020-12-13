@@ -44,7 +44,7 @@
   },
   "scripts": {
     "start": "SKIP_PREFLIGHT_CHECK=true react-app-rewired start",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
+    "build": "SKIP_PREFLIGHT_CHECK=true REACT_APP_API_BASE_URL=https://dopplr-backend.herokuapp.com  REACT_APP_LANGUAGE_SERVER_WS=wss://dopplr-backend.herokuapp.com/ react-app-rewired build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
     "eject": "react-scripts eject"
   },
