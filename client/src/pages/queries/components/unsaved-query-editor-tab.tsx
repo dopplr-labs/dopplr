@@ -97,7 +97,8 @@ function Tab() {
     })
   }
 
-  const [measureContainer, containerBounds] = useMeasure()
+  const [measureContainer1, containerBounds1] = useMeasure()
+  const [measureContainer2, containerBounds2] = useMeasure()
 
   if (isLoadingResource) {
     return (
@@ -191,45 +192,56 @@ function Tab() {
           </Button>
         </div>
         {isTwoPane ? (
-          <div className="flex flex-1">
+          <div className="flex flex-1" ref={measureContainer1}>
             <HorizontalPane
               initialWidth={640}
               maxConstraint={800}
               minConstraint={320}
-              className="z-10 flex flex-col bg-white border-r h-ful"
-            >
-              <Editor
-                resourceId={selectedResourceId}
-                value={query}
-                setValue={setQuery}
-              />
-            </HorizontalPane>
-            <div className="flex-1">
-              <div className="flex justify-end px-4 py-2">
-                <button
-                  className="focus:outline-none"
-                  onClick={() => {
-                    setIsTwoPane(false)
-                  }}
-                >
-                  <BorderHorizontalOutlined />
-                </button>
-              </div>
-              <div className="h-full px-4">
-                <ResultsTable
-                  data={queryResult ?? undefined}
-                  isLoading={isRunningQuery}
-                  error={queryResultError}
-                />
-              </div>
-            </div>
+              render={({ paneWidth, dragHandle }) => (
+                <>
+                  <div
+                    className="relative z-10 flex flex-col h-full border-r"
+                    style={{ width: paneWidth }}
+                  >
+                    <Editor
+                      resourceId={selectedResourceId}
+                      value={query}
+                      setValue={setQuery}
+                    />
+                    {dragHandle}
+                  </div>
+                  <div
+                    className="h-full"
+                    style={{ width: containerBounds1.width - paneWidth }}
+                  >
+                    <div className="flex justify-end px-4 py-2">
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => {
+                          setIsTwoPane(false)
+                        }}
+                      >
+                        <BorderHorizontalOutlined />
+                      </button>
+                    </div>
+                    <div className="h-full px-4">
+                      <ResultsTable
+                        data={queryResult ?? undefined}
+                        isLoading={isRunningQuery}
+                        error={queryResultError}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            />
           </div>
         ) : (
-          <div className="flex flex-col flex-1" ref={measureContainer}>
+          <div className="flex flex-col flex-1" ref={measureContainer2}>
             <VerticalPane
               initialHeight={480}
-              maxHeight={containerBounds.height}
-              maxConstraint={containerBounds.height - 160}
+              maxHeight={containerBounds2.height}
+              maxConstraint={containerBounds2.height - 160}
               buffer={80}
               render={({
                 paneHeight,
@@ -241,7 +253,7 @@ function Tab() {
                   {!isFullScreen ? (
                     <div
                       className="w-full"
-                      style={{ height: containerBounds.height - paneHeight }}
+                      style={{ height: containerBounds2.height - paneHeight }}
                     >
                       <Editor
                         resourceId={selectedResourceId}
