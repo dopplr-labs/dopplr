@@ -1,10 +1,12 @@
-import clsx from 'clsx'
 import React, { useState, useEffect } from 'react'
 import { DraggableCore } from 'react-draggable'
 
-export type HorizontalPaneProps = {
+type HorizontalPaneProps = {
+  render: (props: {
+    paneWidth: number
+    dragHandle: React.ReactNode
+  }) => React.ReactElement
   className?: string
-  children?: React.ReactNode
   initialWidth?: number
   minConstraint?: number
   maxConstraint?: number
@@ -12,14 +14,13 @@ export type HorizontalPaneProps = {
 }
 
 export default function HorizontalPane({
-  className,
-  children,
+  render,
   initialWidth = 240,
   minConstraint = 0,
   maxConstraint,
   buffer,
 }: HorizontalPaneProps) {
-  const [sidebarWidth, setSidebarWidth] = useState(initialWidth)
+  const [paneWidth, setPaneWidth] = useState<number>(initialWidth)
   const [dragDirection, setDragDirection] = useState<string | null>(null)
 
   const [xPos, setXPos] = useState(initialWidth)
@@ -51,53 +52,48 @@ export default function HorizontalPane({
     },
     [xPos, dragDirection, minConstraint, maxConstraint],
   )
+  const dragHandle = (
+    <DraggableCore
+      onDrag={(e, data) => {
+        if (data.deltaX < 0) {
+          setDragDirection('left')
+        }
+        if (data.deltaX > 0) {
+          setDragDirection('right')
+        }
 
-  return (
-    <div
-      className={clsx('relative h-full', className)}
-      style={{ width: sidebarWidth }}
+        if (data.x >= minConstraint) {
+          if (maxConstraint) {
+            if (data.x <= maxConstraint) {
+              setPaneWidth(data.x)
+            }
+          } else {
+            setPaneWidth(data.x)
+          }
+        }
+
+        setXPos(data.x)
+
+        if (buffer) {
+          if (data.x < minConstraint - buffer) {
+            setPaneWidth(0)
+          }
+          if (data.x > minConstraint - buffer + 5 && data.x < minConstraint) {
+            setPaneWidth(minConstraint)
+          }
+        }
+      }}
+      onStop={() => {
+        setXPos(initialWidth)
+        setDragDirection(null)
+      }}
     >
-      {children}
-      <DraggableCore
-        onDrag={(e, data) => {
-          if (data.deltaX < 0) {
-            setDragDirection('left')
-          }
-          if (data.deltaX > 0) {
-            setDragDirection('right')
-          }
-
-          if (data.x >= minConstraint) {
-            if (maxConstraint) {
-              if (data.x <= maxConstraint) {
-                setSidebarWidth(data.x)
-              }
-            } else {
-              setSidebarWidth(data.x)
-            }
-          }
-
-          setXPos(data.x)
-
-          if (buffer) {
-            if (data.x < minConstraint - buffer) {
-              setSidebarWidth(0)
-            }
-            if (data.x > minConstraint - buffer + 5 && data.x < minConstraint) {
-              setSidebarWidth(minConstraint)
-            }
-          }
-        }}
-        onStop={() => {
-          setXPos(initialWidth)
-          setDragDirection(null)
-        }}
-      >
-        <div
-          className="absolute top-0 right-0 w-1 h-full transform translate-x-1/2 bg-gray-200 opacity-0 hover:opacity-75"
-          style={{ cursor: 'col-resize' }}
-        />
-      </DraggableCore>
-    </div>
+      <div
+        className="absolute top-0 right-0 w-1 h-full transform translate-x-1/2 bg-gray-200 opacity-0 hover:opacity-75"
+        style={{ cursor: 'col-resize' }}
+      />
+    </DraggableCore>
   )
+
+  return render({ paneWidth, dragHandle })
 }
