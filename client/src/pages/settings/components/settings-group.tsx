@@ -1,17 +1,23 @@
 import React from 'react'
-import SettingsSubgroup from './settings-subgroup'
-import {Group} from '../settings-type'
+import { ToolOutlined } from '@ant-design/icons'
+import { SubGroup } from 'types/settings'
+import SettingsCard from './settings-card'
 
-type AppProps = {
-  group: Group
+type AppProp = {
+  subGroup: SubGroup
 }
 
-export default function SettingsGroup({ group }: AppProps) {
+export default function SettingsGroup({subGroup}: AppProp) {
   return (
     <>
-      <div className="p-2 text-xl border-2 border-gray-300 hover:bg-gray-300">{group.title}</div>
-      {group.subGroups.map((subGroup) => (
-        <SettingsSubgroup subGroup={subGroup} />
+      <div className="text-2xl text-black text-bold mb-4 mt-2 ml-4">
+        <span className="mr-2">
+          <ToolOutlined />
+        </span>
+        {subGroup.title}
+      </div>
+      {subGroup.configs.map((config, idx) => (
+        <SettingsCard key={idx} config={config} />
       ))}
     </>
   )

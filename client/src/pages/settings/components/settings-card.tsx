@@ -5,7 +5,7 @@ import {
   CheckboxConfig,
   SelectConfig,
   ConfigType,
-} from '../settings-type'
+} from 'types/settings'
 
 const { Option } = Select
 
@@ -18,26 +18,29 @@ function renderContent(config: InputConfig | CheckboxConfig | SelectConfig) {
     case ConfigType.InputConfig:
       return (
         <>
-          <div className="text-sm">{config.description}</div>
+          <div className="text-sm text-gray-500">{config.description}</div>
           <Input placeholder="Basic usage" value={config.default} />
         </>
       )
     case ConfigType.SelectConfig:
       return (
         <>
-          <div className="text-sm">{config.description}</div>
+          <div className="text-sm text-gray-500">{config.description}</div>
           <Select defaultValue={config.default}>
-            {config.options.map((option) => (
-              <Option value={option[1]}>{option[0]}</Option>
+            {config.options.map((option, idx) => (
+              <Option key={idx} value={option[1]}>
+                {option[0]}
+              </Option>
             ))}
           </Select>
         </>
       )
     case ConfigType.CheckboxConfig:
       return (
-        <>
-          <Checkbox checked={config.default}>{config.description}</Checkbox>
-        </>
+        <div className="flex">
+          <Checkbox checked={config.default} />
+          <span className="text-gray-500 ml-2">{config.description}</span>
+        </div>
       )
     default:
       return undefined
@@ -46,8 +49,8 @@ function renderContent(config: InputConfig | CheckboxConfig | SelectConfig) {
 
 export default function SettingsCard({ config }: AppProp) {
   return (
-    <div className="p-2 border-2 border-gray-300 hover:bg-gray-300">
-      <div className="text-base">{config.title}</div>
+    <div className="p-2 ml-2 w-2/3">
+      <div className="text-black">{config.title}</div>
       {renderContent(config)}
     </div>
   )
