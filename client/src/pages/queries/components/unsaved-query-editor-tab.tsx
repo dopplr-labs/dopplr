@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
-import { Button, Empty, Result, Select } from 'antd'
+import { Button, Empty, Result, Select, Tooltip } from 'antd'
 import {
   CaretRightFilled,
   SaveOutlined,
@@ -10,7 +10,10 @@ import {
   DownOutlined,
   BorderVerticleOutlined,
   BorderHorizontalOutlined,
+  RightOutlined,
+  LeftOutlined,
 } from '@ant-design/icons'
+import clsx from 'clsx'
 import Editor from 'components/editor'
 import useMeasure from 'react-use-measure'
 import sqlFormatter from 'sql-formatter'
@@ -26,6 +29,11 @@ import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
+
+enum SplitOrientation {
+  HORIZONTAL = 'horizontal',
+  VERTICAL = 'vertical',
+}
 
 function useUpdateTabOnQueryChange({
   tabRoute,
@@ -48,7 +56,11 @@ function useUpdateTabOnQueryChange({
 
 function Tab() {
   const { pathname: tabRoute } = useLocation()
-  const [isTwoPane, setIsTwoPane] = useState(false)
+
+  const [splitOrientation, setSplitOrientation] = usePersistedSetState<string>(
+    'split-orientation',
+    SplitOrientation.HORIZONTAL,
+  )
 
   const [query, setQuery] = usePersistedSetState(`${tabRoute}-query`, '')
   useUpdateTabOnQueryChange({ tabRoute, query })
@@ -97,8 +109,7 @@ function Tab() {
     })
   }
 
-  const [measureContainer1, containerBounds1] = useMeasure()
-  const [measureContainer2, containerBounds2] = useMeasure()
+  const [measureContainer, containerBounds] = useMeasure()
 
   if (isLoadingResource) {
     return (
@@ -191,13 +202,26 @@ function Tab() {
             Run Query
           </Button>
         </div>
-        {isTwoPane ? (
-          <div className="flex flex-1" ref={measureContainer1}>
+        <div
+          className={clsx(
+            'flex flex-1',
+            splitOrientation === SplitOrientation.VERTICAL ? '' : 'flex-col',
+          )}
+          ref={measureContainer}
+        >
+          {splitOrientation === SplitOrientation.VERTICAL ? (
             <HorizontalPane
+              paneName="editor-horizontal-pane"
               initialWidth={640}
               maxConstraint={800}
               minConstraint={320}
-              render={({ paneWidth, dragHandle }) => (
+              buffer={160}
+              render={({
+                paneWidth,
+                isFullScreen,
+                dragHandle,
+                toggleFullScreen,
+              }) => (
                 <>
                   <div
                     className="relative z-10 flex flex-col h-full border-r"
@@ -212,17 +236,35 @@ function Tab() {
                   </div>
                   <div
                     className="h-full"
-                    style={{ width: containerBounds1.width - paneWidth }}
+                    style={{ width: containerBounds.width - paneWidth }}
                   >
-                    <div className="flex justify-end px-4 py-2">
-                      <button
-                        className="focus:outline-none"
-                        onClick={() => {
-                          setIsTwoPane(false)
-                        }}
+                    <div className="flex justify-end px-4 py-2 space-x-4">
+                      <Tooltip
+                        title="Split Horizontally"
+                        placement="left"
+                        mouseEnterDelay={1}
                       >
-                        <BorderHorizontalOutlined />
-                      </button>
+                        <button
+                          className="focus:outline-none"
+                          onClick={() => {
+                            setSplitOrientation(SplitOrientation.HORIZONTAL)
+                          }}
+                        >
+                          <BorderHorizontalOutlined />
+                        </button>
+                      </Tooltip>
+                      <Tooltip
+                        title="Fullscreen"
+                        placement="left"
+                        mouseEnterDelay={1}
+                      >
+                        <button
+                          className="focus:outline-none"
+                          onClick={toggleFullScreen}
+                        >
+                          {isFullScreen ? <RightOutlined /> : <LeftOutlined />}
+                        </button>
+                      </Tooltip>
                     </div>
                     <div className="h-full px-4">
                       <ResultsTable
@@ -235,13 +277,12 @@ function Tab() {
                 </>
               )}
             />
-          </div>
-        ) : (
-          <div className="flex flex-col flex-1" ref={measureContainer2}>
+          ) : (
             <VerticalPane
+              paneName="editor-vertical-pane"
               initialHeight={480}
-              maxHeight={containerBounds2.height}
-              maxConstraint={containerBounds2.height - 160}
+              maxHeight={containerBounds.height}
+              maxConstraint={containerBounds.height - 160}
               buffer={80}
               render={({
                 paneHeight,
@@ -253,7 +294,7 @@ function Tab() {
                   {!isFullScreen ? (
                     <div
                       className="w-full"
-                      style={{ height: containerBounds2.height - paneHeight }}
+                      style={{ height: containerBounds.height - paneHeight }}
                     >
                       <Editor
                         resourceId={selectedResourceId}
@@ -268,20 +309,32 @@ function Tab() {
                   >
                     {dragHandle}
                     <div className="flex justify-end px-4 py-2 space-x-4">
-                      <button
-                        className="focus:outline-none"
-                        onClick={() => {
-                          setIsTwoPane(true)
-                        }}
+                      <Tooltip
+                        placement="left"
+                        title="Split Vertically"
+                        mouseEnterDelay={1}
                       >
-                        <BorderVerticleOutlined />
-                      </button>
-                      <button
-                        className="focus:outline-none"
-                        onClick={toggleFullScreen}
+                        <button
+                          className="focus:outline-none"
+                          onClick={() => {
+                            setSplitOrientation(SplitOrientation.VERTICAL)
+                          }}
+                        >
+                          <BorderVerticleOutlined />
+                        </button>
+                      </Tooltip>
+                      <Tooltip
+                        placement="left"
+                        title="Fullscreen"
+                        mouseEnterDelay={1}
                       >
-                        {isFullScreen ? <DownOutlined /> : <UpOutlined />}
-                      </button>
+                        <button
+                          className="focus:outline-none"
+                          onClick={toggleFullScreen}
+                        >
+                          {isFullScreen ? <DownOutlined /> : <UpOutlined />}
+                        </button>
+                      </Tooltip>
                     </div>
                     <div className="h-full px-4">
                       <ResultsTable
@@ -294,8 +347,8 @@ function Tab() {
                 </>
               )}
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <SaveQueryModal
         visible={saveModalVisible}
