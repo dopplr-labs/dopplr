@@ -5,6 +5,7 @@ export const textEditorSettings: Group = {
   subGroupDict: {
     cursor: {
       title: 'Cursor',
+      description: 'Customize cursor settings.',
       configs: [
         {
           type: ConfigType.SelectConfig,
@@ -30,6 +31,7 @@ export const textEditorSettings: Group = {
     },
     font: {
       title: 'Font',
+      description: 'Customize font settings.',
       configs: [
         {
           type: ConfigType.InputConfig,
@@ -50,6 +52,7 @@ export const textEditorSettings: Group = {
     },
     minimap: {
       title: 'Minimap',
+      description: 'Customize minimap settings.',
       configs: [
         {
           type: ConfigType.CheckboxConfig,

@@ -5,6 +5,7 @@ export const workbenchSettings: Group = {
   subGroupDict: {
     zenMode: {
       title: 'Zen Mode',
+      description: 'Customize zen mode settings.',
       configs: [
         {
           type: ConfigType.CheckboxConfig,

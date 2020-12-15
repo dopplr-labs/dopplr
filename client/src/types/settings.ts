@@ -29,13 +29,14 @@ export type CheckboxConfig = {
 
 // key-value pair of subgroup keys with their respective information
 export type SubGroup = {
-  title: string
+  title: string,
+  description: string,
   configs: (InputConfig | SelectConfig | CheckboxConfig)[]
 }
 
 // key-value pair of group title and subgroup
 export type Group = {
-  title: string
+  title: string,
   subGroupDict: {
     [key: string]: SubGroup
   }
