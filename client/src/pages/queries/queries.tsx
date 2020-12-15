@@ -158,7 +158,7 @@ export default function Queries() {
         <div className="flex flex-col flex-1 overflow-hidden">
           <Tabs
             type="editable-card"
-            className="editors-tab"
+            className="flex-shrink-0 editors-tab"
             activeKey={activeTabRoute}
             onChange={focusTab}
             onEdit={(tabKey, action) => {
