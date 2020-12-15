@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { DraggableCore } from 'react-draggable'
+import usePersistedSetState from 'hooks/use-persisted-state'
 
 type HorizontalPaneProps = {
   render: (props: {
     paneWidth: number
+    isFullScreen?: boolean
     dragHandle: React.ReactNode
+    toggleFullScreen?: () => void
   }) => React.ReactElement
-  className?: string
+  paneName: string
   initialWidth?: number
   minConstraint?: number
   maxConstraint?: number
@@ -15,14 +18,19 @@ type HorizontalPaneProps = {
 
 export default function HorizontalPane({
   render,
+  paneName,
   initialWidth = 240,
   minConstraint = 0,
   maxConstraint,
   buffer,
 }: HorizontalPaneProps) {
-  const [paneWidth, setPaneWidth] = useState<number>(initialWidth)
+  const [paneWidth, setPaneWidth] = usePersistedSetState<number>(
+    paneName,
+    initialWidth,
+  )
   const [dragDirection, setDragDirection] = useState<string | null>(null)
 
+  const isFullScreen = paneWidth === 0
   const [xPos, setXPos] = useState(initialWidth)
 
   useEffect(
@@ -52,6 +60,11 @@ export default function HorizontalPane({
     },
     [xPos, dragDirection, minConstraint, maxConstraint],
   )
+
+  const toggleFullScreen = useCallback(() => {
+    setPaneWidth((prevState) => (prevState === 0 ? initialWidth : 0))
+  }, [initialWidth, setPaneWidth])
+
   const dragHandle = (
     <DraggableCore
       onDrag={(e, data) => {
@@ -95,5 +108,5 @@ export default function HorizontalPane({
     </DraggableCore>
   )
 
-  return render({ paneWidth, dragHandle })
+  return render({ paneWidth, isFullScreen, dragHandle, toggleFullScreen })
 }
