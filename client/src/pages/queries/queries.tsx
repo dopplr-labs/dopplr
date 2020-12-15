@@ -127,6 +127,7 @@ export default function Queries() {
     <TabsContext.Provider value={{ updateTab }}>
       <div className="flex flex-1 h-full">
         <HorizontalPane
+          paneName="tab-horizontal-pane"
           initialWidth={320}
           maxConstraint={400}
           minConstraint={280}
@@ -154,28 +155,6 @@ export default function Queries() {
             </div>
           )}
         />
-        {/* <HorizontalPane
-          initialWidth={320}
-          maxConstraint={400}
-          minConstraint={280}
-          buffer={80}
-          className="z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
-        >
-          <Tabs className="flex-1 queries-tab mt-0.5" size="small" centered>
-            <Tabs.TabPane tab="Schema" key="schema">
-              <div
-                className="w-full h-full overflow-hidden"
-                id="schema-container"
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="History" key="history">
-              <HistoriesTab />
-            </Tabs.TabPane>
-            <Tabs.TabPane key="saved" tab="Saved">
-              <SavedQueriesTab />
-            </Tabs.TabPane>
-          </Tabs>
-        </HorizontalPane> */}
         <div className="flex flex-col flex-1 overflow-hidden">
           <Tabs
             type="editable-card"
