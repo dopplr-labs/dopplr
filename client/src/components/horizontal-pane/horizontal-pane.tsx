@@ -5,7 +5,7 @@ import usePersistedSetState from 'hooks/use-persisted-state'
 type HorizontalPaneProps = {
   render: (props: {
     paneWidth: number
-    isFullScreen?: boolean
+    isPaneClose?: boolean
     dragHandle: React.ReactNode
     toggleFullScreen?: () => void
   }) => React.ReactElement
@@ -15,6 +15,8 @@ type HorizontalPaneProps = {
   maxConstraint?: number
   buffer?: number
 }
+
+const BUFFER_MARGIN = 5
 
 export default function HorizontalPane({
   render,
@@ -30,7 +32,7 @@ export default function HorizontalPane({
   )
   const [dragDirection, setDragDirection] = useState<string | null>(null)
 
-  const isFullScreen = paneWidth === 0
+  const isPaneClose = paneWidth === 0
   const [xPos, setXPos] = useState(initialWidth)
 
   useEffect(
@@ -91,7 +93,10 @@ export default function HorizontalPane({
           if (data.x < minConstraint - buffer) {
             setPaneWidth(0)
           }
-          if (data.x > minConstraint - buffer + 5 && data.x < minConstraint) {
+          if (
+            data.x > minConstraint - buffer + BUFFER_MARGIN &&
+            data.x < minConstraint
+          ) {
             setPaneWidth(minConstraint)
           }
         }
@@ -108,5 +113,5 @@ export default function HorizontalPane({
     </DraggableCore>
   )
 
-  return render({ paneWidth, isFullScreen, dragHandle, toggleFullScreen })
+  return render({ paneWidth, isPaneClose, dragHandle, toggleFullScreen })
 }

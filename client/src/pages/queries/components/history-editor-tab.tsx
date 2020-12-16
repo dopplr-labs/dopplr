@@ -239,7 +239,9 @@ function Tab() {
         <div
           className={clsx(
             'flex flex-1',
-            splitOrientation === SplitOrientation.VERTICAL ? '' : 'flex-col',
+            splitOrientation === SplitOrientation.HORIZONTAL
+              ? 'flex-col'
+              : undefined,
           )}
           ref={measureContainer}
         >
@@ -252,7 +254,7 @@ function Tab() {
               buffer={160}
               render={({
                 paneWidth,
-                isFullScreen,
+                isPaneClose,
                 dragHandle,
                 toggleFullScreen,
               }) => (
@@ -296,13 +298,13 @@ function Tab() {
                           className="focus:outline-none"
                           onClick={toggleFullScreen}
                         >
-                          {isFullScreen ? <RightOutlined /> : <LeftOutlined />}
+                          {isPaneClose ? <RightOutlined /> : <LeftOutlined />}
                         </button>
                       </Tooltip>
                     </div>
                     <div className="h-full px-4">
                       <ResultsTable
-                        data={queryResult ?? undefined}
+                        data={queryResult}
                         isLoading={isRunningQuery}
                         error={queryResultError}
                       />
@@ -372,7 +374,7 @@ function Tab() {
                     </div>
                     <div className="h-full px-4">
                       <ResultsTable
-                        data={queryResult ?? undefined}
+                        data={queryResult}
                         isLoading={isRunningQuery}
                         error={queryResultError}
                       />

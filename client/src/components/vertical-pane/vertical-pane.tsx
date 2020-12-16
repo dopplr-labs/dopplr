@@ -17,6 +17,8 @@ type VerticalPaneProps = {
   minConstraint?: number
 }
 
+const BUFFER_MARGIN = 8
+
 export default function VerticalPane({
   render,
   paneName,
@@ -71,7 +73,7 @@ export default function VerticalPane({
         }
 
         if (
-          paneHeight - data.y < maxConstraint + buffer - 8 &&
+          paneHeight - data.y < maxConstraint + buffer - BUFFER_MARGIN &&
           paneHeight - data.y > maxConstraint
         ) {
           setPaneHeight(maxConstraint)
