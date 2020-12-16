@@ -9,7 +9,7 @@ import { QueryResult } from 'types/query'
 const PAGINATION_CONTAINER_HEIGHT = 96
 
 type ResultsTableProps = {
-  data?: QueryResult
+  data: QueryResult | null
   isLoading: boolean
   error?: any
   className?: string
