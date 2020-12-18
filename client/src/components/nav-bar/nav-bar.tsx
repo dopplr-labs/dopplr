@@ -22,7 +22,7 @@ export default function Navbar() {
   }, [signOut, user])
 
   return (
-    <div className="relative z-10 flex items-center h-12 px-8 bg-gray-800">
+    <div className="relative z-50 flex items-center h-12 px-8 shadow-xl bg-brand-dark">
       <img
         src={require('images/logo-transparent.svg')}
         alt="Dopplr"
