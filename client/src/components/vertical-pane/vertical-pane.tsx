@@ -1,3 +1,4 @@
+import usePersistedSetState from 'hooks/use-persisted-state'
 import React, { useCallback, useEffect, useState } from 'react'
 import { DraggableCore } from 'react-draggable'
 
@@ -8,6 +9,7 @@ type VerticalPaneProps = {
     isFullScreen: boolean
     toggleFullScreen: () => void
   }) => React.ReactElement
+  paneName: string
   initialHeight: number
   buffer: number
   maxHeight: number
@@ -15,15 +17,21 @@ type VerticalPaneProps = {
   minConstraint?: number
 }
 
+const BUFFER_MARGIN = 8
+
 export default function VerticalPane({
   render,
+  paneName,
   initialHeight,
   buffer,
   maxHeight,
   maxConstraint,
   minConstraint = 200,
 }: VerticalPaneProps) {
-  const [paneHeight, setPaneHeight] = useState(initialHeight)
+  const [paneHeight, setPaneHeight] = usePersistedSetState<number>(
+    paneName,
+    initialHeight,
+  )
 
   const isFullScreen = paneHeight === maxHeight
 
@@ -48,7 +56,7 @@ export default function VerticalPane({
     setPaneHeight((prevState) =>
       prevState === maxHeight ? initialHeight : maxHeight,
     )
-  }, [initialHeight, maxHeight])
+  }, [initialHeight, setPaneHeight, maxHeight])
 
   const dragHandle = (
     <DraggableCore
@@ -65,7 +73,7 @@ export default function VerticalPane({
         }
 
         if (
-          paneHeight - data.y < maxConstraint + buffer - 8 &&
+          paneHeight - data.y < maxConstraint + buffer - BUFFER_MARGIN &&
           paneHeight - data.y > maxConstraint
         ) {
           setPaneHeight(maxConstraint)
