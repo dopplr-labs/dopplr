@@ -50,49 +50,23 @@ export function App() {
             <Route protectedRoute element={<Home />} path="/" />
             <Route protectedRoute element={<Resources />} path="resources">
               <Route protectedRoute path="/" element={<ResourcesList />} />
-              <Route
-                protectedRoute
-                path="new/:resourceType"
-                element={<CreateResource />}
-              />
-              <Route
-                protectedRoute
-                path=":resourceId"
-                element={<ResourceDetail />}
-              />
+              <Route path="new/:resourceType" element={<CreateResource />} />
+              <Route path=":resourceId" element={<ResourceDetail />} />
             </Route>
             <Route protectedRoute element={<Queries />} path="queries">
-              <Route
-                protectedRoute
-                path="new/:tabId"
-                element={<UnsavedQueryEditorTab />}
-              />
-              <Route
-                protectedRoute
-                path="history/:historyId"
-                element={<HistoryEditorTab />}
-              />
-              <Route
-                protectedRoute
-                path="saved/:queryId"
-                element={<SavedQueryEditorTab />}
-              />
+              <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
+              <Route path="history/:historyId" element={<HistoryEditorTab />} />
+              <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
             </Route>
             <Route protectedRoute element={<Dashboards />} path="dashboards" />
-          </Route>
-          <Route element={<Queries />} path="queries">
-            <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
-            <Route path="history/:historyId" element={<HistoryEditorTab />} />
-            <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
-          </Route>
-          <Route element={<Dashboards />} path="dashboards" />
-          <Route element={<Settings />} path="settings">
-            <Route
-              path="/"
-              element={<Navigate to="text-editor" replace={true} />}
-            />
-            <Route path="text-editor" element={<TextEditorSettings />} />
-            <Route path="workbench" element={<WorkbenchSettings />} />
+            <Route protectedRoute element={<Settings />} path="settings">
+              <Route
+                path="/"
+                element={<Navigate to="text-editor" replace={true} />}
+              />
+              <Route path="text-editor" element={<TextEditorSettings />} />
+              <Route path="workbench" element={<WorkbenchSettings />} />
+            </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Routes>
