@@ -56,7 +56,7 @@ function renderContent(config: InputConfig | CheckboxConfig | SelectConfig) {
 export default function SettingsCard({ config }: AppProp) {
   return (
     <div>
-      <label className="block mb-2 text-sm font-medium text-gray-700">
+      <label className="block mb-2 text-sm font-medium text-content-primary">
         {config.title}
       </label>
       {renderContent(config)}

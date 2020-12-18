@@ -44,14 +44,14 @@ const pages = [
 
 export default function SideBar() {
   return (
-    <div className="flex flex-col items-center justify-start h-full p-2 space-y-2 bg-background-primary text-content-tertiary">
+    <div className="flex flex-col items-center justify-start h-full p-2 space-y-2 bg-background-primary text-content-secondary">
       {pages.map((page) => {
         return (
           <NavLink
             to={page.defaultRoute}
             key={page.id}
             className="flex flex-col items-center justify-center w-24 py-2 space-y-1 rounded-md"
-            activeClassName="bg-background-secondary text-content-secondary hover:text-content-secondary bg-opacity-75"
+            activeClassName="bg-background-tertiary text-content-primary hover:text-content-primary bg-opacity-75"
           >
             {cloneElement(page.icon, { className: 'text-xl' })}
             <div className="text-xs">{page.title}</div>
