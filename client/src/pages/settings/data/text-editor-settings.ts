@@ -38,7 +38,7 @@ export const textEditorSettings: Group = {
           title: 'Font Family',
           description: 'Controls the font family.',
           default:
-            "'FuraCode Nerd Font', 'monospace', monospace, 'Droid Sans Fallback'",
+            "'JetBrains Mono', 'monospace', monospace, 'Droid Sans Fallback'",
           key: 'cursor_3',
         },
         {
