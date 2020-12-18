@@ -33,6 +33,7 @@ export default function ResourceDetail() {
   const resources: Resource[] | undefined = queryCache.getQueryData([
     'resources',
   ])
+
   const [disabled, setDisabled] = useState(true)
 
   const [editResource] = useMutation(updateResource, {
@@ -108,49 +109,51 @@ export default function ResourceDetail() {
   const formContent = useMemo(() => {
     if (isLoading) {
       return (
-        <div>
-          <img
-            src={require('images/resources/postgres-logo.png')}
-            className="w-5 h-5 mb-4"
-            alt="Postgres"
-          />
-          <div className="font-medium text-gray-800">Connect to Postgres</div>
-          <div className="mb-6 text-xs">
-            Connect your Postgres database to run queries and create dashboard
-          </div>
-          <div className="flex mb-6 space-x-32">
-            <div className="w-24 h-8 bg-gray-200 animate-pulse" />
-            <div className="flex-1 h-8 bg-gray-200 animate-pulse" />
-          </div>
-          <div className="mb-6 border-b" />
-          <div>
-            <div className="font-medium text-gray-800">
-              Database Configuration
+        <>
+          <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-primary">
+            <div>
+              <div className="text-base font-medium text-content-primary">
+                Connect to Postgres
+              </div>
+              <div className="text-sm">
+                Connect your Postgres database to run queries and create
+                dashboard
+              </div>
             </div>
-            <div className="mb-6 text-xs">
-              This configuration would be used to connect with your Postgres
-              database
-            </div>
+            <img
+              src={require('images/resources/postgres-logo.png')}
+              className="w-6 h-6"
+              alt="Postgres"
+            />
           </div>
-          {range(5).map((val) => (
-            <div key={val} className="flex mb-6 space-x-32">
-              <div
-                className="w-24 h-8 bg-gray-200 animate-pulse"
-                style={{ opacity: 1 - val / 5 }}
-              />
-              <div
-                className="flex-1 h-8 bg-gray-200 animate-pulse"
-                style={{ opacity: 1 - val / 5 }}
-              />
-            </div>
-          ))}
-          <div className="flex p-4 -mx-4 -mb-4 space-x-4 bg-gray-50">
-            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
+
+          <div className="flex p-6 space-x-32 border-b">
+            <div className="w-24 h-8 bg-background-secondary animate-pulse" />
+            <div className="flex-1 h-8 bg-background-secondary animate-pulse" />
+          </div>
+
+          <div className="p-6 space-y-6 border-b">
+            {range(5).map((val) => (
+              <div key={val} className="flex space-x-32">
+                <div
+                  className="w-24 h-8 bg-background-secondary animate-pulse"
+                  style={{ opacity: 1 - val / 5 }}
+                />
+                <div
+                  className="flex-1 h-8 bg-background-secondary animate-pulse"
+                  style={{ opacity: 1 - val / 5 }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="flex px-6 py-4 space-x-4">
+            <div className="w-20 h-8 bg-background-secondary animate-pulse" />
             <div className="flex-1" />
-            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
-            <div className="w-20 h-8 bg-gray-200 animate-pulse" />
+            <div className="w-20 h-8 bg-background-secondary animate-pulse" />
+            <div className="w-20 h-8 bg-background-secondary animate-pulse" />
           </div>
-        </div>
+        </>
       )
     }
 
@@ -172,91 +175,95 @@ export default function ResourceDetail() {
           }}
           onFinish={onFinish}
         >
-          <img
-            src={require('images/resources/postgres-logo.png')}
-            className="w-5 h-5 mb-4"
-            alt="Postgres"
-          />
-          <div className="font-medium text-gray-800">Connect to Postgres</div>
-          <div className="mb-6 text-xs">
-            Connect your Postgres database to run queries and create dashboard
-          </div>
-          <Form.Item
-            name="name"
-            label="Name"
-            rules={[
-              { required: true, message: 'Please enter the resource name' },
-            ]}
-          >
-            <Input placeholder='i.e. "Production DB (readonly)"' />
-          </Form.Item>
-
-          <div className="mb-6 border-b" />
-
-          <div>
-            <div className="font-medium text-gray-800">
-              Database Configuration
+          <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-primary">
+            <div>
+              <div className="text-base font-medium text-content-primary">
+                {resource.name}
+              </div>
+              <div className="text-sm">
+                Connect your Postgres database to run queries and create
+                dashboard
+              </div>
             </div>
-            <div className="mb-6 text-xs">
-              This configuration would be used to connect with your Postgres
-              database
-            </div>
+            <img
+              src={require('images/resources/postgres-logo.png')}
+              className="w-6 h-6"
+              alt="Postgres"
+            />
           </div>
-          <Form.Item
-            name="host"
-            label="Host"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter the database host url',
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="port"
-            label="Port"
-            rules={[
-              { required: true, message: 'Please enter the database port' },
-            ]}
-          >
-            <InputNumber className="w-full" />
-          </Form.Item>
-          <Form.Item
-            name="database"
-            label="Database"
-            rules={[
-              { required: true, message: 'Please enter the database name' },
-            ]}
-          >
-            <Input placeholder="hn_api_production" />
-          </Form.Item>
-          <Form.Item
-            name="username"
-            label="Database Username"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter the database user name',
-              },
-            ]}
-          >
-            <Input placeholder="postgres" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Database Password"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter the database password',
-              },
-            ]}
-          >
-            <Input.Password visibilityToggle={false} />
-          </Form.Item>
-          <div className="flex p-4 -mx-4 -mb-4 space-x-4 bg-gray-50">
+
+          <div className="p-6 border-b">
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[
+                { required: true, message: 'Please enter the resource name' },
+              ]}
+              className="mb-0"
+            >
+              <Input placeholder='i.e. "Production DB (readonly)"' />
+            </Form.Item>
+          </div>
+
+          <div className="p-6 border-b">
+            <Form.Item
+              name="host"
+              label="Host"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter the database host url',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="port"
+              label="Port"
+              rules={[
+                { required: true, message: 'Please enter the database port' },
+              ]}
+            >
+              <InputNumber className="w-full" />
+            </Form.Item>
+            <Form.Item
+              name="database"
+              label="Database"
+              rules={[
+                { required: true, message: 'Please enter the database name' },
+              ]}
+            >
+              <Input placeholder="hn_api_production" />
+            </Form.Item>
+            <Form.Item
+              name="username"
+              label="Database Username"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter the database user name',
+                },
+              ]}
+            >
+              <Input placeholder="postgres" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label="Database Password"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter the database password',
+                },
+              ]}
+              className="mb-0"
+            >
+              <Input.Password />
+            </Form.Item>
+          </div>
+
+          <div className="flex px-6 py-4 space-x-4">
             <Link to="/resources">
               <Button htmlType="button" icon={<ArrowLeftOutlined />}>
                 Back
@@ -290,12 +297,8 @@ export default function ResourceDetail() {
   ])
 
   return (
-    <div className="flex-1 px-12 py-8 space-x-6 bg-gray-50">
-      <div className="flex items-start w-full max-w-screen-md mx-auto space-x-8">
-        <div className="flex-1 p-4 overflow-hidden bg-white shadow">
-          {formContent}
-        </div>
-      </div>
+    <div className="max-w-3xl overflow-hidden border rounded-md">
+      {formContent}
     </div>
   )
 }

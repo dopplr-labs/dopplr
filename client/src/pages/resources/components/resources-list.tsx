@@ -43,29 +43,27 @@ const resources = [
 
 export default function ResourcesList() {
   return (
-    <div className="flex flex-col flex-1">
-      <div className="grid gap-4 p-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {resources.map((resource) =>
-          resource.comingSoon ? (
+    <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {resources.map((resource) =>
+        resource.comingSoon ? (
+          <ResourceCard
+            title={resource.title}
+            description={resource.description}
+            imagePath={resource.imagePath}
+            comingSoon={resource.comingSoon ?? false}
+            key={resource.id}
+          />
+        ) : (
+          <Link to={`/resources/new/${resource.id}`} key={resource.id}>
             <ResourceCard
               title={resource.title}
               description={resource.description}
               imagePath={resource.imagePath}
               comingSoon={resource.comingSoon ?? false}
-              key={resource.id}
             />
-          ) : (
-            <Link to={`/resources/new/${resource.id}`} key={resource.id}>
-              <ResourceCard
-                title={resource.title}
-                description={resource.description}
-                imagePath={resource.imagePath}
-                comingSoon={resource.comingSoon ?? false}
-              />
-            </Link>
-          ),
-        )}
-      </div>
+          </Link>
+        ),
+      )}
     </div>
   )
 }

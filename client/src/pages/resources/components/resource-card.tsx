@@ -15,10 +15,8 @@ export default function ResourceCard({
   return (
     <div
       className={clsx(
-        'group flex flex-col items-start justify-between relative p-4 border',
-        comingSoon
-          ? 'opacity-50'
-          : 'hover:shadow-lg hover:border-blue-500 cursor-pointer',
+        'group flex flex-col items-start justify-between relative p-4 border rounded-md overflow-hidden',
+        comingSoon ? 'opacity-50' : 'hover:border-brand-primary cursor-pointer',
       )}
     >
       <img
@@ -26,10 +24,8 @@ export default function ResourceCard({
         alt="Postgres"
         className="object-contain object-left w-20 h-10 mb-4"
       />
-      <p className="mb-1 text-sm font-bold text-gray-800 group-hover:text-blue-700">
-        {title}
-      </p>
-      <p className="text-xs text-gray-600">{description}</p>
+      <p className="mb-1 text-sm font-medium">{title}</p>
+      <p className="text-xs">{description}</p>
 
       {comingSoon ? (
         <span className="absolute top-0 right-0 mt-2 mr-4 text-xs">
