@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import firebase from 'firebase/app'
-// import 'firebase/auth'
-import { auth, googleProvider } from 'utils/firebase'
+import { auth, googleAuthProvider, githubAuthProvider } from 'utils/firebase'
 import AuthContext from 'contexts/auth-context'
-import { Spin } from 'antd'
+import { message, Spin } from 'antd'
 
 type AuthProps = {
   children: React.ReactElement
@@ -25,12 +24,27 @@ export default function Auth({ children }: AuthProps) {
   }, [])
 
   async function signInWithGoogle() {
-    auth.signInWithPopup(googleProvider)
+    try {
+      await auth.signInWithPopup(googleAuthProvider)
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
+  async function signInWithGithub() {
+    try {
+      await auth.signInWithPopup(githubAuthProvider)
+    } catch (error) {
+      message.error(error.message)
+    }
   }
 
   async function signOut() {
-    await auth.signOut()
-    return true
+    try {
+      await auth.signOut()
+    } catch (error) {
+      message.error(error.message)
+    }
   }
 
   if (!authVerified) {
@@ -47,6 +61,7 @@ export default function Auth({ children }: AuthProps) {
         user,
         signOut,
         signInWithGoogle,
+        signInWithGithub,
       }}
     >
       {children}

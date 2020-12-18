@@ -3,12 +3,14 @@ import firebase from 'firebase/app'
 
 const AuthContext = createContext<{
   user: firebase.User | null
-  signOut: () => Promise<boolean>
+  signOut: () => void
   signInWithGoogle: () => void
+  signInWithGithub: () => void
 }>({
   user: null,
-  signOut: async () => false,
+  signOut: async () => {},
   signInWithGoogle: () => {},
+  signInWithGithub: () => {},
 })
 
 export default AuthContext
