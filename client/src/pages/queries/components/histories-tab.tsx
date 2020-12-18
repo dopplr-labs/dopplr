@@ -51,7 +51,7 @@ export default function HistoriesTab() {
           {range(10).map((val) => (
             <div
               key={val}
-              className="w-full h-4 bg-gray-200 animate-pulse"
+              className="w-full h-4 bg-background-secondary animate-pulse"
               style={{ opacity: 1 - val / 10 }}
             />
           ))}

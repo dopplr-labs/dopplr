@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import { message } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
@@ -14,6 +14,9 @@ import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor
 import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
+import Settings from 'pages/settings'
+import TextEditorSettings from 'pages/settings/components/text-editor-settings'
+import WorkbenchSettings from 'pages/settings/components/workbench-settings'
 import client from 'utils/client'
 
 async function fetchHealthStatus() {
@@ -51,7 +54,16 @@ export function App() {
             <Route path="saved/:queryId" element={<SavedQueryEditorTab />} />
           </Route>
           <Route element={<Dashboards />} path="dashboards" />
+          <Route element={<Settings />} path="settings">
+            <Route
+              path="/"
+              element={<Navigate to="text-editor" replace={true} />}
+            />
+            <Route path="text-editor" element={<TextEditorSettings />} />
+            <Route path="workbench" element={<WorkbenchSettings />} />
+          </Route>
         </Route>
+        <Route path="*" element={<Navigate to="/" replace={true} />} />
       </Routes>
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />

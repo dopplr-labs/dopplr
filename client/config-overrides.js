@@ -29,12 +29,13 @@ module.exports = override(
     lessOptions: {
       modifyVars: {
         '@font-family': tailwindConfig.theme.extend.fontFamily.sans.join(', '),
-        '@primary-color': tailwindConfig.theme.extend.colors.blue['500'],
-        '@border-radius-base': defaultTailwindConfig.borderRadius.default,
+        '@primary-color': tailwindConfig.theme.extend.colors.brand.primary,
+        '@border-radius-base': defaultTailwindConfig.borderRadius.DEFAULT,
         '@padding-sm': remToPx(defaultTailwindConfig.spacing[4]),
-        '@heading-color': tailwindConfig.theme.extend.colors.gray['800'],
-        '@text-color': tailwindConfig.theme.extend.colors.gray['600'],
-        '@text-color-secondary': tailwindConfig.theme.extend.colors.gray['400'],
+        '@heading-color': tailwindConfig.theme.extend.colors.content.primary,
+        '@text-color': tailwindConfig.theme.extend.colors.content.secondary,
+        '@text-color-secondary':
+          tailwindConfig.theme.extend.colors.content.tertiary,
         '@form-item-label-font-size': defaultTailwindConfig.fontSize.xs,
       },
       javascriptEnabled: true,

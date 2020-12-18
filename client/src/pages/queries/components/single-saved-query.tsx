@@ -83,11 +83,11 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
     <>
       <Link
         to={`saved/${query.id}`}
-        className="flex items-center justify-between px-3 py-2 text-xs cursor-pointer group hover:bg-gray-100"
+        className="flex items-center justify-between px-3 py-2 text-xs cursor-pointer group hover:bg-background-primary"
         title={`${query.name}\n${query.query}`}
       >
         <div className="space-y-2 truncate">
-          <div className="font-medium text-blue-500">
+          <div className="font-medium text-brand-primary">
             <span>{query.name}</span>
           </div>
           <div className="truncate">{query.query}</div>

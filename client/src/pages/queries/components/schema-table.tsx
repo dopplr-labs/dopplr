@@ -45,7 +45,7 @@ export default function SchemaTable({
     <>
       <div>
         <div
-          className="flex items-center justify-between px-3 py-1 font-mono text-xs font-bold text-blue-500 truncate cursor-pointer group hover:bg-blue-50 hover:text-blue-500"
+          className="flex items-center justify-between px-3 py-1 font-mono text-xs font-bold truncate cursor-pointer text-brand-primary group hover:bg-brand-light hover:text-brand-primary"
           onClick={() => {
             setSchema((prevState) => ({
               ...prevState,
@@ -79,10 +79,10 @@ export default function SchemaTable({
                 key={column.column_name}
                 className="grid grid-cols-3 mb-2 font-mono text-xs"
               >
-                <span className="col-span-2 text-gray-600 truncate">
+                <span className="col-span-2 truncate text-content-secondary">
                   {column.column_name}
                 </span>
-                <span className="col-span-1 text-right text-gray-400 truncate">
+                <span className="col-span-1 text-right truncate text-content-tertiary">
                   {column.data_type}
                 </span>
               </li>

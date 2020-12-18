@@ -12,6 +12,7 @@ type VerticalPaneProps = {
   buffer: number
   maxHeight: number
   maxConstraint: number
+  minConstraint?: number
 }
 
 export default function VerticalPane({
@@ -20,6 +21,7 @@ export default function VerticalPane({
   buffer,
   maxHeight,
   maxConstraint,
+  minConstraint = 200,
 }: VerticalPaneProps) {
   const [paneHeight, setPaneHeight] = useState(initialHeight)
 
@@ -27,17 +29,20 @@ export default function VerticalPane({
 
   const [shouldChangeCursor, setShouldChangeCursor] = useState(false)
 
-  useEffect(() => {
-    const root = document.getElementById('root')
-    if (!root) {
-      return
-    }
-    if (shouldChangeCursor) {
-      root.style.cursor = 'n-resize'
-    } else {
-      root.style.removeProperty('cursor')
-    }
-  }, [shouldChangeCursor])
+  useEffect(
+    function changeBodyCursor() {
+      const root = document.getElementById('root')
+      if (!root) {
+        return
+      }
+      if (shouldChangeCursor) {
+        root.style.cursor = 'n-resize'
+      } else {
+        root.style.removeProperty('cursor')
+      }
+    },
+    [shouldChangeCursor],
+  )
 
   const toggleFullScreen = useCallback(() => {
     setPaneHeight((prevState) =>
@@ -48,7 +53,10 @@ export default function VerticalPane({
   const dragHandle = (
     <DraggableCore
       onDrag={(e, data) => {
-        if (paneHeight - data.y <= maxConstraint) {
+        if (
+          paneHeight - data.y >= minConstraint &&
+          paneHeight - data.y <= maxConstraint
+        ) {
           setPaneHeight((prevState) => prevState - data.y)
         }
 
@@ -69,7 +77,7 @@ export default function VerticalPane({
       }}
     >
       <div
-        className="absolute top-0 left-0 w-full h-1 transform -translate-y-1/2 bg-gray-200 opacity-0 hover:opacity-75"
+        className="absolute top-0 left-0 w-full h-1 transform -translate-y-1/2 bg-background-secondary opacity-0 hover:opacity-75"
         style={{ cursor: 'row-resize' }}
       />
     </DraggableCore>

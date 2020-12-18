@@ -4,7 +4,9 @@ import { Button, Result } from 'antd'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { queryCache, useQuery } from 'react-query'
 import { range } from 'lodash-es'
-import { Postgres } from 'components/icons'
+import PageLayout from 'components/page-layout'
+import PageSideBar from 'components/page-side-bar'
+import PageSideBarLink from 'components/page-side-bar-link'
 import { fetchResources } from './queries'
 
 export default function Resources() {
@@ -28,15 +30,16 @@ export default function Resources() {
   const resourcesList = useMemo(() => {
     if (isLoading) {
       return (
-        <div className="space-y-4">
+        <>
           {range(5).map((val) => (
-            <div
-              key={val}
-              className="w-full h-4 bg-gray-200 animate-pulse"
-              style={{ opacity: 1 - val / 5 }}
-            />
+            <div key={val} className="px-4 py-1">
+              <div
+                className="w-full h-4 bg-background-secondary animate-pulse"
+                style={{ opacity: 1 - val / 5 }}
+              />
+            </div>
           ))}
-        </div>
+        </>
       )
     }
 
@@ -46,20 +49,17 @@ export default function Resources() {
 
     if (resources) {
       return (
-        <div className="space-y-2">
+        <>
           {resources?.map((resource) => (
-            <Link
+            <PageSideBarLink
               to={`/resources/${resource.id}`}
               key={resource.id}
-              className="flex items-center space-x-2 text-sm cursor-pointer hover:text-blue-500"
+              badge={resource.type}
             >
-              {resource.type === 'postgres' ? (
-                <Postgres className="w-6 h-6" />
-              ) : null}
-              <span className="text-xs">{resource.name}</span>
-            </Link>
+              {resource.name}
+            </PageSideBarLink>
           ))}
-        </div>
+        </>
       )
     }
 
@@ -67,31 +67,29 @@ export default function Resources() {
   }, [resources, isLoading, error])
 
   return (
-    <div className="flex flex-1 h-full">
-      <div className="flex flex-col w-64 h-full p-4 border-r">
-        <div className="flex items-center mb-2 space-x-2">
-          <DatabaseOutlined className="text-lg" />
-          <span className="font-medium text-gray-800">Resources</span>
-        </div>
-        <div className="mb-4 text-xs">
-          Connect with your preferred database and fetch data to render in
-          Tables
-        </div>
-
-        {pathname !== '/resources' ? (
-          <Link to="/resources" className="block mb-4">
-            <Button icon={<PlusOutlined />} className="w-full" type="primary">
-              Create New
-            </Button>
-          </Link>
-        ) : null}
-
-        <div className="mb-4 -mx-4 border-b" />
-
-        {resourcesList}
-      </div>
-
-      <Outlet />
-    </div>
+    <PageLayout
+      sidebar={
+        <PageSideBar
+          icon={<DatabaseOutlined className="text-lg" />}
+          title="Resources"
+          description="Connect with your preferred database and fetch data to render in Tables"
+          primaryAction={
+            pathname !== '/resources' ? (
+              <Link to="/resources" className="block mt-4">
+                <Button
+                  icon={<PlusOutlined />}
+                  className="w-full"
+                  type="primary"
+                >
+                  Create New
+                </Button>
+              </Link>
+            ) : undefined
+          }
+          items={resourcesList}
+        />
+      }
+      content={<Outlet />}
+    />
   )
 }

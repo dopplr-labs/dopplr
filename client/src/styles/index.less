@@ -95,18 +95,19 @@
 
 @tailwind components;
 
-@font-family: theme('fontFamily.sans');
-@primary-color: #0ea5e9;
+@link-hover-color: @primary-color;
+@link-active-color: @primary-color;
 
 svg {
   vertical-align: inherit;
 }
 
-body {
+a:hover {
+  color: inherit;
 }
 
 .ant-btn {
-  @apply inline-flex items-center justify-center !important;
+  @apply inline-flex items-center justify-center;
 }
 
 body {
@@ -122,7 +123,16 @@ body {
 
 .editor {
   .margin-view-overlays {
-    @apply bg-gray-50;
+    @apply bg-background-primary;
+  }
+}
+
+.active-page-side-bar-link {
+  @apply relative;
+
+  &::after {
+    content: '';
+    @apply absolute top-0 right-0 border-r-2 bottom-0 border-brand-primary bg-transparent;
   }
 }
 
@@ -131,7 +141,7 @@ body {
     @apply relative overflow-hidden;
 
     &::after {
-      @apply absolute bottom-0 left-0 right-0 border-t-2 border-blue-500;
+      @apply absolute bottom-0 left-0 right-0 border-t-2 border-brand-primary;
       content: '';
     }
   }

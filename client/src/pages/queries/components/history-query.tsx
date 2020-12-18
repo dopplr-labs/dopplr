@@ -65,7 +65,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
   return (
     <>
       <Link
-        className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-gray-50 group"
+        className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-background-primary group"
         to={`/queries/history/${query.id}`}
       >
         <div className="w-full text-xs truncate" title={query.query}>
