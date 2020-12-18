@@ -1,9 +1,12 @@
 import React from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom'
+import { Navigate, Routes } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import { message } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
+import Route from 'components/route'
+import Auth from 'components/auth'
 import AppShell from 'components/app-shell'
+import Login from 'pages/Login'
 import Home from 'pages/home'
 import Resources from 'pages/resources'
 import ResourcesList from 'pages/resources/components/resources-list'
@@ -40,13 +43,42 @@ export function App() {
 
   return (
     <>
-      <Routes>
-        <Route element={<AppShell />} path="/">
-          <Route element={<Home />} path="/" />
-          <Route element={<Resources />} path="resources">
-            <Route path="/" element={<ResourcesList />} />
-            <Route path="new/:resourceType" element={<CreateResource />} />
-            <Route path=":resourceId" element={<ResourceDetail />} />
+      <Auth>
+        <Routes>
+          <Route element={<Login />} path="/login" />
+          <Route protectedRoute element={<AppShell />} path="/">
+            <Route protectedRoute element={<Home />} path="/" />
+            <Route protectedRoute element={<Resources />} path="resources">
+              <Route protectedRoute path="/" element={<ResourcesList />} />
+              <Route
+                protectedRoute
+                path="new/:resourceType"
+                element={<CreateResource />}
+              />
+              <Route
+                protectedRoute
+                path=":resourceId"
+                element={<ResourceDetail />}
+              />
+            </Route>
+            <Route protectedRoute element={<Queries />} path="queries">
+              <Route
+                protectedRoute
+                path="new/:tabId"
+                element={<UnsavedQueryEditorTab />}
+              />
+              <Route
+                protectedRoute
+                path="history/:historyId"
+                element={<HistoryEditorTab />}
+              />
+              <Route
+                protectedRoute
+                path="saved/:queryId"
+                element={<SavedQueryEditorTab />}
+              />
+            </Route>
+            <Route protectedRoute element={<Dashboards />} path="dashboards" />
           </Route>
           <Route element={<Queries />} path="queries">
             <Route path="new/:tabId" element={<UnsavedQueryEditorTab />} />
@@ -62,9 +94,9 @@ export function App() {
             <Route path="text-editor" element={<TextEditorSettings />} />
             <Route path="workbench" element={<WorkbenchSettings />} />
           </Route>
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace={true} />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" replace={true} />} />
+        </Routes>
+      </Auth>
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />
       ) : null}
