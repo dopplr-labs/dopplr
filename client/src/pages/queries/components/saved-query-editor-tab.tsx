@@ -169,14 +169,14 @@ function Tab() {
       <div className="flex h-full px-4 space-x-4">
         <div className="flex-1 py-4 space-y-4">
           <div className="flex items-center space-x-4">
-            <div className="w-48 h-10 bg-gray-200 animate-pulse" />
+            <div className="w-48 h-10 bg-background-secondary animate-pulse" />
             <div className="flex-1" />
-            <div className="w-24 h-10 bg-gray-200 animate-pulse" />
-            <div className="w-24 h-10 bg-gray-200 animate-pulse" />
-            <div className="w-24 h-10 bg-gray-200 animate-pulse" />
+            <div className="w-24 h-10 bg-background-secondary animate-pulse" />
+            <div className="w-24 h-10 bg-background-secondary animate-pulse" />
+            <div className="w-24 h-10 bg-background-secondary animate-pulse" />
           </div>
-          <div className="w-full bg-gray-200 h-80 animate-pulse" />
-          <div className="w-full h-40 bg-gray-200 animate-pulse" />
+          <div className="w-full bg-background-secondary h-80 animate-pulse" />
+          <div className="w-full h-40 bg-background-secondary animate-pulse" />
         </div>
       </div>
     )
@@ -252,7 +252,7 @@ function Tab() {
             />
           ) : (
             <div
-              className="flex-1 text-sm text-gray-800 cursor-pointer"
+              className="flex-1 text-sm cursor-pointer text-content-primary"
               onClick={() => {
                 setEditQueryName(true)
               }}

@@ -36,7 +36,7 @@ export default function ResultsTable({
             <div className="flex" key={row}>
               {range(5).map((col) => (
                 <div className="flex-1 p-2 border" key={col}>
-                  <div className="w-full h-4 bg-gray-200 animate-pulse" />
+                  <div className="w-full h-4 bg-background-secondary animate-pulse" />
                 </div>
               ))}
             </div>
@@ -94,7 +94,7 @@ export default function ResultsTable({
     }
 
     return (
-      <div className="flex items-center justify-center h-full space-x-1 text-gray-400">
+      <div className="flex items-center justify-center h-full space-x-1 text-content-tertiary">
         <span>Click</span>
         <span className="inline-flex items-center px-2 space-x-1 border">
           <CaretRightFilled />

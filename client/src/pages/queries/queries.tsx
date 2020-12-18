@@ -133,7 +133,12 @@ export default function Queries() {
           buffer={80}
           className="z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
         >
-          <Tabs className="flex-1 queries-tab mt-0.5" size="small" centered>
+          <Tabs
+            className="flex-1 queries-tab mt-0.5"
+            size="small"
+            centered
+            animated={false}
+          >
             <Tabs.TabPane tab="Schema" key="schema">
               <div
                 className="w-full h-full overflow-hidden"
@@ -171,7 +176,7 @@ export default function Queries() {
                       {tab.name || 'Untitled Query'}
                     </span>
                     {tab.hasUnsavedChanges ? (
-                      <div className="w-2 h-2 bg-blue-400 rounded-full" />
+                      <div className="w-2 h-2 rounded-full bg-brand-primary" />
                     ) : null}
                   </div>
                 }

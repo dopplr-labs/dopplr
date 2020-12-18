@@ -33,7 +33,7 @@ export default function TableSample({
             <div className="flex" key={row}>
               {range(5).map((col) => (
                 <div className="flex-1 p-2 border" key={col}>
-                  <div className="w-full h-4 bg-gray-200 animate-pulse" />
+                  <div className="w-full h-4 bg-background-secondary animate-pulse" />
                 </div>
               ))}
             </div>
@@ -75,7 +75,7 @@ export default function TableSample({
     <Modal
       title={
         <span>
-          <span className="text-blue-500">{tableName}</span> sample
+          <span className="text-brand-primary">{tableName}</span> sample
         </span>
       }
       visible={visible}

@@ -77,7 +77,7 @@ export default function VerticalPane({
       }}
     >
       <div
-        className="absolute top-0 left-0 w-full h-1 transform -translate-y-1/2 bg-gray-200 opacity-0 hover:opacity-75"
+        className="absolute top-0 left-0 w-full h-1 transform -translate-y-1/2 bg-background-secondary opacity-0 hover:opacity-75"
         style={{ cursor: 'row-resize' }}
       />
     </DraggableCore>

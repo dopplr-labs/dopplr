@@ -94,7 +94,7 @@ export default function HorizontalPane({
         }}
       >
         <div
-          className="absolute top-0 right-0 w-1 h-full transform translate-x-1/2 bg-gray-200 opacity-0 hover:opacity-75"
+          className="absolute top-0 right-0 w-1 h-full transform translate-x-1/2 bg-background-secondary opacity-0 hover:opacity-75"
           style={{ cursor: 'col-resize' }}
         />
       </DraggableCore>

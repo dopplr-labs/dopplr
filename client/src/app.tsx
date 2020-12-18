@@ -57,9 +57,9 @@ export function App() {
           <Route element={<Settings />} path="settings">
             <Route
               path="/"
-              element={<Navigate to="textEditor" replace={true} />}
+              element={<Navigate to="text-editor" replace={true} />}
             />
-            <Route path="textEditor" element={<TextEditorSettings />} />
+            <Route path="text-editor" element={<TextEditorSettings />} />
             <Route path="workbench" element={<WorkbenchSettings />} />
           </Route>
         </Route>

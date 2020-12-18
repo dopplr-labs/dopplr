@@ -17,7 +17,7 @@ export default function DayHistory({
   return (
     <div>
       <div
-        className="flex items-center px-3 py-2 space-x-1 text-xs font-medium text-blue-500 cursor-pointer hover:bg-blue-50"
+        className="flex items-center px-3 py-2 space-x-1 text-xs font-medium cursor-pointer text-brand-primary hover:bg-brand-light"
         onClick={() => {
           setShow((prevState) => !prevState)
         }}
