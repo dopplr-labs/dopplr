@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,6 +13,7 @@ import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { PaginationDto } from 'src/dtos/pagination.dto'
 import { QueryResult } from 'pg'
 import { User } from 'src/auth/user.types'
+import { Resource } from 'src/resources/resource.entity'
 import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
 import { Query } from './query.entity'
 import { QueryRepository } from './query.repository'
@@ -19,6 +22,7 @@ import { QueryRepository } from './query.repository'
 export class QueriesService {
   constructor(
     @InjectRepository(QueryRepository) private queryRepository: QueryRepository,
+    @Inject(forwardRef(() => ResourcesService))
     private resourcesService: ResourcesService,
   ) {}
 
@@ -234,5 +238,15 @@ export class QueriesService {
     } catch (error) {
       throw new InternalServerErrorException(error)
     }
+  }
+
+  /**
+   * Delete all the queries for a particular resource
+   *
+   * @param resource - Resource for which all the queries are to be deleted
+   * @param user - User deleting all the queries for a resource
+   */
+  deleteQueriesForResource(resource: Resource, user: User) {
+    this.queryRepository.delete({ resource, uid: user.uid })
   }
 }
