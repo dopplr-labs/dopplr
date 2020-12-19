@@ -34,4 +34,7 @@ export class Query {
 
   @Column()
   isSaved: boolean
+
+  @Column()
+  uid: string
 }
