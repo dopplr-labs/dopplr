@@ -17,6 +17,7 @@ import * as TextDocumentImpl from 'vscode-languageserver-textdocument'
 import * as rpc from 'vscode-ws-jsonrpc'
 import { ResourcesService } from 'src/resources/resources.service'
 import { Logger } from '@nestjs/common'
+import { AuthService } from 'src/auth/auth.service'
 import { PgClient } from './db-connection'
 import {
   DBFunction,
@@ -33,11 +34,16 @@ import { BackwardIterator } from './backword-iterator'
 export function launch(
   socket: rpc.IWebSocket,
   resourcesService: ResourcesService,
+  authService: AuthService,
 ) {
   const reader = new rpc.WebSocketMessageReader(socket)
   const writer = new rpc.WebSocketMessageWriter(socket)
   const connection = createConnection(reader, writer)
-  const server = new SqlLanguageServer(connection, resourcesService)
+  const server = new SqlLanguageServer(
+    connection,
+    resourcesService,
+    authService,
+  )
   server.start()
   return server
 }
@@ -60,6 +66,7 @@ export class SqlLanguageServer {
   constructor(
     protected readonly connection: IConnection,
     private readonly resourcesService: ResourcesService,
+    private readonly authService: AuthService,
   ) {
     this.documents.listen(this.connection)
 
@@ -77,7 +84,8 @@ export class SqlLanguageServer {
   handleConnectionInitialize = (params): InitializeResult => {
     const { initializationOptions = {} } = params
     const resourceId = initializationOptions.resourceId
-    this.loadCompletionCache(resourceId)
+    const uid = initializationOptions.uid
+    this.loadCompletionCache(resourceId, uid)
 
     return {
       capabilities: {
@@ -325,8 +333,13 @@ export class SqlLanguageServer {
     this.connection.dispose()
   }
 
-  loadCompletionCache = async (resourceId: number) => {
-    const resource = await this.resourcesService.getResource(resourceId, false)
+  loadCompletionCache = async (resourceId: number, uid: string) => {
+    const user = await this.authService.getUser(uid)
+    const resource = await this.resourcesService.getResource(
+      resourceId,
+      user,
+      false,
+    )
     this.dbConnection = new PgClient({
       host: resource.host,
       port: resource.port,

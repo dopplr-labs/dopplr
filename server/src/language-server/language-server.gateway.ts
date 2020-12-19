@@ -8,6 +8,7 @@ import {
 import * as ws from 'ws'
 import * as rpc from 'vscode-ws-jsonrpc'
 import { ResourcesService } from 'src/resources/resources.service'
+import { AuthService } from 'src/auth/auth.service'
 import { launch, SqlLanguageServer } from './language-server'
 
 type WsClient = ws & { languageServer: SqlLanguageServer | undefined }
@@ -20,7 +21,10 @@ export class LanguageServerGateway
 
   logger = new Logger('LanguageServerGateway')
 
-  constructor(private resourcesService: ResourcesService) {}
+  constructor(
+    private resourcesService: ResourcesService,
+    private authService: AuthService,
+  ) {}
 
   handleDisconnect(client: WsClient) {
     if (client.languageServer) {
@@ -47,10 +51,18 @@ export class LanguageServerGateway
     }
     // launch the server when the web socket is opened
     if (client.readyState === client.OPEN) {
-      client.languageServer = launch(socket, this.resourcesService)
+      client.languageServer = launch(
+        socket,
+        this.resourcesService,
+        this.authService,
+      )
     } else {
       client.on('open', () => {
-        client.languageServer = launch(socket, this.resourcesService)
+        client.languageServer = launch(
+          socket,
+          this.resourcesService,
+          this.authService,
+        )
       })
     }
   }
