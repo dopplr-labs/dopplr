@@ -12,6 +12,13 @@ const resources = [
     commingSoon: false,
   },
   {
+    id: 'my-sql',
+    title: 'MySQL',
+    description: 'Connect with MySQL database to run SQL queries in Dopplr',
+    imagePath: require('images/resources/mysql-logo.svg'),
+    comingSoon: true,
+  },
+  {
     id: 'vertica',
     title: 'Vertica',
     description: 'Connect with Vertica database to run SQL queries in Dopplr',
