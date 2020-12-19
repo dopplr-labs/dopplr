@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { omit } from 'lodash'
+import { User } from 'src/auth/user.types'
 import { SampleTableDto } from 'src/queries/queries.dto'
 import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { postgresColumnTypes } from 'src/utils/postgres-column-types'
@@ -37,8 +38,15 @@ export class ResourcesService {
    *
    * @param id - Id of the resource
    */
-  async getResource(id: number, encrypt: boolean = true): Promise<Resource> {
-    const resource = await this.resourcesRepository.findOne({ id })
+  async getResource(
+    id: number,
+    user: User,
+    encrypt: boolean = true,
+  ): Promise<Resource> {
+    const resource = await this.resourcesRepository.findOne({
+      id,
+      uid: user.uid,
+    })
     if (!resource) {
       throw new NotFoundException('resource not found')
     }
@@ -48,9 +56,9 @@ export class ResourcesService {
   /**
    * Returns all the resources
    */
-  getAllResources(): Promise<Resource[]> {
+  getAllResources(user: User): Promise<Resource[]> {
     return this.resourcesRepository
-      .find({ order: { createdAt: 'ASC' } })
+      .find({ order: { createdAt: 'ASC' }, where: { uid: user.uid } })
       .then(resources => resources.map(this.encryptResource))
   }
 
@@ -61,9 +69,10 @@ export class ResourcesService {
    */
   async createResource(
     createResourceDto: CreateResourceDto,
+    user: User,
   ): Promise<Resource> {
     return this.resourcesRepository
-      .save(createResourceDto)
+      .save({ ...createResourceDto, uid: user.uid })
       .then(resource => this.encryptResource(resource))
   }
 
@@ -76,6 +85,7 @@ export class ResourcesService {
   async updateResource(
     id: number,
     updateResourceDto: UpdateResourceDto,
+    user: User,
   ): Promise<Resource> {
     const { password } = updateResourceDto
     const updatedData = {
@@ -83,8 +93,8 @@ export class ResourcesService {
       password: password !== ENCRYPTED_PASSWORD_STRING ? password : undefined,
     }
     return this.resourcesRepository
-      .update({ id }, updatedData)
-      .then(() => this.getResource(id))
+      .update({ id, uid: user.uid }, updatedData)
+      .then(() => this.getResource(id, user))
       .then(resource => this.encryptResource(resource))
   }
 
@@ -93,8 +103,8 @@ export class ResourcesService {
    *
    * @param id - Id of the resource to be deleted
    */
-  async deleteResource(id: number): Promise<Resource> {
-    const resource = await this.getResource(id)
+  async deleteResource(id: number, user: User): Promise<Resource> {
+    const resource = await this.getResource(id, user)
     await this.resourcesRepository.remove([resource])
     return this.encryptResource(resource)
   }
@@ -128,8 +138,8 @@ export class ResourcesService {
    *
    * @param id - Id of the resource to be tested
    */
-  async testSavedResource(id: number) {
-    const resource = await this.getResource(id, false)
+  async testSavedResource(id: number, user: User) {
+    const resource = await this.getResource(id, user, false)
     return this.testResource(resource)
   }
 
@@ -138,8 +148,8 @@ export class ResourcesService {
    *
    * @param id - Id of the resource whose schema is to be fetched
    */
-  async fetchSchema(id: number): Promise<any[]> {
-    const resource = await this.getResource(id, false)
+  async fetchSchema(id: number, user: User): Promise<any[]> {
+    const resource = await this.getResource(id, user, false)
 
     if (resource.type === 'postgres') {
       const pool = createPostgresConnectionPool(resource)
@@ -182,9 +192,9 @@ export class ResourcesService {
     throw new InternalServerErrorException('database type not yet implemented')
   }
 
-  async fetchSampleData(sampleTableDto: SampleTableDto) {
+  async fetchSampleData(sampleTableDto: SampleTableDto, user: User) {
     const { resource: resourceId, tableName } = sampleTableDto
-    const resource = await this.getResource(resourceId, false)
+    const resource = await this.getResource(resourceId, user, false)
 
     if (resource.type === 'postgres') {
       const pool = createPostgresConnectionPool(resource)
