@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { HealthModule } from './health/health.module'
 import { ResourcesModule } from './resources/resources.module'
 import { QueriesModule } from './queries/queries.module'
 import { LanguageServer } from './language-server/language-server.module'
+import { AuthModule } from './auth/auth.module'
+import { AuthMiddleware } from './auth/auth.middleware'
 
 @Module({
   imports: [
@@ -27,6 +29,11 @@ import { LanguageServer } from './language-server/language-server.module'
     ResourcesModule,
     QueriesModule,
     LanguageServer,
+    AuthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*')
+  }
+}
