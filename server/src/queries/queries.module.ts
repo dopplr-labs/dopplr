@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from 'src/auth/auth.module'
 import { ResourcesModule } from 'src/resources/resources.module'
@@ -9,10 +9,11 @@ import { QueryRepository } from './query.repository'
 @Module({
   imports: [
     TypeOrmModule.forFeature([QueryRepository]),
-    ResourcesModule,
+    forwardRef(() => ResourcesModule),
     AuthModule,
   ],
   controllers: [QueriesController],
   providers: [QueriesService],
+  exports: [QueriesService],
 })
 export class QueriesModule {}

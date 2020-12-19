@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -7,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { omit } from 'lodash'
 import { User } from 'src/auth/user.types'
 import { SampleTableDto } from 'src/queries/queries.dto'
+import { QueriesService } from 'src/queries/queries.service'
 import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { postgresColumnTypes } from 'src/utils/postgres-column-types'
 import { Resource } from './resource.entity'
@@ -24,6 +27,8 @@ export class ResourcesService {
   constructor(
     @InjectRepository(ResourceRepository)
     private resourcesRepository: ResourceRepository,
+    @Inject(forwardRef(() => QueriesService))
+    private queriesService: QueriesService,
   ) {}
 
   encryptResource(resource: Resource): Resource {
@@ -105,6 +110,7 @@ export class ResourcesService {
    */
   async deleteResource(id: number, user: User): Promise<Resource> {
     const resource = await this.getResource(id, user)
+    await this.queriesService.deleteQueriesForResource(resource, user)
     await this.resourcesRepository.remove([resource])
     return this.encryptResource(resource)
   }
@@ -192,6 +198,13 @@ export class ResourcesService {
     throw new InternalServerErrorException('database type not yet implemented')
   }
 
+  /**
+   * Fetch sample data for a particular resource. Sample data are the first 10 rows
+   * for a particular table
+   *
+   * @param sampleTableDto - DTO for getting sample table for a resource
+   * @param user - User requesting sample data
+   */
   async fetchSampleData(sampleTableDto: SampleTableDto, user: User) {
     const { resource: resourceId, tableName } = sampleTableDto
     const resource = await this.getResource(resourceId, user, false)
