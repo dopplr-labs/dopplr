@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import MonacoEditor from 'react-monaco-editor'
 import {
   MonacoServices,
@@ -12,6 +12,7 @@ import {
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
 import clsx from 'clsx'
+import AuthContext from 'contexts/auth-context'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -28,6 +29,7 @@ function createWebSocket(url: string): WebSocket {
 function createLanguageClient(
   connection: MessageConnection,
   resourceId: number,
+  uid?: string,
 ): MonacoLanguageClient {
   return new MonacoLanguageClient({
     name: 'Language Client',
@@ -41,6 +43,7 @@ function createLanguageClient(
       },
       initializationOptions: {
         resourceId,
+        uid,
       },
     },
     // create a language client connection from the JSON RPC connection on demand
@@ -71,6 +74,7 @@ export default function Editor({
 }: EditorProps) {
   const editor = useRef<MonacoEditor | null>(null)
   const serviceDisposer = useRef<Disposable | undefined>(undefined)
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     let websocket: WebSocket | undefined
@@ -89,7 +93,11 @@ export default function Editor({
       listen({
         webSocket: websocket,
         onConnection: (connection) => {
-          const languageClient = createLanguageClient(connection, resourceId)
+          const languageClient = createLanguageClient(
+            connection,
+            resourceId,
+            user?.uid,
+          )
           const disposable = languageClient.start()
           connection.onClose(() => {
             disposable.dispose()
@@ -103,7 +111,7 @@ export default function Editor({
         websocket.close()
       }
     }
-  }, [resourceId])
+  }, [resourceId, user])
 
   return (
     <div className={clsx('editor h-full', className)} style={style}>

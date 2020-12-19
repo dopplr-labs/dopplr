@@ -10,6 +10,7 @@ import { ResourcesService } from 'src/resources/resources.service'
 import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { PaginationDto } from 'src/dtos/pagination.dto'
 import { QueryResult } from 'pg'
+import { User } from 'src/auth/user.types'
 import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
 import { Query } from './query.entity'
 import { QueryRepository } from './query.repository'
@@ -28,10 +29,14 @@ export class QueriesService {
    */
   async getAllHistory(
     paginationDto: PaginationDto,
+    user: User,
   ): Promise<PaginationData<Query>> {
     const { page, limit } = paginationDto
 
-    const totalItems = await this.queryRepository.count({ isSaved: false })
+    const totalItems = await this.queryRepository.count({
+      isSaved: false,
+      uid: user.uid,
+    })
     const totalPages = Math.ceil(totalItems / limit)
     const hasMore = page < totalPages
 
@@ -42,6 +47,7 @@ export class QueriesService {
         take: limit,
         where: {
           isSaved: false,
+          uid: user.uid,
         },
       })
       .then(queries =>
@@ -69,10 +75,14 @@ export class QueriesService {
    */
   async getAllSavedQueries(
     paginationDto: PaginationDto,
+    user: User,
   ): Promise<PaginationData<Query>> {
     const { page, limit } = paginationDto
 
-    const totalItems = await this.queryRepository.count({ isSaved: true })
+    const totalItems = await this.queryRepository.count({
+      isSaved: true,
+      uid: user.uid,
+    })
     const totalPages = Math.ceil(totalItems / limit)
     const hasMore = page < totalPages
 
@@ -80,6 +90,7 @@ export class QueriesService {
       .find({
         where: {
           isSaved: true,
+          uid: user.uid,
         },
         order: { createdAt: 'DESC' },
         skip: (page - 1) * limit,
@@ -108,8 +119,8 @@ export class QueriesService {
    *
    * @param id - Id of the resource
    */
-  async getQuery(id: number): Promise<Query> {
-    const query = await this.queryRepository.findOne({ id })
+  async getQuery(id: number, user: User): Promise<Query> {
+    const query = await this.queryRepository.findOne({ id, uid: user.uid })
     if (!query) {
       throw new NotFoundException('query not found')
     }
@@ -121,13 +132,14 @@ export class QueriesService {
    *
    * @param saveQueryDto - Data of the query to be saved
    */
-  async saveQuery(saveQueryDto: SaveQueryDto): Promise<Query> {
+  async saveQuery(saveQueryDto: SaveQueryDto, user: User): Promise<Query> {
     const { resource: resourceId } = saveQueryDto
-    const resource = await this.resourcesService.getResource(resourceId)
+    const resource = await this.resourcesService.getResource(resourceId, user)
     return this.queryRepository.save({
       ...saveQueryDto,
       isSaved: true,
-      resource,
+      resource: this.resourcesService.encryptResource(resource),
+      uid: user.uid,
     })
   }
 
@@ -136,14 +148,19 @@ export class QueriesService {
    *
    * @param runQueryDto - Data of the query to be run
    */
-  async runQuery(runQueryDto: RunQueryDto): Promise<QueryResult> {
+  async runQuery(runQueryDto: RunQueryDto, user: User): Promise<QueryResult> {
     const { resource: resourceId, query } = runQueryDto
-    const resource = await this.resourcesService.getResource(resourceId, false)
+    const resource = await this.resourcesService.getResource(
+      resourceId,
+      user,
+      false,
+    )
     if (resource.type === 'postgres') {
       await this.queryRepository.save({
         ...runQueryDto,
         isSaved: false,
         resource: this.resourcesService.encryptResource(resource),
+        uid: user.uid,
       })
       const pool = createPostgresConnectionPool(resource)
       try {
@@ -168,6 +185,7 @@ export class QueriesService {
   async updateQuery(
     id: number,
     updateQueryDto: UpdateQueryDto,
+    user: User,
   ): Promise<Query> {
     const { resource, ...restData } = updateQueryDto
 
@@ -175,16 +193,16 @@ export class QueriesService {
 
     let resourceEntity
     if (typeof resource !== 'undefined') {
-      resourceEntity = await this.resourcesService.getResource(resource)
+      resourceEntity = await this.resourcesService.getResource(resource, user)
       updatedQueryData.resource = resourceEntity
     }
 
-    const query = await this.getQuery(id)
+    const query = await this.getQuery(id, user)
     if (!query.isSaved) {
       throw new ForbiddenException('only saved queries can be updated')
     }
 
-    await this.queryRepository.update({ id }, updatedQueryData)
+    await this.queryRepository.update({ id, uid: user.uid }, updatedQueryData)
 
     return {
       ...query,
@@ -200,8 +218,8 @@ export class QueriesService {
    *
    * @param id - Id of the query to be deleted
    */
-  async deleteQuery(id: number): Promise<Query> {
-    const query = await this.getQuery(id)
+  async deleteQuery(id: number, user: User): Promise<Query> {
+    const query = await this.getQuery(id, user)
     await this.queryRepository.remove([query])
     return { ...query, id }
   }
@@ -209,9 +227,9 @@ export class QueriesService {
   /**
    * Clear the entire history or unsaved queries
    */
-  async clearHistory(): Promise<boolean> {
+  async clearHistory(user: User): Promise<boolean> {
     try {
-      await this.queryRepository.delete({ isSaved: false })
+      await this.queryRepository.delete({ isSaved: false, uid: user.uid })
       return true
     } catch (error) {
       throw new InternalServerErrorException(error)

@@ -45,4 +45,7 @@ export class Resource {
     query => query.resource,
   )
   queries: Query[]
+
+  @Column()
+  uid: string
 }

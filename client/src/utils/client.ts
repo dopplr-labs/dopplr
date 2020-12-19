@@ -12,7 +12,7 @@ client.interceptors.request.use(async (config) => {
     return {
       ...config,
       headers: {
-        Authorization: `Bearer ${idToken}`,
+        Authorization: idToken,
       },
     }
   }
