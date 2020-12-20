@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import ResourceCard from './resource-card'
 
-const resources = [
+export const resourcesList = [
   {
     id: 'postgres',
     title: 'Postgres',
@@ -16,7 +16,7 @@ const resources = [
     title: 'MySQL',
     description: 'Connect with MySQL database to run SQL queries in Dopplr',
     imagePath: require('images/resources/mysql-logo.svg'),
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     id: 'vertica',
@@ -51,7 +51,7 @@ const resources = [
 export default function ResourcesList() {
   return (
     <div className="grid gap-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {resources.map((resource) =>
+      {resourcesList.map((resource) =>
         resource.comingSoon ? (
           <ResourceCard
             title={resource.title}

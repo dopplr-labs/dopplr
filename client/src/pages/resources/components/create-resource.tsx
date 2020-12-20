@@ -3,6 +3,7 @@ import { Button, Checkbox, Form, Input, InputNumber, message } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { resourcesList } from './resources-list'
 import {
   createResource,
   fetchResources,
@@ -13,6 +14,11 @@ export default function CreateResource() {
   const { resourceType } = useParams() as { resourceType: string }
   const [sslRequired, setSslRequired] = useState(false)
   const [selfCertificate, setSelfCertificate] = useState(false)
+
+  const resource =
+    resourcesList[
+      resourcesList.findIndex((resource) => resource.id === resourceType)
+    ]
 
   const navigate = useNavigate()
 
@@ -34,17 +40,13 @@ export default function CreateResource() {
     const { name, host, port, database, username, password } = values
     addResource({
       name,
-      type: 'postgres',
+      type: 'postgres', // need to change this in future
       host,
       port,
       database,
       username,
       password,
     })
-  }
-
-  if (resourceType !== 'postgres') {
-    return null
   }
 
   async function pingConnection() {
@@ -67,7 +69,7 @@ export default function CreateResource() {
     try {
       const response = await testResourceConnection({
         name,
-        type: 'postgres',
+        type: 'postgres', // need to change this in future
         host,
         port,
         database,
@@ -89,7 +91,7 @@ export default function CreateResource() {
         layout="horizontal"
         form={form}
         name="create-resource"
-        initialValues={{ port: 5432 }}
+        initialValues={{ port: 5432 }} // need to change this in future
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 20 }}
         labelAlign="left"
@@ -98,16 +100,17 @@ export default function CreateResource() {
         <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-secondary">
           <div>
             <div className="text-base font-medium text-content-primary">
-              Connect to Postgres
+              Connect to {resource.title}
             </div>
             <div className="text-sm">
-              Connect your Postgres database to run queries and create dashboard
+              Connect your {resource.title} database to run queries and create
+              dashboard
             </div>
           </div>
           <img
-            src={require('images/resources/postgres-logo.png')}
+            src={resource.imagePath}
             className="w-6 h-6"
-            alt="Postgres"
+            alt={resource.title}
           />
         </div>
 
