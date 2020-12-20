@@ -137,20 +137,34 @@ function Tab() {
 
   if (!selectedResourceId) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            <span className="text-xs">
-              No resources have been created. Create a resource to run query
-            </span>
-          }
-        >
-          <Button type="primary" icon={<PlusOutlined />}>
-            Create Resource
-          </Button>
-        </Empty>
-      </div>
+      <>
+        <div className="flex items-center justify-center w-full h-full">
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <span className="text-xs">
+                No resources have been created. Create a resource to run query
+              </span>
+            }
+          >
+            <Button type="primary" icon={<PlusOutlined />}>
+              Create Resource
+            </Button>
+          </Empty>
+        </div>
+        {createPortal(
+          <Empty
+            className="flex flex-col items-center justify-center h-full my-0"
+            description={
+              <span className="text-xs">
+                Create a resource to view its schema
+              </span>
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />,
+          document.getElementById('schema-container') as HTMLDivElement,
+        )}
+      </>
     )
   }
 
@@ -362,19 +376,7 @@ function Tab() {
         onSave={handleQuerySaveComplete}
       />
       {createPortal(
-        selectedResourceId ? (
-          <SchemaTab resourceId={selectedResourceId} />
-        ) : (
-          <Empty
-            className="flex flex-col items-center justify-center h-full my-0"
-            description={
-              <span className="text-xs">
-                Select a resource to view its schema
-              </span>
-            }
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-        ),
+        <SchemaTab resourceId={selectedResourceId} />,
         document.getElementById('schema-container') as HTMLDivElement,
       )}
     </>
