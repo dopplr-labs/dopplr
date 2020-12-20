@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react'
-import { CaretRightFilled } from '@ant-design/icons'
-import { Result, Table } from 'antd'
+import { createPortal } from 'react-dom'
+import {
+  CaretRightFilled,
+  FilePdfOutlined,
+  FileTextOutlined,
+} from '@ant-design/icons'
+import { Dropdown, Menu, Result, Table } from 'antd'
 import clsx from 'clsx'
 import { range } from 'lodash-es'
 import useMeasure from 'react-use-measure'
@@ -28,6 +33,19 @@ export default function ResultsTable({
     undefined,
   )
 
+  const downloadOptions = useMemo(() => {
+    return (
+      <Menu>
+        <Menu.Item className="flex items-center">
+          <FileTextOutlined /> CSV
+        </Menu.Item>
+        <Menu.Item className="flex items-center space-x-3">
+          <FilePdfOutlined /> PDF
+        </Menu.Item>
+      </Menu>
+    )
+  }, [])
+
   const content = useMemo(() => {
     if (isLoading) {
       return (
@@ -50,45 +68,57 @@ export default function ResultsTable({
     }
 
     if (data) {
+      const tableFooter = document
+        .getElementById('table-container')
+        ?.querySelector('.ant-table-pagination-right')
+
       return (
         <>
-          <div>
-            <Table
-              columns={data?.fields.map((field) => ({
-                key: field.name,
-                title: <span title={field.name}>{field.name}</span>,
-                dataIndex: field.name,
-                width: 120,
-                // eslint-disable-next-line react/display-name
-                render: (value: any) => (
-                  <span className="text-xs">{String(value)}</span>
-                ),
-              }))}
-              dataSource={data?.rows.map((row: any, index: number) => ({
-                key: (index + 1).toString(),
-                ...row,
-              }))}
-              size="small"
-              // @ts-ignore
-              onHeaderRow={() => ({
-                ref: (node: HTMLTableRowElement) => {
-                  if (node) {
-                    setTableHeaderSize(node?.getBoundingClientRect()?.height)
-                  }
-                },
-              })}
-              scroll={{
-                x: containerBounds.width,
-                y:
-                  tableHeaderSize && containerBounds.height
-                    ? containerBounds.height -
-                      tableHeaderSize -
-                      PAGINATION_CONTAINER_HEIGHT
-                    : 0,
-              }}
-              pagination={{ showSizeChanger: true }}
-            />
-          </div>
+          <Table
+            columns={data?.fields.map((field) => ({
+              key: field.name,
+              title: <span title={field.name}>{field.name}</span>,
+              dataIndex: field.name,
+              width: 120,
+              // eslint-disable-next-line react/display-name
+              render: (value: any) => (
+                <span className="text-xs">{String(value)}</span>
+              ),
+            }))}
+            dataSource={data?.rows.map((row: any, index: number) => ({
+              key: (index + 1).toString(),
+              ...row,
+            }))}
+            size="small"
+            // @ts-ignore
+            onHeaderRow={() => ({
+              ref: (node: HTMLTableRowElement) => {
+                if (node) {
+                  setTableHeaderSize(node?.getBoundingClientRect()?.height)
+                }
+              },
+            })}
+            scroll={{
+              x: containerBounds.width,
+              y:
+                tableHeaderSize && containerBounds.height
+                  ? containerBounds.height -
+                    tableHeaderSize -
+                    PAGINATION_CONTAINER_HEIGHT
+                  : 0,
+            }}
+            pagination={{ showSizeChanger: true }}
+          />
+          {tableFooter
+            ? createPortal(
+                <div className="flex justify-end flex-1">
+                  <Dropdown.Button overlay={downloadOptions} type="primary">
+                    Download
+                  </Dropdown.Button>
+                </div>,
+                tableFooter,
+              )
+            : null}
         </>
       )
     }
@@ -103,11 +133,19 @@ export default function ResultsTable({
         <span>to run query</span>
       </div>
     )
-  }, [data, isLoading, error, containerBounds, tableHeaderSize])
+  }, [
+    data,
+    isLoading,
+    error,
+    containerBounds,
+    tableHeaderSize,
+    downloadOptions,
+  ])
 
   return (
     <div
       className={clsx('flex flex-col h-full', className)}
+      id="table-container"
       style={style}
       ref={measureContainer}
     >
