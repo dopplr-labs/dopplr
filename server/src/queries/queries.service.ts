@@ -9,11 +9,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { PaginationData } from 'src/types/pagination'
 import { ResourcesService } from 'src/resources/resources.service'
-import { createPostgresConnectionPool } from 'src/utils/postgres'
 import { PaginationDto } from 'src/dtos/pagination.dto'
-import { QueryResult } from 'pg'
 import { User } from 'src/auth/user.types'
 import { Resource } from 'src/resources/resource.entity'
+import { ClientFactory } from 'src/db-clients/client-factory'
+import { QueryResult } from 'src/db-clients/client.interface'
 import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
 import { Query } from './query.entity'
 import { QueryRepository } from './query.repository'
@@ -159,25 +159,19 @@ export class QueriesService {
       user,
       false,
     )
-    if (resource.type === 'postgres') {
-      await this.queryRepository.save({
+    const client = ClientFactory.createClient(resource)
+
+    const [result] = await Promise.all([
+      client.runQuery(query),
+      this.queryRepository.save({
         ...runQueryDto,
         isSaved: false,
         resource: this.resourcesService.encryptResource(resource),
         uid: user.uid,
-      })
-      const pool = createPostgresConnectionPool(resource)
-      try {
-        const result = await pool.query(query)
-        return result
-      } catch (error) {
-        throw new InternalServerErrorException(error)
-      } finally {
-        pool.end()
-      }
-    }
+      }),
+    ])
 
-    throw new InternalServerErrorException('database type not yet implemented')
+    return result
   }
 
   /**
