@@ -22,9 +22,7 @@ export default function SchemaTab({ resourceId }: SchemaTabProps) {
   const filteredSchema = useMemo(() => {
     if (schema) {
       return matchSorter(schema, input, {
-        keys: [
-          (table) => table.columns.map((i: ColumnsField) => i.column_name),
-        ],
+        keys: [(table) => table.columns.map((i: ColumnsField) => i.name)],
       })
     }
   }, [input, schema])

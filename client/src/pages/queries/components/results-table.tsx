@@ -64,7 +64,15 @@ export default function ResultsTable({
     }
 
     if (error) {
-      return <Result status="warning" subTitle={error.message} />
+      return (
+        <Result
+          status="warning"
+          subTitle={
+            error?.response?.data?.message ??
+            'Something went wrong. Please try again'
+          }
+        />
+      )
     }
 
     if (data) {

@@ -25,6 +25,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { fetchResources } from 'pages/resources/queries'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { createPortal } from 'react-dom'
+import { formatDuration } from 'utils/time'
 import { fetchHistory, runQuery } from '../queries-and-mutations'
 import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
@@ -253,7 +254,28 @@ function Tab() {
             ))}
           </Select>
           <div className="flex-1" />
-          <div className="flex-1" />
+          {queryResult?.timeToRunQuery ? (
+            <div className="text-xs text-content-tertiary">
+              Took{' '}
+              <span className="font-medium text-content-primary">
+                {formatDuration(queryResult.timeToRunQuery)}
+              </span>{' '}
+              to run
+            </div>
+          ) : null}
+          <Button
+            type="primary"
+            icon={<CaretRightFilled />}
+            loading={isRunningQuery}
+            disabled={isRunningQuery || !query}
+            onClick={() => {
+              if (selectedResourceId) {
+                runQueryMutation({ resource: selectedResourceId, query })
+              }
+            }}
+          >
+            Run Query
+          </Button>
           <Button
             icon={<CodeOutlined />}
             onClick={() => {
@@ -269,19 +291,6 @@ function Tab() {
             }}
           >
             Save
-          </Button>
-          <Button
-            type="primary"
-            icon={<CaretRightFilled />}
-            loading={isRunningQuery}
-            disabled={isRunningQuery}
-            onClick={() => {
-              if (selectedResourceId) {
-                runQueryMutation({ resource: selectedResourceId, query })
-              }
-            }}
-          >
-            Run Query
           </Button>
         </div>
 
