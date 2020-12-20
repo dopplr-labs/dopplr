@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import MonacoEditor from 'react-monaco-editor'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import {
   MonacoServices,
   Services,
@@ -58,6 +59,7 @@ type EditorProps = {
   resourceId: number
   value: string
   setValue: (udpatedValue: string) => void
+  editorAction?: monaco.editor.IActionDescriptor[]
   className?: string
   style?: React.CSSProperties
 }
@@ -66,6 +68,7 @@ export default function Editor({
   resourceId,
   value,
   setValue,
+  editorAction,
   className,
   style,
 }: EditorProps) {
@@ -126,6 +129,13 @@ export default function Editor({
         }}
         ref={(monacoEditor) => {
           editor.current = monacoEditor
+        }}
+        editorDidMount={(editor) => {
+          if (editorAction) {
+            editorAction.forEach((action) => {
+              editor.addAction(action)
+            })
+          }
         }}
       />
     </div>
