@@ -34,13 +34,15 @@ export interface DBField {
   attname: string
   attnum: number
   attrelid: string
-  dataType: string
+  datatype: string
+  tablesize: number
 }
 
 export interface DBTable {
   schemaname: string
   tablename: string
   isTable: boolean
+  tablesize: number
   columns: DBField[]
 }
 

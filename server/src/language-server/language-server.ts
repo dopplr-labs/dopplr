@@ -1,22 +1,25 @@
 import {
   CompletionItem,
   CompletionItemKind,
+  CompletionParams,
   createConnection,
   Diagnostic,
   DiagnosticSeverity,
   IConnection,
+  InitializeParams,
   InitializeResult,
   ParameterInformation,
   SignatureHelp,
+  SignatureHelpParams,
   SignatureInformation,
-  TextDocument,
+  TextDocumentChangeEvent,
   TextDocuments,
   TextDocumentSyncKind,
 } from 'vscode-languageserver'
-import * as TextDocumentImpl from 'vscode-languageserver-textdocument'
+import { TextDocument } from 'vscode-languageserver-textdocument'
 import * as rpc from 'vscode-ws-jsonrpc'
-import { ResourcesService } from 'src/resources/resources.service'
 import { Logger } from '@nestjs/common'
+import { ResourcesService } from 'src/resources/resources.service'
 import { AuthService } from 'src/auth/auth.service'
 import { PgClient } from './db-connection'
 import {
@@ -35,7 +38,7 @@ export function launch(
   socket: rpc.IWebSocket,
   resourcesService: ResourcesService,
   authService: AuthService,
-) {
+): SqlLanguageServer {
   const reader = new rpc.WebSocketMessageReader(socket)
   const writer = new rpc.WebSocketMessageWriter(socket)
   const connection = createConnection(reader, writer)
@@ -49,9 +52,7 @@ export function launch(
 }
 
 export class SqlLanguageServer {
-  protected readonly documents = new TextDocuments(
-    TextDocumentImpl.TextDocument,
-  )
+  protected readonly documents = new TextDocuments(TextDocument)
 
   schemaCache: DBSchema[] = []
   tableCache: DBTable[] = []
@@ -70,18 +71,16 @@ export class SqlLanguageServer {
   ) {
     this.documents.listen(this.connection)
 
-    this.documents.onDidChangeContent(change => {
-      this.validateTextDocument(change.document)
-    })
-
     this.connection.onInitialize(this.handleConnectionInitialize)
+
+    this.documents.onDidChangeContent(this.handleDocumentChange)
 
     this.connection.onCompletion(this.handleCompletion)
 
     this.connection.onSignatureHelp(this.handleSignatureHelp)
   }
 
-  handleConnectionInitialize = (params): InitializeResult => {
+  handleConnectionInitialize = (params: InitializeParams): InitializeResult => {
     const { initializationOptions = {} } = params
     const resourceId = initializationOptions.resourceId
     const uid = initializationOptions.uid
@@ -98,239 +97,6 @@ export class SqlLanguageServer {
         },
       },
     }
-  }
-
-  handleSignatureHelp = (positionParams): SignatureHelp => {
-    const document = this.documents.get(positionParams.textDocument.uri)
-    let activeSignature = null
-    let activeParameter = null
-    const signatures: SignatureInformation[] = []
-    if (document) {
-      const iterator = new BackwardIterator(
-        document,
-        positionParams.position.character - 1,
-        positionParams.position.line,
-      )
-
-      const paramCount = iterator.readArguments()
-      if (paramCount < 0) return null
-
-      const ident = iterator.readIdent()
-      if (!ident || ident.match(/^".*?"$/)) return null
-
-      const fn = this.functionCache.find(
-        f => f.name.toLocaleLowerCase() === ident.toLocaleLowerCase(),
-      )
-      if (!fn) return null
-
-      const overloads = fn.overloads.filter(o => o.args.length >= paramCount)
-      if (!overloads || !overloads.length) return null
-
-      overloads.forEach(overload => {
-        signatures.push({
-          label: `${fn.name}( ${overload.args.join(' , ')} )`,
-          documentation: overload.description,
-          parameters: overload.args.map<ParameterInformation>(v => {
-            return { label: v }
-          }),
-        })
-      })
-
-      activeSignature = 0
-      activeParameter = Math.min(paramCount, overloads[0].args.length - 1)
-    }
-    return { signatures, activeSignature, activeParameter }
-  }
-
-  handleCompletion = (e: any): CompletionItem[] => {
-    const items: FieldCompletionItem[] = []
-
-    const document = this.documents.get(e.textDocument.uri)
-    if (!document) return items
-
-    const iterator = new BackwardIterator(
-      document,
-      e.position.character - 1,
-      e.position.line,
-    )
-
-    if (e.context.triggerCharacter === '"') {
-      const startingQuotedIdent = iterator.isFowardDQuote()
-      if (!startingQuotedIdent) return items
-
-      iterator.next() // get passed the starting quote
-      if (iterator.isNextPeriod()) {
-        // probably a field - get the ident
-        let ident = iterator.readIdent()
-        let isQuotedIdent = false
-        if (ident.match(/^".*?"$/)) {
-          isQuotedIdent = true
-          ident = fixQuotedIdent(ident)
-        }
-        const table = this.tableCache.find(tbl => {
-          return (
-            (isQuotedIdent && tbl.tablename === ident) ||
-            (!isQuotedIdent &&
-              tbl.tablename.toLocaleLowerCase() === ident.toLocaleLowerCase())
-          )
-        })
-
-        if (!table) return items
-        table.columns.forEach(field => {
-          items.push({
-            label: field.attname,
-            kind: CompletionItemKind.Property,
-            detail: field.dataType,
-          })
-        })
-      } else {
-        // probably a table - list the tables
-        this.tableCache.forEach(table => {
-          items.push({
-            label: table.tablename,
-            kind: CompletionItemKind.Class,
-          })
-        })
-      }
-      return items
-    }
-
-    if (e.context.triggerCharacter === '.') {
-      const idents = readIdents(iterator, 3)
-      let pos = 0
-
-      let schema = this.schemaCache.find(sch => {
-        return (
-          (idents[pos].isQuoted && sch.name === idents[pos].name) ||
-          (!idents[pos].isQuoted &&
-            sch.name.toLocaleLowerCase() ===
-              idents[pos].name.toLocaleLowerCase())
-        )
-      })
-
-      if (!schema) {
-        schema = this.schemaCache.find(sch => {
-          return sch.name === 'public'
-        })
-      } else {
-        pos++
-      }
-
-      if (idents.length === pos) {
-        this.tableCache.forEach(tbl => {
-          if (tbl.schemaname !== schema.name) {
-            return
-          }
-          items.push({
-            label: tbl.tablename,
-            kind: CompletionItemKind.Class,
-            detail: tbl.schemaname !== 'public' ? tbl.schemaname : null,
-          })
-        })
-        return items
-      }
-
-      const table = this.tableCache.find(tbl => {
-        return (
-          (tbl.schemaname === schema.name &&
-            idents[pos].isQuoted &&
-            tbl.tablename === idents[pos].name) ||
-          (!idents[pos].isQuoted &&
-            tbl.tablename.toLocaleLowerCase() ===
-              idents[pos].name.toLocaleLowerCase())
-        )
-      })
-
-      if (table) {
-        table.columns.forEach(field => {
-          items.push({
-            label: field.attname,
-            kind: CompletionItemKind.Property,
-            detail: field.dataType,
-          })
-        })
-      }
-
-      return items
-    }
-
-    this.schemaCache.forEach(schema => {
-      items.push({
-        label: schema.name,
-        kind: CompletionItemKind.Module,
-      })
-    })
-
-    this.tableCache.forEach(table => {
-      items.push({
-        label: table.tablename,
-        detail: table.schemaname !== 'public' ? table.schemaname : null,
-        kind: table.isTable
-          ? CompletionItemKind.Class
-          : CompletionItemKind.Interface,
-        insertText:
-          table.schemaname === 'public'
-            ? table.tablename
-            : table.schemaname + '.' + table.tablename,
-      })
-      table.columns.forEach(field => {
-        const foundItem = items.find(
-          i =>
-            i.label === field.attname &&
-            i.kind === CompletionItemKind.Field &&
-            i.detail === field.dataType,
-        )
-        if (foundItem) {
-          foundItem.tables.push(table.tablename)
-          foundItem.tables.sort()
-          foundItem.documentation = foundItem.tables.join(', ')
-        } else {
-          items.push({
-            label: field.attname,
-            kind: CompletionItemKind.Field,
-            detail: field.dataType,
-            documentation: table.tablename,
-            tables: [table.tablename],
-          })
-        }
-      })
-    })
-
-    this.functionCache.forEach(fn => {
-      items.push({
-        label: fn.name,
-        kind: CompletionItemKind.Function,
-        detail: fn.resultType,
-        documentation: fn.overloads[0].description,
-      })
-    })
-
-    this.keywordCache.forEach(keyword => {
-      items.push({
-        label: keyword,
-        kind: CompletionItemKind.Keyword,
-      })
-    })
-
-    this.databaseCache.forEach(database => {
-      items.push({
-        label: database,
-        kind: CompletionItemKind.Module,
-      })
-    })
-
-    return items
-  }
-
-  start() {
-    this.connection.listen()
-  }
-
-  stop() {
-    if (this.dbConnection) {
-      this.dbConnection.end()
-    }
-    this.connection.dispose()
   }
 
   loadCompletionCache = async (resourceId: number, uid: string) => {
@@ -353,6 +119,7 @@ export class SqlLanguageServer {
     const vQueries = SqlQueryManager.getVersionQueries(
       this.dbConnection.pg_version,
     )
+
     try {
       const schemas = await this.dbConnection.query(`
         SELECT nspname as name
@@ -376,6 +143,7 @@ export class SqlLanguageServer {
           tbl.tablename,
           tbl.quoted_name,
           tbl.isTable,
+          tbl.tableSize,
           json_agg(a) as columns
         FROM
           (
@@ -383,7 +151,8 @@ export class SqlLanguageServer {
               schemaname,
               tablename,
               (quote_ident(schemaname) || '.' || quote_ident(tablename)) as quoted_name,
-              true as isTable
+              true as isTable,
+              pg_relation_size(quote_ident(tablename)) as tableSize
             FROM
               pg_tables
             WHERE
@@ -397,7 +166,8 @@ export class SqlLanguageServer {
               schemaname,
               viewname as tablename,
               (quote_ident(schemaname) || '.' || quote_ident(viewname)) as quoted_name,
-              false as isTable
+              false as isTable,
+              0 as tableSize
             FROM pg_views
             WHERE
               schemaname not in ('information_schema', 'pg_catalog', 'pg_toast')
@@ -410,7 +180,7 @@ export class SqlLanguageServer {
             SELECT
               attrelid,
               attname,
-              format_type(atttypid, atttypmod) as dataType,
+              format_type(atttypid, atttypmod) as datatype,
               attnum,
               attisdropped
             FROM
@@ -421,7 +191,7 @@ export class SqlLanguageServer {
             AND NOT a.attisdropped
             AND has_column_privilege(tbl.quoted_name, a.attname, 'SELECT, INSERT, UPDATE, REFERENCES')
           )
-        GROUP BY schemaname, tablename, quoted_name, isTable;
+        GROUP BY schemaname, tablename, quoted_name, isTable, tableSize;
         `)
       this.tableCache = tablesAndColumns.rows
     } catch (err) {
@@ -477,6 +247,261 @@ export class SqlLanguageServer {
     } catch (err) {
       this.logger.error(err)
     }
+  }
+
+  handleDocumentChange = (change: TextDocumentChangeEvent<TextDocument>) => {
+    this.validateTextDocument(change.document)
+  }
+
+  handleSignatureHelp = (
+    positionParams: SignatureHelpParams,
+  ): SignatureHelp => {
+    const document = this.documents.get(positionParams.textDocument.uri)
+    let activeSignature = null
+    let activeParameter = null
+    const signatures: SignatureInformation[] = []
+    if (document) {
+      const iterator = new BackwardIterator(
+        document,
+        positionParams.position.character - 1,
+        positionParams.position.line,
+      )
+
+      const paramCount = iterator.readArguments()
+      if (paramCount < 0) {
+        return null
+      }
+
+      const ident = iterator.readIdent()
+      if (!ident || ident.match(/^".*?"$/)) {
+        return null
+      }
+
+      const fn = this.functionCache.find(
+        f => f.name.toLocaleLowerCase() === ident.toLocaleLowerCase(),
+      )
+      if (!fn) {
+        return null
+      }
+
+      const overloads = fn.overloads.filter(o => o.args.length >= paramCount)
+      if (!overloads || !overloads.length) {
+        return null
+      }
+
+      overloads.forEach(overload => {
+        signatures.push({
+          label: `${fn.name}( ${overload.args.join(' , ')} )`,
+          documentation: overload.description,
+          parameters: overload.args.map<ParameterInformation>(v => {
+            return { label: v }
+          }),
+        })
+      })
+
+      activeSignature = 0
+      activeParameter = Math.min(paramCount, overloads[0].args.length - 1)
+    }
+
+    return { signatures, activeSignature, activeParameter }
+  }
+
+  handleCompletion = (params: CompletionParams): CompletionItem[] => {
+    const items: FieldCompletionItem[] = []
+
+    const document = this.documents.get(params.textDocument.uri)
+    if (!document) return items
+
+    const iterator = new BackwardIterator(
+      document,
+      params.position.character - 1,
+      params.position.line,
+    )
+
+    if (params.context.triggerCharacter === '"') {
+      const startingQuotedIdent = iterator.isFowardDQuote()
+      if (!startingQuotedIdent) {
+        return items
+      }
+
+      iterator.next() // get passed the starting quote
+      if (iterator.isNextPeriod()) {
+        // probably a field - get the ident
+        let ident = iterator.readIdent()
+        let isQuotedIdent = false
+        if (ident.match(/^".*?"$/)) {
+          isQuotedIdent = true
+          ident = fixQuotedIdent(ident)
+        }
+
+        const table = this.tableCache.find(tbl => {
+          return (
+            (isQuotedIdent && tbl.tablename === ident) ||
+            (!isQuotedIdent &&
+              tbl.tablename.toLocaleLowerCase() === ident.toLocaleLowerCase())
+          )
+        })
+
+        if (!table) {
+          return items
+        }
+
+        table.columns.forEach(field => {
+          items.push({
+            label: field.attname,
+            kind: CompletionItemKind.Property,
+            detail: field.datatype,
+          })
+        })
+      } else {
+        // probably a table - list the tables
+        this.tableCache.forEach(table => {
+          items.push({
+            label: table.tablename,
+            kind: CompletionItemKind.Class,
+            detail: `${table.tablesize} rows`,
+          })
+        })
+      }
+      return items
+    }
+
+    if (params.context.triggerCharacter === '.') {
+      const idents = readIdents(iterator, 3)
+      let pos = 0
+
+      let schema = this.schemaCache.find(sch => {
+        return (
+          (idents[pos].isQuoted && sch.name === idents[pos].name) ||
+          (!idents[pos].isQuoted &&
+            sch.name.toLocaleLowerCase() ===
+              idents[pos].name.toLocaleLowerCase())
+        )
+      })
+
+      if (!schema) {
+        schema = this.schemaCache.find(sch => {
+          return sch.name === 'public'
+        })
+      } else {
+        pos++
+      }
+
+      if (idents.length === pos) {
+        this.tableCache.forEach(tbl => {
+          if (tbl.schemaname !== schema.name) {
+            return
+          }
+          items.push({
+            label: tbl.tablename,
+            kind: CompletionItemKind.Class,
+            detail: `${tbl.tablesize} rows`,
+          })
+        })
+        return items
+      }
+
+      const table = this.tableCache.find(tbl => {
+        return (
+          (tbl.schemaname === schema.name &&
+            idents[pos].isQuoted &&
+            tbl.tablename === idents[pos].name) ||
+          (!idents[pos].isQuoted &&
+            tbl.tablename.toLocaleLowerCase() ===
+              idents[pos].name.toLocaleLowerCase())
+        )
+      })
+
+      if (table) {
+        table.columns.forEach(field => {
+          items.push({
+            label: field.attname,
+            kind: CompletionItemKind.Property,
+            detail: field.datatype,
+          })
+        })
+      }
+
+      return items
+    }
+
+    this.schemaCache.forEach(schema => {
+      items.push({
+        label: schema.name,
+        kind: CompletionItemKind.Module,
+      })
+    })
+
+    this.tableCache.forEach(table => {
+      items.push({
+        label: table.tablename,
+        detail: `${table.tablesize} rows`,
+        kind: table.isTable
+          ? CompletionItemKind.Class
+          : CompletionItemKind.Interface,
+        insertText:
+          table.schemaname === 'public'
+            ? table.tablename
+            : table.schemaname + '.' + table.tablename,
+      })
+      table.columns.forEach(field => {
+        const foundItem = items.find(
+          i =>
+            i.label === field.attname &&
+            i.kind === CompletionItemKind.Field &&
+            i.detail === field.datatype,
+        )
+        if (foundItem) {
+          foundItem.tables.push(table.tablename)
+          foundItem.tables.sort()
+          foundItem.documentation = foundItem.tables.join(', ')
+        } else {
+          items.push({
+            label: field.attname,
+            kind: CompletionItemKind.Field,
+            detail: field.datatype,
+            documentation: table.tablename,
+            tables: [table.tablename],
+          })
+        }
+      })
+    })
+
+    this.functionCache.forEach(fn => {
+      items.push({
+        label: fn.name,
+        kind: CompletionItemKind.Function,
+        detail: fn.resultType,
+        documentation: fn.overloads[0].description,
+      })
+    })
+
+    this.keywordCache.forEach(keyword => {
+      items.push({
+        label: keyword,
+        kind: CompletionItemKind.Keyword,
+      })
+    })
+
+    this.databaseCache.forEach(database => {
+      items.push({
+        label: database,
+        kind: CompletionItemKind.Module,
+      })
+    })
+
+    return items
+  }
+
+  start() {
+    this.connection.listen()
+  }
+
+  stop() {
+    if (this.dbConnection) {
+      this.dbConnection.end()
+    }
+    this.connection.dispose()
   }
 
   validateTextDocument = async (textDocument: TextDocument): Promise<void> => {
