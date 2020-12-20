@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import clsx from 'clsx'
 import { Button, Empty, Result, Select, Tooltip } from 'antd'
 import {
@@ -138,6 +139,40 @@ function Tab() {
   }
 
   const [measureContainer, containerBounds] = useMeasure()
+
+  const editorAction = [
+    {
+      id: 'run-query',
+      label: 'Run Query',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+      run: (editor: monaco.editor.ICodeEditor) => {
+        if (selectedResourceId) {
+          runQueryMutation({
+            resource: selectedResourceId,
+            query: editor.getValue(),
+          })
+        }
+      },
+    },
+    {
+      id: 'save-query',
+      label: 'Save Query',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+      run: () => {
+        setSaveModalVisible(true)
+      },
+    },
+    {
+      id: 'beautify-query',
+      label: 'Beautify Query',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_B],
+      run: () => {
+        setQuery((prevQuery) =>
+          sqlFormatter.format(prevQuery.replace(/\r\n/g, '\n')),
+        )
+      },
+    },
+  ]
 
   if (isLoadingResource || isLoadingHistory) {
     return (
@@ -281,6 +316,7 @@ function Tab() {
                       resourceId={selectedResourceId}
                       value={query}
                       setValue={setQuery}
+                      editorAction={editorAction}
                     />
                     {dragHandle}
                   </div>
@@ -350,6 +386,7 @@ function Tab() {
                         resourceId={selectedResourceId}
                         value={query}
                         setValue={setQuery}
+                        editorAction={editorAction}
                       />
                     </div>
                   ) : null}
