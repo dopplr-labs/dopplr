@@ -2,16 +2,13 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { omit } from 'lodash'
 import { User } from 'src/auth/user.types'
+import { ClientFactory } from 'src/db-clients/client-factory'
 import { SampleTableDto } from 'src/queries/queries.dto'
 import { QueriesService } from 'src/queries/queries.service'
-import { createPostgresConnectionPool } from 'src/utils/postgres'
-import { postgresColumnTypes } from 'src/utils/postgres-column-types'
 import { Resource } from './resource.entity'
 import { ResourceRepository } from './resource.repository'
 import {
@@ -92,11 +89,13 @@ export class ResourcesService {
     updateResourceDto: UpdateResourceDto,
     user: User,
   ): Promise<Resource> {
-    const { password } = updateResourceDto
-    const updatedData = {
-      ...updateResourceDto,
-      password: password !== ENCRYPTED_PASSWORD_STRING ? password : undefined,
+    const { password, ...restData } = updateResourceDto
+    const updatedData: Partial<UpdateResourceDto> = restData
+
+    if (password !== ENCRYPTED_PASSWORD_STRING) {
+      updatedData.password = password
     }
+
     return this.resourcesRepository
       .update({ id, uid: user.uid }, updatedData)
       .then(() => this.getResource(id, user))
@@ -122,20 +121,8 @@ export class ResourcesService {
    * @param resource - Resource to be tested
    */
   async testResource(resource: TestResourceDto): Promise<boolean> {
-    if (resource.type === 'postgres') {
-      const pool = createPostgresConnectionPool(resource)
-
-      try {
-        await pool.query('SELECT NOW()')
-        return true
-      } catch (error) {
-        throw new InternalServerErrorException(error)
-      } finally {
-        pool.end()
-      }
-    }
-
-    throw new InternalServerErrorException('database type not yet implemented')
+    const client = ClientFactory.createClient(resource)
+    return client.testConnection()
   }
 
   /**
@@ -154,48 +141,11 @@ export class ResourcesService {
    *
    * @param id - Id of the resource whose schema is to be fetched
    */
-  async fetchSchema(id: number, user: User): Promise<any[]> {
+  async fetchSchema(id: number, user: User) {
     const resource = await this.getResource(id, user, false)
 
-    if (resource.type === 'postgres') {
-      const pool = createPostgresConnectionPool(resource)
-
-      try {
-        const { rows: tableRows } = await pool.query(
-          "SELECT * from information_schema.tables where table_schema != 'pg_catalog' AND table_schema != 'information_schema';",
-        )
-        const tables = tableRows.map(row => row.table_name)
-        const tableRowQueries = await Promise.all(
-          tables.map(table =>
-            pool.query(
-              `SELECT * FROM information_schema.columns WHERE table_name = '${table}'`,
-            ),
-          ),
-        )
-
-        return tables.map((table, index) => {
-          return {
-            table,
-            columns: tableRowQueries[index].rows.map(row => {
-              const rowData = omit(row, [
-                'table_catalog',
-                'table_name',
-                'table_schema',
-              ])
-              rowData.data_type =
-                postgresColumnTypes[rowData.data_type] ?? rowData.data_type
-              return rowData
-            }),
-          }
-        })
-      } catch (error) {
-        throw new InternalServerErrorException(error)
-      } finally {
-        pool.end()
-      }
-    }
-
-    throw new InternalServerErrorException('database type not yet implemented')
+    const client = ClientFactory.createClient(resource)
+    return client.getSchema()
   }
 
   /**
@@ -208,18 +158,7 @@ export class ResourcesService {
   async fetchSampleData(sampleTableDto: SampleTableDto, user: User) {
     const { resource: resourceId, tableName } = sampleTableDto
     const resource = await this.getResource(resourceId, user, false)
-
-    if (resource.type === 'postgres') {
-      const pool = createPostgresConnectionPool(resource)
-      try {
-        return await pool.query(`SELECT * FROM ${tableName} LIMIT 10;`)
-      } catch (error) {
-        throw new InternalServerErrorException(error)
-      } finally {
-        pool.end()
-      }
-    }
-
-    throw new InternalServerErrorException('database type not yet implemented')
+    const client = ClientFactory.createClient(resource)
+    return client.fetchTableSampleData(tableName)
   }
 }
