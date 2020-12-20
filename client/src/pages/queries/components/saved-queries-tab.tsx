@@ -42,7 +42,8 @@ export default function SavedQueriesTab() {
       )
     }
 
-    if (data && data.length > 0) {
+    if (data && data[0].items.length) {
+      // using reduce to flatten array from 2d to 1d
       const savedQueries = data
         .map((page) => page.items)
         .reduce((prev, curr) => prev.concat(curr))
@@ -73,7 +74,7 @@ export default function SavedQueriesTab() {
     return (
       <div className="flex items-center justify-center h-full">
         <Empty
-          description={<span className="text-xs">Run your first query</span>}
+          description={<span className="text-xs">Save your first query</span>}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
         />
       </div>
