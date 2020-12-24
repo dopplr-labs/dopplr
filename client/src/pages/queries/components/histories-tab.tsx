@@ -59,11 +59,8 @@ export default function HistoriesTab() {
       )
     }
 
-    if (data && data.length > 0) {
-      // using reduce to flatten array from 2d to 1d
-      const history = data
-        .map((page) => page.items)
-        .reduce((prev, curr) => prev.concat(curr))
+    if (data && data[0].items.length) {
+      const history = data.map((page) => page.items).flat()
 
       const groupedHistory = groupBy(history, (item) => {
         const today = dayjs().format('DD MMMM')
@@ -122,16 +119,18 @@ export default function HistoriesTab() {
       <Scrollbars className="flex-1" autoHide>
         {historyContent}
       </Scrollbars>
-      <div className="border-t">
-        <Button
-          onClick={confirmDeleteHistory}
-          icon={<DeleteOutlined />}
-          type="link"
-          className="w-full"
-        >
-          Clear All
-        </Button>
-      </div>
+      {data && data[0].items.length > 0 ? (
+        <div className="border-t">
+          <Button
+            onClick={confirmDeleteHistory}
+            icon={<DeleteOutlined />}
+            type="link"
+            className="w-full"
+          >
+            Clear All
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

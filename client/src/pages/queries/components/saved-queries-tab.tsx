@@ -42,10 +42,8 @@ export default function SavedQueriesTab() {
       )
     }
 
-    if (data && data.length > 0) {
-      const savedQueries = data
-        .map((page) => page.items)
-        .reduce((prev, curr) => prev.concat(curr))
+    if (data && data[0].items.length) {
+      const savedQueries = data.map((page) => page.items).flat()
 
       return (
         <InfiniteScroll
@@ -73,7 +71,7 @@ export default function SavedQueriesTab() {
     return (
       <div className="flex items-center justify-center h-full">
         <Empty
-          description={<span className="text-xs">Run your first query</span>}
+          description={<span className="text-xs">Save your first query</span>}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
         />
       </div>

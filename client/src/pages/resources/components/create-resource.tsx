@@ -1,8 +1,17 @@
-import React from 'react'
-import { Button, Form, Input, InputNumber, message } from 'antd'
+import React, { useState } from 'react'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Result,
+} from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { resourcesList } from './resources-list'
 import {
   createResource,
   fetchResources,
@@ -11,6 +20,13 @@ import {
 
 export default function CreateResource() {
   const { resourceType } = useParams() as { resourceType: string }
+  const [sslRequired, setSslRequired] = useState(false)
+  const [selfCertificate, setSelfCertificate] = useState(false)
+
+  const resource =
+    resourcesList[
+      resourcesList.findIndex((resource) => resource.id === resourceType)
+    ]
 
   const navigate = useNavigate()
 
@@ -32,17 +48,13 @@ export default function CreateResource() {
     const { name, host, port, database, username, password } = values
     addResource({
       name,
-      type: 'postgres',
+      type: 'postgres', // need to change this in future
       host,
       port,
       database,
       username,
       password,
     })
-  }
-
-  if (resourceType !== 'postgres') {
-    return null
   }
 
   async function pingConnection() {
@@ -65,7 +77,7 @@ export default function CreateResource() {
     try {
       const response = await testResourceConnection({
         name,
-        type: 'postgres',
+        type: 'postgres', // need to change this in future
         host,
         port,
         database,
@@ -81,32 +93,44 @@ export default function CreateResource() {
     }
   }
 
+  if (!resource) {
+    return (
+      <Result
+        status="404"
+        title="Unknown Resource Type"
+        subTitle="Sorry, the page doesn't exist. Come back later"
+        extra={
+          <Link to="/resources">
+            <Button type="primary">Create Resource</Button>
+          </Link>
+        }
+      />
+    )
+  }
+
   return (
     <div className="max-w-3xl space-y-4 overflow-hidden border rounded-md">
       <Form
         layout="horizontal"
         form={form}
         name="create-resource"
-        initialValues={{ port: 5432 }}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
+        initialValues={{ port: 5432 }} // need to change this in future
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 20 }}
         labelAlign="left"
         onFinish={onFinish}
       >
         <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-secondary">
           <div>
             <div className="text-base font-medium text-content-primary">
-              Connect to Postgres
+              Connect to {resource.title}
             </div>
             <div className="text-sm">
-              Connect your Postgres database to run queries and create dashboard
+              Connect your {resource.title} database to run queries and create
+              dashboard
             </div>
           </div>
-          <img
-            src={require('images/resources/postgres-logo.png')}
-            className="w-6 h-6"
-            alt="Postgres"
-          />
+          <img src={resource.image} className="w-6 h-6" alt={resource.title} />
         </div>
 
         <div className="p-6 border-b">
@@ -174,10 +198,68 @@ export default function CreateResource() {
                 message: 'Please enter the database password',
               },
             ]}
-            className="mb-0"
           >
             <Input.Password />
           </Form.Item>
+          <Form.Item label=" " colon={false} className="mb-2">
+            <Checkbox
+              checked={sslRequired}
+              onChange={(e) => {
+                setSslRequired(e.target.checked)
+              }}
+            >
+              Connect Using SSL
+            </Checkbox>
+          </Form.Item>
+          {sslRequired ? (
+            <>
+              <Form.Item label=" " colon={false}>
+                <Checkbox
+                  checked={selfCertificate}
+                  onChange={(e) => {
+                    setSelfCertificate(e.target.checked)
+                  }}
+                >
+                  Use a self-signed certificate
+                </Checkbox>
+              </Form.Item>
+              {selfCertificate ? (
+                <>
+                  <Form.Item name="clientKey" label="Client Key">
+                    <Input.TextArea
+                      className="text-xs"
+                      style={{ height: 108 }}
+                      placeholder="-----BEGIN CERTIFICATE-----
+              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+...
+-----END CERTIFICATE-----
+              "
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="clientCertificate"
+                    label="Client Certificate"
+                  >
+                    <Input.TextArea
+                      className="text-xs"
+                      style={{ height: 108 }}
+                      placeholder="-----BEGIN CERTIFICATE-----
+              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+...
+-----END CERTIFICATE-----
+              "
+                    />
+                  </Form.Item>
+                </>
+              ) : null}
+            </>
+          ) : null}
         </div>
 
         <div className="flex px-6 py-4 space-x-4">

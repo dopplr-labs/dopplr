@@ -1,6 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { range } from 'lodash-es'
-import { Form, Input, InputNumber, Button, Result, Modal, message } from 'antd'
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Result,
+  Modal,
+  message,
+  Checkbox,
+} from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, queryCache } from 'react-query'
@@ -14,6 +23,8 @@ import {
 
 export default function ResourceDetail() {
   const { resourceId } = useParams() as { resourceId: string }
+  const [sslRequired, setSslRequired] = useState(false)
+  const [selfCertificate, setSelfCertificate] = useState(false)
 
   const navigate = useNavigate()
 
@@ -167,8 +178,8 @@ export default function ResourceDetail() {
           layout="horizontal"
           form={form}
           name="update-resource"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 20 }}
           labelAlign="left"
           onValuesChange={() => {
             setDisabled(false)
@@ -257,10 +268,68 @@ export default function ResourceDetail() {
                   message: 'Please enter the database password',
                 },
               ]}
-              className="mb-0"
             >
               <Input.Password />
             </Form.Item>
+            <Form.Item label=" " colon={false} className="mb-2">
+              <Checkbox
+                checked={sslRequired}
+                onChange={(e) => {
+                  setSslRequired(e.target.checked)
+                }}
+              >
+                Connect Using SSL
+              </Checkbox>
+            </Form.Item>
+            {sslRequired ? (
+              <>
+                <Form.Item label=" " colon={false}>
+                  <Checkbox
+                    checked={selfCertificate}
+                    onChange={(e) => {
+                      setSelfCertificate(e.target.checked)
+                    }}
+                  >
+                    Use a self-signed certificate
+                  </Checkbox>
+                </Form.Item>
+                {selfCertificate ? (
+                  <>
+                    <Form.Item name="clientKey" label="Client Key">
+                      <Input.TextArea
+                        className="text-xs"
+                        style={{ height: 108 }}
+                        placeholder="-----BEGIN CERTIFICATE-----
+              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+...
+-----END CERTIFICATE-----
+              "
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="clientCertificate"
+                      label="Client Certificate"
+                    >
+                      <Input.TextArea
+                        className="text-xs"
+                        style={{ height: 108 }}
+                        placeholder="-----BEGIN CERTIFICATE-----
+              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
+...
+-----END CERTIFICATE-----
+              "
+                      />
+                    </Form.Item>
+                  </>
+                ) : null}
+              </>
+            ) : null}
           </div>
 
           <div className="flex px-6 py-4 space-x-4">
@@ -294,6 +363,8 @@ export default function ResourceDetail() {
     confirmDelete,
     form,
     pingConnection,
+    selfCertificate,
+    sslRequired,
   ])
 
   return (
