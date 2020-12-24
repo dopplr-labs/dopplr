@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GoogleOutlined, GithubOutlined } from '@ant-design/icons'
 import AuthContext from 'contexts/auth-context'
-import BreathingDots from './components/breathing-dots'
+// import BreathingDots from './components/breathing-dots'
 
 export default function Login() {
   const { user, signInWithGoogle, signInWithGithub } = useContext(AuthContext)
@@ -44,7 +44,12 @@ export default function Login() {
         </button>
       </div>
       <div className="flex-1">
-        <BreathingDots />
+        <img
+          src="https://images.unsplash.com/photo-1554965650-378bcfce5cac?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80"
+          className="object-cover w-full h-full"
+          alt="Display"
+        />
+        {/* <BreathingDots /> */}
       </div>
     </div>
   )

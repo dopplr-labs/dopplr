@@ -60,10 +60,7 @@ export default function HistoriesTab() {
     }
 
     if (data && data[0].items.length) {
-      // using reduce to flatten array from 2d to 1d
-      const history = data
-        .map((page) => page.items)
-        .reduce((prev, curr) => prev.concat(curr))
+      const history = data.map((page) => page.items).flat()
 
       const groupedHistory = groupBy(history, (item) => {
         const today = dayjs().format('DD MMMM')

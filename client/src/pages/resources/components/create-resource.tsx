@@ -1,5 +1,13 @@
 import React, { useState } from 'react'
-import { Button, Checkbox, Form, Input, InputNumber, message } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Result,
+} from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -85,6 +93,21 @@ export default function CreateResource() {
     }
   }
 
+  if (!resource) {
+    return (
+      <Result
+        status="404"
+        title="Unknown Resource Type"
+        subTitle="Sorry, the page doesn't exist. Come back later"
+        extra={
+          <Link to="/resources">
+            <Button type="primary">Create Resource</Button>
+          </Link>
+        }
+      />
+    )
+  }
+
   return (
     <div className="max-w-3xl space-y-4 overflow-hidden border rounded-md">
       <Form
@@ -107,11 +130,7 @@ export default function CreateResource() {
               dashboard
             </div>
           </div>
-          <img
-            src={resource.imagePath}
-            className="w-6 h-6"
-            alt={resource.title}
-          />
+          <img src={resource.image} className="w-6 h-6" alt={resource.title} />
         </div>
 
         <div className="p-6 border-b">
