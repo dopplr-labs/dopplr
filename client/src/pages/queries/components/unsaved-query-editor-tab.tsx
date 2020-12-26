@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
-import { Button, Empty, Result, Select, Tooltip } from 'antd'
+import { Button, Empty, Result, Select, Tabs, Tooltip } from 'antd'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import {
   CaretRightFilled,
@@ -350,64 +350,81 @@ function Tab() {
                 isFullScreen,
                 dragHandle,
                 toggleFullScreen,
-              }) => (
-                <>
-                  {!isFullScreen ? (
-                    <div
-                      className="w-full"
-                      style={{ height: containerBounds.height - paneHeight }}
+              }) => {
+                const headerIcons = (
+                  <div className="space-x-4">
+                    <Tooltip
+                      placement="left"
+                      title="Split Vertically"
+                      mouseEnterDelay={1}
                     >
-                      <Editor
-                        resourceId={selectedResourceId}
-                        value={query}
-                        setValue={setQuery}
-                        editorAction={editorAction}
-                      />
-                    </div>
-                  ) : null}
-                  <div
-                    className="relative border-t"
-                    style={{ height: paneHeight }}
-                  >
-                    {dragHandle}
-                    <div className="flex justify-end px-4 py-2 space-x-4">
-                      <Tooltip
-                        placement="left"
-                        title="Split Vertically"
-                        mouseEnterDelay={1}
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => {
+                          setSplitOrientation(SplitOrientation.VERTICAL)
+                        }}
                       >
-                        <button
-                          className="focus:outline-none"
-                          onClick={() => {
-                            setSplitOrientation(SplitOrientation.VERTICAL)
-                          }}
-                        >
-                          <BorderVerticleOutlined />
-                        </button>
-                      </Tooltip>
-                      <Tooltip
-                        placement="left"
-                        title="Fullscreen"
-                        mouseEnterDelay={1}
+                        <BorderVerticleOutlined />
+                      </button>
+                    </Tooltip>
+                    <Tooltip
+                      placement="left"
+                      title="Fullscreen"
+                      mouseEnterDelay={1}
+                    >
+                      <button
+                        className="focus:outline-none"
+                        onClick={toggleFullScreen}
                       >
-                        <button
-                          className="focus:outline-none"
-                          onClick={toggleFullScreen}
-                        >
-                          {isFullScreen ? <DownOutlined /> : <UpOutlined />}
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <div className="h-full px-4">
-                      <ResultsTable
-                        data={queryResult}
-                        isLoading={isRunningQuery}
-                        error={queryResultError}
-                      />
-                    </div>
+                        {isFullScreen ? <DownOutlined /> : <UpOutlined />}
+                      </button>
+                    </Tooltip>
                   </div>
-                </>
-              )}
+                )
+
+                return (
+                  <>
+                    {!isFullScreen ? (
+                      <div
+                        className="w-full"
+                        style={{ height: containerBounds.height - paneHeight }}
+                      >
+                        <Editor
+                          resourceId={selectedResourceId}
+                          value={query}
+                          setValue={setQuery}
+                          editorAction={editorAction}
+                        />
+                      </div>
+                    ) : null}
+                    <div
+                      className="relative flex flex-col border-t"
+                      style={{ height: paneHeight }}
+                    >
+                      {dragHandle}
+                      <div className="flex items-start w-full h-full px-4 py-2 space-x-4">
+                        <Tabs
+                          defaultActiveKey="1"
+                          size="small"
+                          className="w-full h-full queries-tab"
+                          tabBarExtraContent={headerIcons}
+                        >
+                          <Tabs.TabPane tab="Table" key="1">
+                            <div className="w-full h-full px-4">
+                              <ResultsTable
+                                data={queryResult}
+                                isLoading={isRunningQuery}
+                                error={queryResultError}
+                              />
+                            </div>
+                          </Tabs.TabPane>
+                          <Tabs.TabPane tab="Charts" key="2" />
+                        </Tabs>
+                      </div>
+                    </div>
+                  </>
+                )
+              }}
             />
           )}
         </div>
