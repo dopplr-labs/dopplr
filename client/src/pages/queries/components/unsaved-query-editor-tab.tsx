@@ -346,7 +346,12 @@ function Tab() {
                             />
                           </div>
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab="Charts" key="2" />
+                        <Tabs.TabPane tab="Charts" key="2">
+                          <Result
+                            title="Under Construction"
+                            subTitle="Sorry, the page doesn't exist. Come back later"
+                          />
+                        </Tabs.TabPane>
                       </Tabs>
                     </div>
                   </>
@@ -432,7 +437,12 @@ function Tab() {
                             />
                           </div>
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab="Charts" key="2" />
+                        <Tabs.TabPane tab="Charts" key="2">
+                          <Result
+                            title="Under Construction"
+                            subTitle="Sorry, the page doesn't exist. Come back later"
+                          />
+                        </Tabs.TabPane>
                       </Tabs>
                     </div>
                   </>
