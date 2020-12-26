@@ -1,36 +1,28 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
-import { Button, Empty, Result, Select, Tabs, Tooltip } from 'antd'
+import { Button, Empty, Result, Select } from 'antd'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import {
   CaretRightFilled,
   SaveOutlined,
   CodeOutlined,
   PlusOutlined,
-  UpOutlined,
-  DownOutlined,
-  BorderVerticleOutlined,
-  BorderHorizontalOutlined,
-  RightOutlined,
-  LeftOutlined,
 } from '@ant-design/icons'
 import clsx from 'clsx'
-import Editor from 'components/editor'
 import useMeasure from 'react-use-measure'
 import sqlFormatter from 'sql-formatter'
-import VerticalPane from 'components/vertical-pane'
 import { QueryResult, SavedQuery } from 'types/query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { fetchResources } from 'pages/resources/queries'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { createPortal } from 'react-dom'
-import HorizontalPane from 'components/horizontal-pane'
 import { formatDuration } from 'utils/time'
 import { runQuery } from '../queries-and-mutations'
-import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
+import VerticalOrientation from './vertical-orientation'
+import HorizontalOrientation from './horizontal-orientation'
 
 enum SplitOrientation {
   HORIZONTAL = 'horizontal',
@@ -112,6 +104,14 @@ function Tab() {
   }
 
   const [measureContainer, containerBounds] = useMeasure()
+
+  function handleHorizontalSplit() {
+    setSplitOrientation(SplitOrientation.HORIZONTAL)
+  }
+
+  function handleVerticalSplit() {
+    setSplitOrientation(SplitOrientation.VERTICAL)
+  }
 
   const editorAction = [
     {
@@ -270,184 +270,28 @@ function Tab() {
           ref={measureContainer}
         >
           {splitOrientation === SplitOrientation.VERTICAL ? (
-            <HorizontalPane
-              paneName="editor-horizontal-pane"
-              initialWidth={640}
-              maxConstraint={800}
-              minConstraint={320}
-              buffer={160}
-              render={({
-                paneWidth,
-                isPaneClose,
-                dragHandle,
-                toggleFullScreen,
-              }) => {
-                const headerIcons = (
-                  <div className="space-x-4">
-                    <Tooltip
-                      title="Split Horizontally"
-                      placement="left"
-                      mouseEnterDelay={1}
-                    >
-                      <button
-                        className="focus:outline-none"
-                        onClick={() => {
-                          setSplitOrientation(SplitOrientation.HORIZONTAL)
-                        }}
-                      >
-                        <BorderHorizontalOutlined />
-                      </button>
-                    </Tooltip>
-                    <Tooltip
-                      title="Fullscreen"
-                      placement="left"
-                      mouseEnterDelay={1}
-                    >
-                      <button
-                        className="focus:outline-none"
-                        onClick={toggleFullScreen}
-                      >
-                        {isPaneClose ? <RightOutlined /> : <LeftOutlined />}
-                      </button>
-                    </Tooltip>
-                  </div>
-                )
-
-                return (
-                  <>
-                    <div
-                      className="relative z-10 flex flex-col h-full border-r"
-                      style={{ width: paneWidth }}
-                    >
-                      <Editor
-                        resourceId={selectedResourceId}
-                        value={query}
-                        setValue={setQuery}
-                        editorAction={editorAction}
-                      />
-                      {dragHandle}
-                    </div>
-                    <div
-                      className="h-full"
-                      style={{ width: containerBounds.width - paneWidth }}
-                    >
-                      <Tabs
-                        defaultActiveKey="1"
-                        className="h-full px-4 py-1 queries-tab"
-                        size="small"
-                        tabBarExtraContent={headerIcons}
-                      >
-                        <Tabs.TabPane tab="Table" key="1">
-                          <div className="h-full">
-                            <ResultsTable
-                              data={queryResult}
-                              isLoading={isRunningQuery}
-                              error={queryResultError}
-                            />
-                          </div>
-                        </Tabs.TabPane>
-                        <Tabs.TabPane tab="Charts" key="2">
-                          <Result
-                            title="Under Construction"
-                            subTitle="Sorry, the page doesn't exist. Come back later"
-                          />
-                        </Tabs.TabPane>
-                      </Tabs>
-                    </div>
-                  </>
-                )
-              }}
+            <VerticalOrientation
+              handleHorizontalSplit={handleHorizontalSplit}
+              resourceId={selectedResourceId}
+              query={query}
+              setQuery={setQuery}
+              editorAction={editorAction}
+              containerBounds={containerBounds}
+              queryResult={queryResult}
+              isRunningQuery={isRunningQuery}
+              error={queryResultError}
             />
           ) : (
-            <VerticalPane
-              paneName="editor-vertical-pane"
-              initialHeight={480}
-              maxHeight={containerBounds.height}
-              maxConstraint={containerBounds.height - 160}
-              buffer={80}
-              render={({
-                paneHeight,
-                isFullScreen,
-                dragHandle,
-                toggleFullScreen,
-              }) => {
-                const headerIcons = (
-                  <div className="space-x-4">
-                    <Tooltip
-                      placement="left"
-                      title="Split Vertically"
-                      mouseEnterDelay={1}
-                    >
-                      <button
-                        className="focus:outline-none"
-                        onClick={() => {
-                          setSplitOrientation(SplitOrientation.VERTICAL)
-                        }}
-                      >
-                        <BorderVerticleOutlined />
-                      </button>
-                    </Tooltip>
-                    <Tooltip
-                      placement="left"
-                      title="Fullscreen"
-                      mouseEnterDelay={1}
-                    >
-                      <button
-                        className="focus:outline-none"
-                        onClick={toggleFullScreen}
-                      >
-                        {isFullScreen ? <DownOutlined /> : <UpOutlined />}
-                      </button>
-                    </Tooltip>
-                  </div>
-                )
-
-                return (
-                  <>
-                    {!isFullScreen ? (
-                      <div
-                        className="w-full"
-                        style={{ height: containerBounds.height - paneHeight }}
-                      >
-                        <Editor
-                          resourceId={selectedResourceId}
-                          value={query}
-                          setValue={setQuery}
-                          editorAction={editorAction}
-                        />
-                      </div>
-                    ) : null}
-                    <div
-                      className="relative border-t"
-                      style={{ height: paneHeight }}
-                    >
-                      {dragHandle}
-                      <Tabs
-                        defaultActiveKey="1"
-                        size="small"
-                        className="w-full h-full px-4 py-1 queries-tab"
-                        tabBarExtraContent={headerIcons}
-                      >
-                        <Tabs.TabPane tab="Table" key="1">
-                          <div className="w-full h-full">
-                            <ResultsTable
-                              data={queryResult}
-                              isLoading={isRunningQuery}
-                              error={queryResultError}
-                            />
-                          </div>
-                        </Tabs.TabPane>
-                        <Tabs.TabPane tab="Charts" key="2">
-                          <Result
-                            title="Under Construction"
-                            subTitle="Sorry, the page doesn't exist. Come back later"
-                          />
-                        </Tabs.TabPane>
-                      </Tabs>
-                    </div>
-                  </>
-                )
-              }}
+            <HorizontalOrientation
+              handleVerticalSplit={handleVerticalSplit}
+              resourceId={selectedResourceId}
+              query={query}
+              setQuery={setQuery}
+              editorAction={editorAction}
+              containerBounds={containerBounds}
+              queryResult={queryResult}
+              isRunningQuery={isRunningQuery}
+              error={queryResultError}
             />
           )}
         </div>
