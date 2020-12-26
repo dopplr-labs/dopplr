@@ -11,7 +11,7 @@ import { range } from 'lodash-es'
 import useMeasure from 'react-use-measure'
 import { QueryResult } from 'types/query'
 
-const PAGINATION_CONTAINER_HEIGHT = 96
+const PAGINATION_CONTAINER_HEIGHT = 80
 
 type ResultsTableProps = {
   data: QueryResult | null
