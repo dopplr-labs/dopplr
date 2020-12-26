@@ -272,62 +272,77 @@ function Tab() {
                 isPaneClose,
                 dragHandle,
                 toggleFullScreen,
-              }) => (
-                <>
-                  <div
-                    className="relative z-10 flex flex-col h-full border-r"
-                    style={{ width: paneWidth }}
-                  >
-                    <Editor
-                      resourceId={selectedResourceId}
-                      value={query}
-                      setValue={setQuery}
-                      editorAction={editorAction}
-                    />
-                    {dragHandle}
+              }) => {
+                const headerIcons = (
+                  <div className="space-x-4">
+                    <Tooltip
+                      title="Split Horizontally"
+                      placement="left"
+                      mouseEnterDelay={1}
+                    >
+                      <button
+                        className="focus:outline-none"
+                        onClick={() => {
+                          setSplitOrientation(SplitOrientation.HORIZONTAL)
+                        }}
+                      >
+                        <BorderHorizontalOutlined />
+                      </button>
+                    </Tooltip>
+                    <Tooltip
+                      title="Fullscreen"
+                      placement="left"
+                      mouseEnterDelay={1}
+                    >
+                      <button
+                        className="focus:outline-none"
+                        onClick={toggleFullScreen}
+                      >
+                        {isPaneClose ? <RightOutlined /> : <LeftOutlined />}
+                      </button>
+                    </Tooltip>
                   </div>
-                  <div
-                    className="h-full"
-                    style={{ width: containerBounds.width - paneWidth }}
-                  >
-                    <div className="flex justify-end px-4 py-2 space-x-4">
-                      <Tooltip
-                        title="Split Horizontally"
-                        placement="left"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={() => {
-                            setSplitOrientation(SplitOrientation.HORIZONTAL)
-                          }}
-                        >
-                          <BorderHorizontalOutlined />
-                        </button>
-                      </Tooltip>
-                      <Tooltip
-                        title="Fullscreen"
-                        placement="left"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={toggleFullScreen}
-                        >
-                          {isPaneClose ? <RightOutlined /> : <LeftOutlined />}
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <div className="h-full px-4">
-                      <ResultsTable
-                        data={queryResult}
-                        isLoading={isRunningQuery}
-                        error={queryResultError}
+                )
+
+                return (
+                  <>
+                    <div
+                      className="relative z-10 flex flex-col h-full border-r"
+                      style={{ width: paneWidth }}
+                    >
+                      <Editor
+                        resourceId={selectedResourceId}
+                        value={query}
+                        setValue={setQuery}
+                        editorAction={editorAction}
                       />
+                      {dragHandle}
                     </div>
-                  </div>
-                </>
-              )}
+                    <div
+                      className="h-full"
+                      style={{ width: containerBounds.width - paneWidth }}
+                    >
+                      <Tabs
+                        defaultActiveKey="1"
+                        className="h-full px-4 py-1 queries-tab"
+                        size="small"
+                        tabBarExtraContent={headerIcons}
+                      >
+                        <Tabs.TabPane tab="Table" key="1">
+                          <div className="h-full">
+                            <ResultsTable
+                              data={queryResult}
+                              isLoading={isRunningQuery}
+                              error={queryResultError}
+                            />
+                          </div>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Charts" key="2" />
+                      </Tabs>
+                    </div>
+                  </>
+                )
+              }}
             />
           ) : (
             <VerticalPane
@@ -389,29 +404,27 @@ function Tab() {
                       </div>
                     ) : null}
                     <div
-                      className="relative flex flex-col border-t"
+                      className="relative border-t"
                       style={{ height: paneHeight }}
                     >
                       {dragHandle}
-                      <div className="flex items-start w-full h-full px-4 py-2 space-x-4">
-                        <Tabs
-                          defaultActiveKey="1"
-                          size="small"
-                          className="w-full h-full queries-tab"
-                          tabBarExtraContent={headerIcons}
-                        >
-                          <Tabs.TabPane tab="Table" key="1">
-                            <div className="w-full h-full px-4">
-                              <ResultsTable
-                                data={queryResult}
-                                isLoading={isRunningQuery}
-                                error={queryResultError}
-                              />
-                            </div>
-                          </Tabs.TabPane>
-                          <Tabs.TabPane tab="Charts" key="2" />
-                        </Tabs>
-                      </div>
+                      <Tabs
+                        defaultActiveKey="1"
+                        size="small"
+                        className="w-full h-full px-4 py-1 queries-tab"
+                        tabBarExtraContent={headerIcons}
+                      >
+                        <Tabs.TabPane tab="Table" key="1">
+                          <div className="w-full h-full">
+                            <ResultsTable
+                              data={queryResult}
+                              isLoading={isRunningQuery}
+                              error={queryResultError}
+                            />
+                          </div>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Charts" key="2" />
+                      </Tabs>
                     </div>
                   </>
                 )
@@ -420,7 +433,6 @@ function Tab() {
           )}
         </div>
       </div>
-      {/* </HotKeys> */}
       <SaveQueryModal
         visible={saveModalVisible}
         onRequestClose={() => {
