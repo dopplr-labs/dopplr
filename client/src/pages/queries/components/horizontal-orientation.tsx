@@ -99,7 +99,7 @@ export default function HorizontalOrientation({
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Charts" key="2">
-                  <ChartTab />
+                  <ChartTab data={queryResult} />
                 </Tabs.TabPane>
               </Tabs>
             </div>
