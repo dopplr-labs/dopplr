@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tooltip, Tabs, Result } from 'antd'
+import { Tooltip, Tabs } from 'antd'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { RectReadOnly } from 'react-use-measure'
 import {
@@ -11,6 +11,7 @@ import VerticalPane from 'components/vertical-pane'
 import Editor from 'components/editor'
 import { QueryResult } from 'types/query'
 import ResultsTable from './results-table'
+import ChartTab from './chart-tab'
 
 type HorizontalOrientationProps = {
   handleVerticalSplit: () => void
@@ -98,10 +99,7 @@ export default function HorizontalOrientation({
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Charts" key="2">
-                  <Result
-                    title="Under Construction"
-                    subTitle="Sorry, the page doesn't exist. Come back later"
-                  />
+                  <ChartTab />
                 </Tabs.TabPane>
               </Tabs>
             </div>
