@@ -100,7 +100,7 @@ export default function VerticalOrientation({
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Charts" key="2">
-                  <ChartTab />
+                  <ChartTab data={queryResult} />
                 </Tabs.TabPane>
               </Tabs>
             </div>
