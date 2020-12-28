@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Select, Form, Input, Empty } from 'antd'
-import { Line, Area, Column, Scatter } from '@ant-design/charts'
+import { Line, Area, Column, Scatter, Pie } from '@ant-design/charts'
 import {
   AreaChartOutlined,
   BarChartOutlined,
@@ -42,6 +42,15 @@ export default function ChartTab({ data }: ChartTabProps) {
     }
   }, [xAxis, yAxis, chartData])
 
+  const pieConfig = useMemo(() => {
+    return {
+      data: chartData ?? [],
+      angleField: xAxis ?? '',
+      colorField: yAxis ?? '',
+      autoFit: true,
+    }
+  }, [xAxis, yAxis, chartData])
+
   const chartList = useMemo(
     () => [
       {
@@ -68,8 +77,14 @@ export default function ChartTab({ data }: ChartTabProps) {
         label: 'Scatter Plot',
         chart: <Scatter {...config} />,
       },
+      {
+        id: 'pie',
+        icon: <PieChartOutlined />,
+        label: 'Pie Chart',
+        chart: <Pie {...pieConfig} />,
+      },
     ],
-    [config],
+    [config, pieConfig],
   )
 
   const chartContent = useMemo(() => {
