@@ -1,0 +1,13 @@
+export type ChartTypes =
+  | 'line'
+  | 'area'
+  | 'stackedArea'
+  | 'stackedArea100'
+  | 'column'
+  | 'stackedColumn'
+  | 'stackedColumn100'
+  | 'bar'
+  | 'stackedBar'
+  | 'stackedBar100'
+  | 'pie'
+  | 'scatter'
