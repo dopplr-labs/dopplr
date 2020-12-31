@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react'
-import { Select, Form, Input, Empty } from 'antd'
-import { Line, Area, Column, Scatter, Pie } from '@ant-design/charts'
+import { Empty, Form, Select, Input } from 'antd'
+import { Line, Area, Column, Scatter, Bar, Pie } from '@ant-design/charts'
 import {
+  LineChartOutlined,
   AreaChartOutlined,
+  PieChartOutlined,
   BarChartOutlined,
   DotChartOutlined,
-  LineChartOutlined,
-  PieChartOutlined,
 } from '@ant-design/icons'
 import { QueryResult } from 'types/query'
 
@@ -15,41 +15,40 @@ type ChartTabProps = {
 }
 
 export default function ChartTab({ data }: ChartTabProps) {
-  const [xAxis, setXAxis] = useState<string | undefined>()
-  const [yAxis, setYAxis] = useState<string | undefined>()
+  const [label, setLabel] = useState<string | undefined>()
+  const [values, setValues] = useState<string | string[] | undefined>()
   const [title, setTitle] = useState<string | undefined>('Untitled Chart')
   const [chartType, setChartType] = useState<string>('line')
 
   const chartData = useMemo(() => {
-    if (xAxis && yAxis) {
-      return data?.rows.map((row) => {
-        const result: any = {}
-        result[xAxis] = row[xAxis]
-        result[yAxis] = row[yAxis]
-        return result
-      })
+    if (label && values && data) {
+      if (typeof values === 'string') {
+        return data.rows.map((row) => {
+          return { label: row[label], value: row[values], type: values }
+        })
+      } else {
+        return values
+          .map((value) =>
+            data.rows.map((row) => {
+              return { label: row[label], value: row[value], type: value }
+            }),
+          )
+          .flat()
+      }
     } else {
       return []
     }
-  }, [data, xAxis, yAxis])
+  }, [label, values, data])
 
   const config = useMemo(() => {
     return {
-      data: chartData ?? [],
-      xField: xAxis ?? '',
-      yField: yAxis ?? '',
+      data: chartData,
+      xField: 'label',
+      yField: 'value',
+      seriesField: 'type',
       autoFit: true,
     }
-  }, [xAxis, yAxis, chartData])
-
-  const pieConfig = useMemo(() => {
-    return {
-      data: chartData ?? [],
-      angleField: xAxis ?? '',
-      colorField: yAxis ?? '',
-      autoFit: true,
-    }
-  }, [xAxis, yAxis, chartData])
+  }, [chartData])
 
   const chartList = useMemo(
     () => [
@@ -69,7 +68,19 @@ export default function ChartTab({ data }: ChartTabProps) {
         id: 'column',
         icon: <BarChartOutlined />,
         label: 'Column Chart',
-        chart: <Column {...config} />,
+        chart: <Column {...config} isGroup />,
+      },
+      {
+        id: 'bar',
+        icon: <BarChartOutlined className="transform rotate-90" />,
+        label: 'Bar Chart',
+        chart: <Bar {...config} xField="value" yField="label" isGroup />,
+      },
+      {
+        id: 'pie',
+        icon: <PieChartOutlined />,
+        label: 'Pie Chart',
+        chart: <Pie data={chartData} angleField="value" colorField="label" />,
       },
       {
         id: 'scatter',
@@ -77,14 +88,8 @@ export default function ChartTab({ data }: ChartTabProps) {
         label: 'Scatter Plot',
         chart: <Scatter {...config} />,
       },
-      {
-        id: 'pie',
-        icon: <PieChartOutlined />,
-        label: 'Pie Chart',
-        chart: <Pie {...pieConfig} />,
-      },
     ],
-    [config, pieConfig],
+    [config, chartData],
   )
 
   const chartContent = useMemo(() => {
@@ -119,8 +124,8 @@ export default function ChartTab({ data }: ChartTabProps) {
     if (data) {
       return (
         <div className="flex w-full h-full">
-          <div className="flex flex-col flex-1 px-8 pb-8 space-y-4">
-            {xAxis && yAxis ? (
+          <div className="flex flex-col w-full px-8 pb-8 space-y-4">
+            {label && values ? (
               <>
                 <div className="text-center">{title}</div>
                 {
@@ -133,72 +138,72 @@ export default function ChartTab({ data }: ChartTabProps) {
               <Empty description={<span>Select data to plot chart</span>} />
             )}
           </div>
-          <div className="flex-shrink-0 w-1/4 h-full py-4 pl-4 border-l">
-            <Form layout="vertical">
-              <Form.Item label="Chart Type">
-                <Select
-                  value={chartType}
-                  onChange={(value) => {
-                    setChartType(value)
-                  }}
-                >
-                  {chartList.map((chart) => (
-                    <Select.Option key={chart.id} value={chart.id}>
-                      <div className="flex items-center space-x-3">
-                        {chart.icon}
-                        <span>{chart.label}</span>
-                      </div>
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item label="X Axis">
-                <Select
-                  placeholder="Add X-Axis"
-                  className="w-full"
-                  value={xAxis}
-                  onChange={(value) => {
-                    setXAxis(value)
-                  }}
-                >
-                  {data.fields.map((field) => (
-                    <Select.Option key={field.columnId} value={field.name}>
-                      {field.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item label="Y Axis">
-                <Select
-                  placeholder="Add Y-Axis"
-                  className="w-full"
-                  value={yAxis}
-                  onChange={(value) => {
-                    setYAxis(value)
-                  }}
-                >
-                  {data.fields.map((field) => (
-                    <Select.Option key={field.columnId} value={field.name}>
-                      {field.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item label="Chart Title">
-                <Input
-                  placeholder="Enter chart title"
-                  value={title}
-                  onChange={({ target: { value } }) => {
-                    setTitle(value)
-                  }}
-                />
-              </Form.Item>
-            </Form>
-          </div>
+          <Form layout="vertical" className="w-80 h-full py=4 pl-4 border-l">
+            <Form.Item label="Chart Type">
+              <Select
+                showSearch
+                value={chartType}
+                onChange={(value) => {
+                  setChartType(value)
+                }}
+              >
+                {chartList.map((chart) => (
+                  <Select.Option key={chart.id} value={chart.id}>
+                    <div className="flex items-center space-x-3">
+                      {chart.icon}
+                      <span>{chart.label}</span>
+                    </div>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Label">
+              <Select
+                placeholder="Add label"
+                className="w-full"
+                value={label}
+                onChange={(value) => {
+                  setLabel(value)
+                }}
+              >
+                {data.fields.map((field) => (
+                  <Select.Option key={field.columnId} value={field.name}>
+                    {field.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Values">
+              <Select
+                placeholder="Add values"
+                mode={chartType !== 'pie' ? 'multiple' : undefined}
+                className="w-full"
+                value={values}
+                onChange={(value) => {
+                  setValues(value)
+                }}
+              >
+                {data.fields.map((field) => (
+                  <Select.Option key={field.columnId} value={field.name}>
+                    {field.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Chart Title">
+              <Input
+                placeholder="Enter chart title"
+                value={title}
+                onChange={({ target: { value } }) => {
+                  setTitle(value)
+                }}
+              />
+            </Form.Item>
+          </Form>
         </div>
       )
     }
-  }, [data, xAxis, yAxis, title, chartList, chartType])
+  }, [data, label, values, chartList, chartType, title])
 
   return <>{chartContent}</>
 }
