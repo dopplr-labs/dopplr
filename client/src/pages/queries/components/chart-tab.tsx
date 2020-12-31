@@ -1,14 +1,14 @@
-import React, { useMemo, useState } from 'react'
+import React, { cloneElement, useMemo, useState } from 'react'
 import { Empty, Form, Select, Input } from 'antd'
-import { Line, Area, Column, Scatter, Bar, Pie } from '@ant-design/charts'
 import {
   LineChartOutlined,
   AreaChartOutlined,
   PieChartOutlined,
   BarChartOutlined,
-  DotChartOutlined,
 } from '@ant-design/icons'
 import { QueryResult } from 'types/query'
+import { ChartTypes } from 'types/chart'
+import { chartList, chartOrder } from '../data/chartList'
 
 type ChartTabProps = {
   data: QueryResult | null
@@ -18,7 +18,7 @@ export default function ChartTab({ data }: ChartTabProps) {
   const [label, setLabel] = useState<string | undefined>()
   const [values, setValues] = useState<string | string[] | undefined>()
   const [title, setTitle] = useState<string | undefined>('Untitled Chart')
-  const [chartType, setChartType] = useState<string>('line')
+  const [chartType, setChartType] = useState<ChartTypes>('line')
 
   const chartData = useMemo(() => {
     if (label && values && data) {
@@ -39,98 +39,6 @@ export default function ChartTab({ data }: ChartTabProps) {
       return []
     }
   }, [label, values, data])
-
-  const config = useMemo(() => {
-    return {
-      data: chartData,
-      xField: 'label',
-      yField: 'value',
-      seriesField: 'type',
-      autoFit: true,
-    }
-  }, [chartData])
-
-  const chartList = useMemo(
-    () => [
-      {
-        id: 'line',
-        icon: <LineChartOutlined />,
-        label: 'Line Chart',
-        chart: <Line {...config} />,
-      },
-      {
-        id: 'area',
-        icon: <AreaChartOutlined />,
-        label: 'Area Chart',
-        chart: <Area {...config} isStack={false} />,
-      },
-      {
-        id: 'stacked-area',
-        icon: <AreaChartOutlined />,
-        label: 'Stacked Area Chart',
-        chart: <Area {...config} isStack />,
-      },
-      {
-        id: '100-stacked-area',
-        icon: <AreaChartOutlined />,
-        label: '100% Stacked Area Chart',
-        chart: <Area {...config} isStack isPercent />,
-      },
-      {
-        id: 'column',
-        icon: <BarChartOutlined />,
-        label: 'Column Chart',
-        chart: <Column {...config} isGroup />,
-      },
-      {
-        id: 'stacked-column',
-        icon: <BarChartOutlined />,
-        label: 'Stacked Column Chart',
-        chart: <Column {...config} isGroup={false} />,
-      },
-      {
-        id: '100-stacked-column',
-        icon: <BarChartOutlined />,
-        label: '100% Stacked Column Chart',
-        chart: <Column {...config} isStack isPercent />,
-      },
-      {
-        id: 'bar',
-        icon: <BarChartOutlined className="transform rotate-90" />,
-        label: 'Bar Chart',
-        chart: <Bar {...config} xField="value" yField="label" isGroup />,
-      },
-      {
-        id: 'stacked-bar',
-        icon: <BarChartOutlined className="transform rotate-90" />,
-        label: 'Stacked Bar Chart',
-        chart: (
-          <Bar {...config} xField="value" yField="label" isGroup={false} />
-        ),
-      },
-      {
-        id: '100-stacked-bar',
-        icon: <BarChartOutlined className="transform rotate-90" />,
-        label: '100% Stacked Bar Chart',
-        chart: (
-          <Bar {...config} xField="value" yField="label" isStack isPercent />
-        ),
-      },
-      {
-        id: 'pie',
-        icon: <PieChartOutlined />,
-        label: 'Pie Chart',
-        chart: <Pie data={chartData} angleField="value" colorField="label" />,
-      },
-      {
-        id: 'scatter',
-        icon: <DotChartOutlined />,
-        label: 'Scatter Plot',
-        chart: <Scatter {...config} />,
-      },
-    ],
-    [config, chartData],
-  )
 
   const chartContent = useMemo(() => {
     if (!data) {
@@ -168,11 +76,7 @@ export default function ChartTab({ data }: ChartTabProps) {
             {label && values ? (
               <>
                 <div className="text-center">{title}</div>
-                {
-                  chartList[
-                    chartList.findIndex((chart) => chart.id === chartType)
-                  ].chart
-                }
+                {cloneElement(chartList[chartType].chart, { data: chartData })}
               </>
             ) : (
               <Empty description={<span>Select data to plot chart</span>} />
@@ -187,11 +91,11 @@ export default function ChartTab({ data }: ChartTabProps) {
                   setChartType(value)
                 }}
               >
-                {chartList.map((chart) => (
-                  <Select.Option key={chart.id} value={chart.id}>
+                {chartOrder.map((chart: ChartTypes) => (
+                  <Select.Option key={chart} value={chart}>
                     <div className="flex items-center space-x-3">
-                      {chart.icon}
-                      <span>{chart.label}</span>
+                      {chartList[chart].icon}
+                      <span>{chartList[chart].label}</span>
                     </div>
                   </Select.Option>
                 ))}
@@ -243,7 +147,7 @@ export default function ChartTab({ data }: ChartTabProps) {
         </div>
       )
     }
-  }, [data, label, values, chartList, chartType, title])
+  }, [data, label, values, chartData, chartType, title])
 
   return <>{chartContent}</>
 }
