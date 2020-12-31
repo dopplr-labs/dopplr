@@ -62,7 +62,19 @@ export default function ChartTab({ data }: ChartTabProps) {
         id: 'area',
         icon: <AreaChartOutlined />,
         label: 'Area Chart',
-        chart: <Area {...config} />,
+        chart: <Area {...config} isStack={false} />,
+      },
+      {
+        id: 'stacked-area',
+        icon: <AreaChartOutlined />,
+        label: 'Stacked Area Chart',
+        chart: <Area {...config} isStack />,
+      },
+      {
+        id: '100-stacked-area',
+        icon: <AreaChartOutlined />,
+        label: '100% Stacked Area Chart',
+        chart: <Area {...config} isStack isPercent />,
       },
       {
         id: 'column',
@@ -71,10 +83,38 @@ export default function ChartTab({ data }: ChartTabProps) {
         chart: <Column {...config} isGroup />,
       },
       {
+        id: 'stacked-column',
+        icon: <BarChartOutlined />,
+        label: 'Stacked Column Chart',
+        chart: <Column {...config} isGroup={false} />,
+      },
+      {
+        id: '100-stacked-column',
+        icon: <BarChartOutlined />,
+        label: '100% Stacked Column Chart',
+        chart: <Column {...config} isStack isPercent />,
+      },
+      {
         id: 'bar',
         icon: <BarChartOutlined className="transform rotate-90" />,
         label: 'Bar Chart',
         chart: <Bar {...config} xField="value" yField="label" isGroup />,
+      },
+      {
+        id: 'stacked-bar',
+        icon: <BarChartOutlined className="transform rotate-90" />,
+        label: 'Stacked Bar Chart',
+        chart: (
+          <Bar {...config} xField="value" yField="label" isGroup={false} />
+        ),
+      },
+      {
+        id: '100-stacked-bar',
+        icon: <BarChartOutlined className="transform rotate-90" />,
+        label: '100% Stacked Bar Chart',
+        chart: (
+          <Bar {...config} xField="value" yField="label" isStack isPercent />
+        ),
       },
       {
         id: 'pie',
