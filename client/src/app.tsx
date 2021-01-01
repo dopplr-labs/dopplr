@@ -17,6 +17,7 @@ import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings/components/text-editor-settings'
 import WorkbenchSettings from 'pages/settings/components/workbench-settings'
 import client from 'utils/client'
+import Logrocket from 'components/logrocket'
 
 async function fetchHealthStatus() {
   const { data } = await client.get('/health/knock-knock')
@@ -90,6 +91,7 @@ export function App() {
           </Routes>
         </Suspense>
       </Auth>
+      <Logrocket />
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />
       ) : null}
