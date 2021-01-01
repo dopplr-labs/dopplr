@@ -89,9 +89,9 @@ export function App() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace={true} />} />
           </Routes>
+          <Logrocket />
         </Suspense>
       </Auth>
-      <Logrocket />
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />
       ) : null}

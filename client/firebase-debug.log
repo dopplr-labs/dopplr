@@ -1,0 +1,17 @@
+[debug] [2021-01-01T16:15:03.282Z] ----------------------------------------------------------------------
+[debug] [2021-01-01T16:15:03.284Z] Command:       /usr/local/Cellar/node/14.13.1/bin/node /usr/local/bin/firebase deploy
+[debug] [2021-01-01T16:15:03.284Z] CLI Version:   9.0.1
+[debug] [2021-01-01T16:15:03.285Z] Platform:      darwin
+[debug] [2021-01-01T16:15:03.285Z] Node Version:  v14.13.1
+[debug] [2021-01-01T16:15:03.286Z] Time:          Fri Jan 01 2021 21:45:03 GMT+0530 (India Standard Time)
+[debug] [2021-01-01T16:15:03.286Z] ----------------------------------------------------------------------
+[debug] [2021-01-01T16:15:03.286Z] 
+[debug] [2021-01-01T16:15:03.292Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-01-01T16:15:03.293Z] > authorizing via signed-in user
+[debug] [2021-01-01T16:15:03.293Z] [iam] checking project dopplr-beta for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2021-01-01T16:15:03.295Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2021-01-01T16:15:03.295Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-01-01T16:15:04.077Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","date":"Fri, 01 Jan 2021 16:15:04 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-01-01T16:15:04.105Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/dopplr-beta:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}

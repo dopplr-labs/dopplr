@@ -4,7 +4,7 @@ import AuthContext from 'contexts/auth-context'
 
 export default function Logrocket() {
   const { user } = useContext(AuthContext)
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV === 'production') {
     if (user) {
       LogRocket.init('dicpce/dopplr')
       LogRocket.identify((Math.random(), 2, 5).toString(), {
