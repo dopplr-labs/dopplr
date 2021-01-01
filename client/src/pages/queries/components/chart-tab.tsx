@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons'
 import { QueryResult } from 'types/query'
 import { ChartTypes } from 'types/chart'
-import { chartList, chartOrder } from '../data/chartList'
+import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 
 type ChartTabProps = {
   data: QueryResult | null
@@ -82,7 +82,7 @@ export default function ChartTab({ data }: ChartTabProps) {
               <Empty description={<span>Select data to plot chart</span>} />
             )}
           </div>
-          <Form layout="vertical" className="w-80 h-full py=4 pl-4 border-l">
+          <Form layout="vertical" className="w-96 h-full py=4 pl-4 border-l">
             <Form.Item label="Chart Type">
               <Select
                 showSearch
@@ -91,13 +91,19 @@ export default function ChartTab({ data }: ChartTabProps) {
                   setChartType(value)
                 }}
               >
-                {chartOrder.map((chart: ChartTypes) => (
-                  <Select.Option key={chart} value={chart}>
-                    <div className="flex items-center space-x-3">
-                      {chartList[chart].icon}
-                      <span>{chartList[chart].label}</span>
-                    </div>
-                  </Select.Option>
+                {chartGroups.map((group) => (
+                  <Select.OptGroup label={group} key={group}>
+                    {chartOrder
+                      .filter((chart) => chartList[chart].group === group)
+                      .map((chart) => (
+                        <Select.Option key={chart} value={chart}>
+                          <div className="flex items-center space-x-3">
+                            {chartList[chart].icon}
+                            <span>{chartList[chart].label}</span>
+                          </div>
+                        </Select.Option>
+                      ))}
+                  </Select.OptGroup>
                 ))}
               </Select>
             </Form.Item>
