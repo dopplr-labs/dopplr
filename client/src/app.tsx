@@ -5,6 +5,7 @@ import { message, Spin } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Route from 'components/route'
 import Auth from 'components/auth'
+import Settings from 'components/settings'
 import AppShell from 'components/app-shell'
 import Home from 'pages/home'
 import ResourcesList from 'pages/resources/components/resources-list'
@@ -14,8 +15,8 @@ import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor
 import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
-import TextEditorSettings from 'pages/settings/components/text-editor-settings'
-import WorkbenchSettings from 'pages/settings/components/workbench-settings'
+import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
+import WorkbenchSettings from 'pages/settings-panel/components/workbench-settings'
 import client from 'utils/client'
 import Logrocket from 'components/logrocket'
 
@@ -29,7 +30,7 @@ const SHOW_DEV_TOOLS = false
 const Login = lazy(() => import('pages/login'))
 const Queries = lazy(() => import('pages/queries'))
 const Resources = lazy(() => import('pages/resources'))
-const Settings = lazy(() => import('pages/settings'))
+const SettingsPanel = lazy(() => import('pages/settings-panel'))
 
 export function App() {
   useQuery('health', fetchHealthStatus, {
@@ -54,48 +55,65 @@ export function App() {
               </div>
             }
           >
-            <Routes>
-              <Route element={<Login />} path="/login" />
-              <Route protectedRoute element={<AppShell />} path="/">
-                <Route protectedRoute element={<Home />} path="/" />
-                <Route protectedRoute element={<Resources />} path="resources">
-                  <Route protectedRoute path="/" element={<ResourcesList />} />
+            <Settings>
+              <Routes>
+                <Route element={<Login />} path="/login" />
+                <Route protectedRoute element={<AppShell />} path="/">
+                  <Route protectedRoute element={<Home />} path="/" />
                   <Route
-                    path="new/:resourceType"
-                    element={<CreateResource />}
+                    protectedRoute
+                    element={<Resources />}
+                    path="resources"
+                  >
+                    <Route
+                      protectedRoute
+                      path="/"
+                      element={<ResourcesList />}
+                    />
+                    <Route
+                      path="new/:resourceType"
+                      element={<CreateResource />}
+                    />
+                    <Route path=":resourceId" element={<ResourceDetail />} />
+                  </Route>
+                  <Route protectedRoute element={<Queries />} path="queries">
+                    <Route
+                      path="new/:tabId"
+                      element={<UnsavedQueryEditorTab />}
+                    />
+                    <Route
+                      path="history/:historyId"
+                      element={<HistoryEditorTab />}
+                    />
+                    <Route
+                      path="saved/:queryId"
+                      element={<SavedQueryEditorTab />}
+                    />
+                  </Route>
+                  <Route
+                    protectedRoute
+                    element={<Dashboards />}
+                    path="dashboards"
                   />
-                  <Route path=":resourceId" element={<ResourceDetail />} />
+                  <Route
+                    protectedRoute
+                    element={<SettingsPanel />}
+                    path="settings"
+                  >
+                    <Route
+                      path="/"
+                      element={<Navigate to="text-editor" replace={true} />}
+                    />
+                    <Route
+                      path="text-editor"
+                      element={<TextEditorSettings />}
+                    />
+                    <Route path="workbench" element={<WorkbenchSettings />} />
+                  </Route>
                 </Route>
-                <Route protectedRoute element={<Queries />} path="queries">
-                  <Route
-                    path="new/:tabId"
-                    element={<UnsavedQueryEditorTab />}
-                  />
-                  <Route
-                    path="history/:historyId"
-                    element={<HistoryEditorTab />}
-                  />
-                  <Route
-                    path="saved/:queryId"
-                    element={<SavedQueryEditorTab />}
-                  />
-                </Route>
-                <Route
-                  protectedRoute
-                  element={<Dashboards />}
-                  path="dashboards"
-                />
-                <Route protectedRoute element={<Settings />} path="settings">
-                  <Route
-                    path="/"
-                    element={<Navigate to="text-editor" replace={true} />}
-                  />
-                  <Route path="text-editor" element={<TextEditorSettings />} />
-                  <Route path="workbench" element={<WorkbenchSettings />} />
-                </Route>
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace={true} />} />
-            </Routes>
+                <Route path="*" element={<Navigate to="/" replace={true} />} />
+              </Routes>
+            </Settings>
           </Suspense>
           {process.env.NODE_ENV === 'production' && <Logrocket />}
         </>

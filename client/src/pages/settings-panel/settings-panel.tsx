@@ -4,8 +4,9 @@ import { Outlet } from 'react-router-dom'
 import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
 import PageSideBarLink from 'components/page-side-bar-link'
+import PreviewBar from './components/preview-bar'
 
-export default function Settings() {
+export default function SettingsPanel() {
   return (
     <PageLayout
       sidebar={
@@ -22,8 +23,16 @@ export default function Settings() {
         />
       }
       content={
-        <div className="max-w-3xl">
-          <Outlet />
+        <div
+          className="flex"
+          style={{ margin: '-2rem', height: 'calc(100vh - 3rem)' }}
+        >
+          <div className="max-w-3xl p-8 overflow-y-auto">
+            <Outlet />
+          </div>
+          <div className="flex-1 border-l w-96">
+            <PreviewBar />
+          </div>
         </div>
       }
     />

@@ -1,4 +1,5 @@
-import { Group, ConfigType } from 'types/settings'
+import { DefaultWorkbenchSettings } from 'components/settings/default'
+import { Group, ConfigType } from '../types'
 
 export const workbenchSettings: Group = {
   title: 'Workbench',
@@ -12,32 +13,32 @@ export const workbenchSettings: Group = {
           title: 'Center Layout',
           description:
             'Controls whether turning on Zen Mode also centers the layout.',
-          default: true,
-          key: 'cursor_6',
+          default: DefaultWorkbenchSettings.zenCenterLayout as boolean,
+          key: 'zenCenterLayout',
         },
         {
           type: ConfigType.CheckboxConfig,
           title: 'Full Screen',
           description:
             'Controls whether turning on Zen Mode also puts the workbench into fullscreen mode.',
-          default: true,
-          key: 'cursor_7',
+          default: DefaultWorkbenchSettings.zenFullScreen as boolean,
+          key: 'zenFullScreen',
         },
         {
           type: ConfigType.CheckboxConfig,
           title: 'Hide Line numbers',
           description:
             'Controls whether turning on Zen Mode also hides the editor line numbers.',
-          default: true,
-          key: 'cursor_8',
+          default: DefaultWorkbenchSettings.zenHideLineNumber as boolean,
+          key: 'zenHideLineNumber',
         },
         {
           type: ConfigType.CheckboxConfig,
           title: 'Hide Tabs',
           description:
             'Controls whether turning on Zen Mode also hides workbench tabs',
-          default: true,
-          key: 'cursor_9',
+          default: DefaultWorkbenchSettings.zenHideTabs as boolean,
+          key: 'zenHideTabs',
         },
       ],
     },
