@@ -126,7 +126,7 @@ export default function ChartTab({ data }: ChartTabProps) {
             <Form.Item label="Values">
               <Select
                 placeholder="Add values"
-                mode={chartType !== 'pie' ? 'multiple' : undefined}
+                mode="multiple"
                 className="w-full"
                 value={values}
                 onChange={(value) => {

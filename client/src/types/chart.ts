@@ -1,5 +1,6 @@
 export type ChartTypes =
   | 'line'
+  | 'smoothLine'
   | 'area'
   | 'stackedArea'
   | 'stackedArea100'
@@ -10,4 +11,5 @@ export type ChartTypes =
   | 'stackedBar'
   | 'stackedBar100'
   | 'pie'
+  | 'ring'
   | 'scatter'
