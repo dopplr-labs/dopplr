@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
 import SettingsContext from 'contexts/settings-context'
-import { DefaultTextEditorSettings, DefaultWorkbenchSettings } from './default'
+import usePersistedSetState from 'hooks/use-persisted-state'
+import { DefaultTextEditorSettings } from './data/default-settings'
 
-type Props = {
-  children: React.ReactElement
+type SettingsProps = {
+  children: React.ReactNode
 }
 
-export default function Settings({ children }: Props) {
-  const [textEditorSettings, setTextEditorSettings] = useState({
-    ...DefaultTextEditorSettings,
-  })
-  const [workbenchSettings, setWorkbenchSettings] = useState({
-    ...DefaultWorkbenchSettings,
-  })
+export default function Settings({ children }: SettingsProps) {
+  const [textEditorSettings, setTextEditorSettings] = usePersistedSetState(
+    'text-editor-settings',
+    DefaultTextEditorSettings,
+  )
 
   const onChangeTextEditorSettings = (
     key: string,
@@ -24,23 +23,11 @@ export default function Settings({ children }: Props) {
     })
   }
 
-  const onChangeWorkbenchSettings = (
-    key: string,
-    value: string | number | boolean,
-  ) => {
-    setWorkbenchSettings({
-      ...workbenchSettings,
-      [key]: value,
-    })
-  }
-
   return (
     <SettingsContext.Provider
       value={{
         textEditorSettings,
         onChangeTextEditorSettings,
-        workbenchSettings,
-        onChangeWorkbenchSettings,
       }}
     >
       {children}

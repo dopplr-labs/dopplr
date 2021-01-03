@@ -1,13 +1,14 @@
 import { BaseSettings } from 'types/settings'
 
-export const DefaultTextEditorSettings: BaseSettings = {
+export const DefaultTextEditorSettings: BaseSettings = Object.freeze({
   // basic editor settings
   lineNumbers: 'on',
-  lineHeight: 24,
+  wordWrap: 'off',
   // font related settings
   fontFamily: 'JetBrains Mono',
   fontWeight: '300',
-  fontSize: 16,
+  fontSize: 12,
+  lineHeight: 20,
   fontLigatures: true,
   // cursor related settings
   cursorBlinking: 'blink',
@@ -16,11 +17,4 @@ export const DefaultTextEditorSettings: BaseSettings = {
   cursorSurroundingLines: 0,
   cursorSurroundingLinesStyle: 'default',
   cursorWidth: 2,
-}
-
-export const DefaultWorkbenchSettings: BaseSettings = {
-  zenCenterLayout: true,
-  zenFullScreen: true,
-  zenHideLineNumber: true,
-  zenHideTabs: true,
-}
+})
