@@ -2,24 +2,15 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, queryCache, useQuery } from 'react-query'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import clsx from 'clsx'
-import { Button, Empty, Result, Select, Tooltip } from 'antd'
+import { Button, Empty, Result, Select } from 'antd'
 import {
   CaretRightFilled,
   SaveOutlined,
   CodeOutlined,
   PlusOutlined,
-  UpOutlined,
-  DownOutlined,
-  BorderVerticleOutlined,
-  RightOutlined,
-  LeftOutlined,
-  BorderHorizontalOutlined,
 } from '@ant-design/icons'
-import Editor from 'components/editor'
 import useMeasure from 'react-use-measure'
 import sqlFormatter from 'sql-formatter'
-import HorizontalPane from 'components/horizontal-pane'
-import VerticalPane from 'components/vertical-pane'
 import { QueryResult, SavedQuery } from 'types/query'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { fetchResources } from 'pages/resources/queries'
@@ -27,10 +18,11 @@ import usePersistedSetState from 'hooks/use-persisted-state'
 import { createPortal } from 'react-dom'
 import { formatDuration } from 'utils/time'
 import { fetchHistory, runQuery } from '../queries-and-mutations'
-import ResultsTable from './results-table'
 import SaveQueryModal from './save-query-modal'
 import { TabsContext } from '../contexts/tabs-context'
 import SchemaTab from './schema-tab'
+import VerticalOrientation from './vertical-orientation'
+import HorizontalOrientation from './horizontal-orientation'
 
 enum SplitOrientation {
   HORIZONTAL = 'horizontal',
@@ -140,6 +132,14 @@ function Tab() {
   }
 
   const [measureContainer, containerBounds] = useMeasure()
+
+  function handleHorizontalSplit() {
+    setSplitOrientation(SplitOrientation.HORIZONTAL)
+  }
+
+  function handleVerticalSplit() {
+    setSplitOrientation(SplitOrientation.VERTICAL)
+  }
 
   const editorAction = [
     {
@@ -304,144 +304,28 @@ function Tab() {
           ref={measureContainer}
         >
           {splitOrientation === SplitOrientation.VERTICAL ? (
-            <HorizontalPane
-              paneName="editor-horizontal-pane"
-              initialWidth={640}
-              maxConstraint={800}
-              minConstraint={320}
-              buffer={160}
-              render={({
-                paneWidth,
-                isPaneClose,
-                dragHandle,
-                toggleFullScreen,
-              }) => (
-                <>
-                  <div
-                    className="relative z-10 flex flex-col h-full border-r"
-                    style={{ width: paneWidth }}
-                  >
-                    <Editor
-                      resourceId={selectedResourceId}
-                      value={query}
-                      setValue={setQuery}
-                      editorAction={editorAction}
-                    />
-                    {dragHandle}
-                  </div>
-                  <div
-                    className="h-full"
-                    style={{ width: containerBounds.width - paneWidth }}
-                  >
-                    <div className="flex justify-end px-4 py-2 space-x-4">
-                      <Tooltip
-                        title="Split Horizontally"
-                        placement="left"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={() => {
-                            setSplitOrientation(SplitOrientation.HORIZONTAL)
-                          }}
-                        >
-                          <BorderHorizontalOutlined />
-                        </button>
-                      </Tooltip>
-                      <Tooltip
-                        title="Fullscreen"
-                        placement="left"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={toggleFullScreen}
-                        >
-                          {isPaneClose ? <RightOutlined /> : <LeftOutlined />}
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <div className="h-full px-4">
-                      <ResultsTable
-                        data={queryResult}
-                        isLoading={isRunningQuery}
-                        error={queryResultError}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+            <VerticalOrientation
+              handleHorizontalSplit={handleHorizontalSplit}
+              resourceId={selectedResourceId}
+              query={query}
+              setQuery={setQuery}
+              editorAction={editorAction}
+              containerBounds={containerBounds}
+              queryResult={queryResult}
+              isRunningQuery={isRunningQuery}
+              error={queryResultError}
             />
           ) : (
-            <VerticalPane
-              paneName="editor-vertical-pane"
-              initialHeight={480}
-              maxHeight={containerBounds.height}
-              maxConstraint={containerBounds.height - 160}
-              buffer={80}
-              render={({
-                paneHeight,
-                isFullScreen,
-                dragHandle,
-                toggleFullScreen,
-              }) => (
-                <>
-                  {!isFullScreen ? (
-                    <div
-                      className="w-full"
-                      style={{ height: containerBounds.height - paneHeight }}
-                    >
-                      <Editor
-                        resourceId={selectedResourceId}
-                        value={query}
-                        setValue={setQuery}
-                        editorAction={editorAction}
-                      />
-                    </div>
-                  ) : null}
-                  <div
-                    className="relative border-t"
-                    style={{ height: paneHeight }}
-                  >
-                    {dragHandle}
-                    <div className="flex justify-end px-4 py-2 space-x-4">
-                      <Tooltip
-                        placement="left"
-                        title="Split Vertically"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={() => {
-                            setSplitOrientation(SplitOrientation.VERTICAL)
-                          }}
-                        >
-                          <BorderVerticleOutlined />
-                        </button>
-                      </Tooltip>
-                      <Tooltip
-                        placement="left"
-                        title="Fullscreen"
-                        mouseEnterDelay={1}
-                      >
-                        <button
-                          className="focus:outline-none"
-                          onClick={toggleFullScreen}
-                        >
-                          {isFullScreen ? <DownOutlined /> : <UpOutlined />}
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <div className="h-full px-4">
-                      <ResultsTable
-                        data={queryResult}
-                        isLoading={isRunningQuery}
-                        error={queryResultError}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+            <HorizontalOrientation
+              handleVerticalSplit={handleVerticalSplit}
+              resourceId={selectedResourceId}
+              query={query}
+              setQuery={setQuery}
+              editorAction={editorAction}
+              containerBounds={containerBounds}
+              queryResult={queryResult}
+              isRunningQuery={isRunningQuery}
+              error={queryResultError}
             />
           )}
         </div>
