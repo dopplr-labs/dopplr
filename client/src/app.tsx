@@ -16,7 +16,6 @@ import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
-import WorkbenchSettings from 'pages/settings-panel/components/workbench-settings'
 import client from 'utils/client'
 import Logrocket from 'components/logrocket'
 
@@ -47,7 +46,7 @@ export function App() {
   return (
     <>
       <Auth>
-        <>
+        <Settings>
           <Suspense
             fallback={
               <div className="flex items-center justify-center w-screen h-screen">
@@ -55,68 +54,54 @@ export function App() {
               </div>
             }
           >
-            <Settings>
-              <Routes>
-                <Route element={<Login />} path="/login" />
-                <Route protectedRoute element={<AppShell />} path="/">
-                  <Route protectedRoute element={<Home />} path="/" />
+            <Routes>
+              <Route element={<Login />} path="/login" />
+              <Route protectedRoute element={<AppShell />} path="/">
+                <Route protectedRoute element={<Home />} path="/" />
+                <Route protectedRoute element={<Resources />} path="resources">
+                  <Route protectedRoute path="/" element={<ResourcesList />} />
                   <Route
-                    protectedRoute
-                    element={<Resources />}
-                    path="resources"
-                  >
-                    <Route
-                      protectedRoute
-                      path="/"
-                      element={<ResourcesList />}
-                    />
-                    <Route
-                      path="new/:resourceType"
-                      element={<CreateResource />}
-                    />
-                    <Route path=":resourceId" element={<ResourceDetail />} />
-                  </Route>
-                  <Route protectedRoute element={<Queries />} path="queries">
-                    <Route
-                      path="new/:tabId"
-                      element={<UnsavedQueryEditorTab />}
-                    />
-                    <Route
-                      path="history/:historyId"
-                      element={<HistoryEditorTab />}
-                    />
-                    <Route
-                      path="saved/:queryId"
-                      element={<SavedQueryEditorTab />}
-                    />
-                  </Route>
+                    path="new/:resourceType"
+                    element={<CreateResource />}
+                  />
+                  <Route path=":resourceId" element={<ResourceDetail />} />
+                </Route>
+                <Route protectedRoute element={<Queries />} path="queries">
                   <Route
-                    protectedRoute
-                    element={<Dashboards />}
-                    path="dashboards"
+                    path="new/:tabId"
+                    element={<UnsavedQueryEditorTab />}
                   />
                   <Route
-                    protectedRoute
-                    element={<SettingsPanel />}
-                    path="settings"
-                  >
-                    <Route
-                      path="/"
-                      element={<Navigate to="text-editor" replace={true} />}
-                    />
-                    <Route
-                      path="text-editor"
-                      element={<TextEditorSettings />}
-                    />
-                    <Route path="workbench" element={<WorkbenchSettings />} />
-                  </Route>
+                    path="history/:historyId"
+                    element={<HistoryEditorTab />}
+                  />
+                  <Route
+                    path="saved/:queryId"
+                    element={<SavedQueryEditorTab />}
+                  />
                 </Route>
-                <Route path="*" element={<Navigate to="/" replace={true} />} />
-              </Routes>
-            </Settings>
+                <Route
+                  protectedRoute
+                  element={<Dashboards />}
+                  path="dashboards"
+                />
+                <Route
+                  protectedRoute
+                  element={<SettingsPanel />}
+                  path="settings"
+                >
+                  <Route
+                    path="/"
+                    element={<Navigate to="text-editor" replace={true} />}
+                  />
+                  <Route path="text-editor" element={<TextEditorSettings />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace={true} />} />
+            </Routes>
           </Suspense>
           {process.env.NODE_ENV === 'production' && <Logrocket />}
-        </>
+        </Settings>
       </Auth>
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />

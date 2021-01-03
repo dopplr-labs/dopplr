@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react'
 import MonacoEditor from 'react-monaco-editor'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import {
   MonacoServices,
   Services,
@@ -12,10 +11,8 @@ import {
 } from 'monaco-languageclient'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc'
-import clsx from 'clsx'
 import AuthContext from 'contexts/auth-context'
-import SettingsContext from 'contexts/settings-context'
-import { settingsRemap } from './editor.utils'
+import BaseEditor from 'components/base-editor'
 
 function createWebSocket(url: string): WebSocket {
   const socketOptions = {
@@ -62,25 +59,15 @@ function createLanguageClient(
 
 type EditorProps = {
   resourceId: number
-  value: string
-  setValue: (udpatedValue: string) => void
-  editorAction?: monaco.editor.IActionDescriptor[]
-  className?: string
-  style?: React.CSSProperties
-}
+} & React.ComponentProps<typeof BaseEditor>
 
 export default function Editor({
   resourceId,
-  value,
-  setValue,
-  editorAction,
-  className,
-  style,
+  ...restEditorProps
 }: EditorProps) {
   const editor = useRef<MonacoEditor | null>(null)
   const serviceDisposer = useRef<Disposable | undefined>(undefined)
   const { user } = useContext(AuthContext)
-  const { textEditorSettings } = useContext(SettingsContext)
 
   useEffect(() => {
     let websocket: WebSocket | undefined
@@ -119,25 +106,5 @@ export default function Editor({
     }
   }, [resourceId, user])
 
-  return (
-    <div className={clsx('editor h-full', className)} style={style}>
-      <MonacoEditor
-        language="pgsql"
-        theme="vs-light"
-        value={value}
-        onChange={setValue}
-        options={settingsRemap(textEditorSettings)}
-        ref={(monacoEditor) => {
-          editor.current = monacoEditor
-        }}
-        editorDidMount={(editor) => {
-          if (editorAction) {
-            editorAction.forEach((action) => {
-              editor.addAction(action)
-            })
-          }
-        }}
-      />
-    </div>
-  )
+  return <BaseEditor {...restEditorProps} ref={editor} />
 }
