@@ -1,26 +1,28 @@
 export enum ConfigType {
-  InputConfig = 1,
-  SelectConfig,
-  CheckboxConfig,
+  INPUT = 'INPUT',
+  SELECT = 'SELECT',
+  CHECKBOX = 'CHECKBOX',
 }
 
 export type InputConfig = {
-  type: ConfigType.InputConfig
+  type: ConfigType.INPUT
   title: string
   description: string
   default: string | number
   key: string
 }
+
 export type SelectConfig = {
-  type: ConfigType.SelectConfig
+  type: ConfigType.SELECT
   title: string
   description: string
   default: string | number
   options: [string, string | number][]
   key: string
 }
+
 export type CheckboxConfig = {
-  type: ConfigType.CheckboxConfig
+  type: ConfigType.CHECKBOX
   title: string
   description: string
   default: boolean

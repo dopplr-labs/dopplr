@@ -1,4 +1,4 @@
-import { DefaultTextEditorSettings } from 'components/settings/default'
+import { DefaultTextEditorSettings } from 'components/settings/data/default-settings'
 import { Group, ConfigType } from '../types'
 
 export const textEditorSettings: Group = {
@@ -9,7 +9,7 @@ export const textEditorSettings: Group = {
       description: 'Customize basic editor settings.',
       configs: [
         {
-          type: ConfigType.SelectConfig,
+          type: ConfigType.SELECT,
           title: 'Line Numbers',
           description: 'Control the rendering of line numbers.',
           default: DefaultTextEditorSettings.lineNumbers as string,
@@ -22,11 +22,17 @@ export const textEditorSettings: Group = {
           key: 'lineNumbers',
         },
         {
-          type: ConfigType.InputConfig,
-          title: 'Line Height',
-          description: 'Controls the line height.',
-          default: DefaultTextEditorSettings.lineHeight as string,
-          key: 'lineHeight',
+          type: ConfigType.SELECT,
+          title: 'Word Wrap',
+          description: 'Control the wrapping of the editor.',
+          default: DefaultTextEditorSettings.wordwrap as string,
+          options: [
+            ['on', 'on'],
+            ['off', 'off'],
+            ['wordWrapColumn', 'wordWrapColumn'],
+            ['bounded', 'bounded'],
+          ],
+          key: 'wordWrap',
         },
       ],
     },
@@ -35,7 +41,7 @@ export const textEditorSettings: Group = {
       description: 'Customize cursor settings.',
       configs: [
         {
-          type: ConfigType.SelectConfig,
+          type: ConfigType.SELECT,
           title: 'Cursor Blinking',
           description: 'Control the cursor animation style.',
           default: DefaultTextEditorSettings.cursorBlinking as string,
@@ -49,7 +55,7 @@ export const textEditorSettings: Group = {
           key: 'cursorBlinking',
         },
         {
-          type: ConfigType.CheckboxConfig,
+          type: ConfigType.CHECKBOX,
           title: 'Cursor Smooth Caret Animation',
           description:
             'Controls whether the smooth caret animation should be enabled.',
@@ -57,7 +63,7 @@ export const textEditorSettings: Group = {
           key: 'cursorSmoothCaretAnimation',
         },
         {
-          type: ConfigType.SelectConfig,
+          type: ConfigType.SELECT,
           title: 'Cursor Style',
           description: 'Control the cursor style.',
           default: DefaultTextEditorSettings.cursorStyle as string,
@@ -72,7 +78,7 @@ export const textEditorSettings: Group = {
           key: 'cursorStyle',
         },
         {
-          type: ConfigType.InputConfig,
+          type: ConfigType.INPUT,
           title: 'Cursor Surrounding Lines',
           description:
             'Controls the minimal number of visible leading and trailing lines surrounding the cursor.',
@@ -80,7 +86,7 @@ export const textEditorSettings: Group = {
           key: 'cursorSurroundingLines',
         },
         {
-          type: ConfigType.SelectConfig,
+          type: ConfigType.SELECT,
           title: 'Cursor Surrounding Lines Style',
           description:
             'Controls when Cursor Surrounding Lines should be enforced.',
@@ -92,7 +98,7 @@ export const textEditorSettings: Group = {
           key: 'cursorSurroundingLinesStyle',
         },
         {
-          type: ConfigType.InputConfig,
+          type: ConfigType.INPUT,
           title: 'Cursor Width',
           description:
             'Control the width of the cursor when cursorStyle is set to line.',
@@ -106,28 +112,35 @@ export const textEditorSettings: Group = {
       description: 'Customize font settings.',
       configs: [
         {
-          type: ConfigType.InputConfig,
+          type: ConfigType.INPUT,
           title: 'Font Family',
           description: 'Controls the font family.',
           default: DefaultTextEditorSettings.fontFamily as string,
           key: 'fontFamily',
         },
         {
-          type: ConfigType.InputConfig,
+          type: ConfigType.INPUT,
           title: 'Font Size',
           description: 'Controls the font size.',
           default: DefaultTextEditorSettings.fontSize as number,
           key: 'fontSize',
         },
         {
-          type: ConfigType.InputConfig,
+          type: ConfigType.INPUT,
+          title: 'Line Height',
+          description: 'Controls the line height.',
+          default: DefaultTextEditorSettings.lineHeight as string,
+          key: 'lineHeight',
+        },
+        {
+          type: ConfigType.INPUT,
           title: 'Font Weight',
           description: 'Controls the font size.',
           default: DefaultTextEditorSettings.fontWeight as number,
           key: 'fontWeight',
         },
         {
-          type: ConfigType.CheckboxConfig,
+          type: ConfigType.CHECKBOX,
           title: 'Enabled',
           description: 'Controls whether font ligature is used',
           default: DefaultTextEditorSettings.fontLigatures as boolean,
