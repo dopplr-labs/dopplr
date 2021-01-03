@@ -117,7 +117,7 @@ export default function ChartTab({ data }: ChartTabProps) {
                 }}
               >
                 {data.fields.map((field) => (
-                  <Select.Option key={field.columnId} value={field.name}>
+                  <Select.Option key={field.name} value={field.name}>
                     {field.name}
                   </Select.Option>
                 ))}
@@ -134,7 +134,7 @@ export default function ChartTab({ data }: ChartTabProps) {
                 }}
               >
                 {data.fields.map((field) => (
-                  <Select.Option key={field.columnId} value={field.name}>
+                  <Select.Option key={field.name} value={field.name}>
                     {field.name}
                   </Select.Option>
                 ))}
