@@ -47,8 +47,8 @@
     "vscode-ws-jsonrpc": "^0.2.0"
   },
   "scripts": {
-    "start": "SKIP_PREFLIGHT_CHECK=true react-app-rewired start",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
+    "start": "craco start",
+    "build": "craco build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
     "eject": "react-scripts eject"
   },
@@ -65,15 +65,16 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "5.8.0",
     "@tailwindcss/ui": "^0.6.2",
     "@types/lodash-es": "^4.17.3",
     "autoprefixer": "9.8.6",
-    "customize-cra": "^1.0.0",
+    "craco-esbuild": "^0.1.0",
+    "craco-less": "^1.17.1",
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "monaco-editor-webpack-plugin": "^2.0.0",
     "postcss": "^8.1.10",
-    "react-app-rewired": "^2.1.6",
     "tailwindcss": "^2.0.1"
   },
   "peerDependencies": {
