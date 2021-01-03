@@ -5,6 +5,7 @@ import { message, Spin } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Route from 'components/route'
 import Auth from 'components/auth'
+import Settings from 'components/settings'
 import AppShell from 'components/app-shell'
 import Home from 'pages/home'
 import ResourcesList from 'pages/resources/components/resources-list'
@@ -14,8 +15,7 @@ import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor
 import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
-import TextEditorSettings from 'pages/settings/components/text-editor-settings'
-import WorkbenchSettings from 'pages/settings/components/workbench-settings'
+import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import client from 'utils/client'
 import Logrocket from 'components/logrocket'
 
@@ -29,7 +29,7 @@ const SHOW_DEV_TOOLS = false
 const Login = lazy(() => import('pages/login'))
 const Queries = lazy(() => import('pages/queries'))
 const Resources = lazy(() => import('pages/resources'))
-const Settings = lazy(() => import('pages/settings'))
+const SettingsPanel = lazy(() => import('pages/settings-panel'))
 
 export function App() {
   useQuery('health', fetchHealthStatus, {
@@ -46,7 +46,7 @@ export function App() {
   return (
     <>
       <Auth>
-        <>
+        <Settings>
           <Suspense
             fallback={
               <div className="flex items-center justify-center w-screen h-screen">
@@ -85,20 +85,23 @@ export function App() {
                   element={<Dashboards />}
                   path="dashboards"
                 />
-                <Route protectedRoute element={<Settings />} path="settings">
+                <Route
+                  protectedRoute
+                  element={<SettingsPanel />}
+                  path="settings"
+                >
                   <Route
                     path="/"
                     element={<Navigate to="text-editor" replace={true} />}
                   />
                   <Route path="text-editor" element={<TextEditorSettings />} />
-                  <Route path="workbench" element={<WorkbenchSettings />} />
                 </Route>
               </Route>
               <Route path="*" element={<Navigate to="/" replace={true} />} />
             </Routes>
           </Suspense>
           {process.env.NODE_ENV === 'production' && <Logrocket />}
-        </>
+        </Settings>
       </Auth>
       {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
         <ReactQueryDevtools />

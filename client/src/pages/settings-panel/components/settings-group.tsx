@@ -1,12 +1,19 @@
 import React from 'react'
-import { SubGroup } from 'types/settings'
-import SettingsCard from './settings-card'
+import { BaseSettings } from 'types/settings'
+import { SubGroup } from '../types'
+import SettingsItem from './settings-item'
 
 type AppProp = {
   subGroup: SubGroup
+  settings: BaseSettings
+  onChangeSettings: (key: string, value: boolean | string | number) => void
 }
 
-export default function SettingsGroup({ subGroup }: AppProp) {
+export default function SettingsGroup({
+  subGroup,
+  settings,
+  onChangeSettings,
+}: AppProp) {
   return (
     <div className="overflow-hidden border rounded-md">
       <div className="px-6 py-3 border-b bg-background-primary">
@@ -19,7 +26,12 @@ export default function SettingsGroup({ subGroup }: AppProp) {
       </div>
       <div className="px-6 py-3 space-y-8 bg-white">
         {subGroup.configs.map((config, idx) => (
-          <SettingsCard key={idx} config={config} />
+          <SettingsItem
+            key={idx}
+            config={config}
+            settings={settings}
+            onChangeSettings={onChangeSettings}
+          />
         ))}
       </div>
     </div>

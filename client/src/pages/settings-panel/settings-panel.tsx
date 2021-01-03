@@ -5,7 +5,7 @@ import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
 import PageSideBarLink from 'components/page-side-bar-link'
 
-export default function Settings() {
+export default function SettingsPanel() {
   return (
     <PageLayout
       sidebar={
@@ -16,16 +16,11 @@ export default function Settings() {
           items={
             <>
               <PageSideBarLink to="text-editor">Text Editor</PageSideBarLink>
-              <PageSideBarLink to="workbench">Workbench</PageSideBarLink>
             </>
           }
         />
       }
-      content={
-        <div className="max-w-3xl">
-          <Outlet />
-        </div>
-      }
+      content={<Outlet />}
     />
   )
 }
