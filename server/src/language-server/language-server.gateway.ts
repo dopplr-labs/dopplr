@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common'
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -11,7 +10,7 @@ import { ResourcesService } from 'src/resources/resources.service'
 import { AuthService } from 'src/auth/auth.service'
 import { launch, SqlLanguageServer } from './language-server'
 
-type WsClient = ws & { languageServer: SqlLanguageServer | undefined }
+type WsClient = ws & { languageServer?: SqlLanguageServer }
 
 @WebSocketGateway()
 export class LanguageServerGateway
@@ -19,16 +18,15 @@ export class LanguageServerGateway
   @WebSocketServer()
   server: ws.Server
 
-  logger = new Logger('LanguageServerGateway')
-
   constructor(
-    private resourcesService: ResourcesService,
-    private authService: AuthService,
+    private readonly resourcesService: ResourcesService,
+    private readonly authService: AuthService,
   ) {}
 
   handleDisconnect(client: WsClient) {
     if (client.languageServer) {
       client.languageServer.stop()
+      client.languageServer = undefined
     }
   }
 

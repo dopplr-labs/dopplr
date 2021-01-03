@@ -45,7 +45,7 @@ export default function SchemaTable({
     <>
       <div>
         <div
-          className="flex items-center justify-between px-3 py-1 font-mono text-xs font-bold truncate cursor-pointer text-brand-primary group hover:bg-brand-light hover:text-brand-primary"
+          className="flex items-center px-3 py-1 space-x-1 font-mono text-xs font-bold truncate cursor-pointer text-brand-primary group hover:bg-brand-light hover:text-brand-primary"
           onClick={() => {
             setSchema((prevState) => ({
               ...prevState,
@@ -53,14 +53,12 @@ export default function SchemaTable({
             }))
           }}
         >
-          <div className="space-x-1">
-            {schema.isOpen ? (
-              <DownOutlined className="text-xs" />
-            ) : (
-              <RightOutlined className="text-xs" />
-            )}
-            <span>{schema.table}</span>
-          </div>
+          {schema.isOpen ? (
+            <DownOutlined className="text-xs" />
+          ) : (
+            <RightOutlined className="text-xs" />
+          )}
+          <span className="flex-1 truncate">{schema.name}</span>
           <Dropdown overlay={tableMenu} trigger={['click']}>
             <button
               className="invisible px-1 group-hover:visible focus:outline-none"
@@ -76,14 +74,14 @@ export default function SchemaTable({
           <ul className="px-3 ml-4">
             {schema.columns.map((column: ColumnsField) => (
               <li
-                key={column.column_name}
+                key={column.name}
                 className="grid grid-cols-3 mb-2 font-mono text-xs"
               >
                 <span className="col-span-2 truncate text-content-secondary">
-                  {column.column_name}
+                  {column.name}
                 </span>
                 <span className="col-span-1 text-right truncate text-content-tertiary">
-                  {column.data_type}
+                  {column.type}
                 </span>
               </li>
             ))}
@@ -94,7 +92,7 @@ export default function SchemaTable({
         visible={show}
         handleModalClose={handleModalClose}
         resourceId={resourceId}
-        tableName={schema.table}
+        tableName={schema.name}
       />
     </>
   )

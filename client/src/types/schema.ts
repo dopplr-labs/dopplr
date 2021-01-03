@@ -1,11 +1,10 @@
 export type ColumnsField = {
-  // eslint-disable-next-line camelcase
-  column_name: string
-  // eslint-disable-next-line camelcase
-  data_type: string
+  name: string
+  type: string
 }
 
 export type SchemaResult = {
-  table: string
+  name: string
+  rowsCount: string
   columns: ColumnsField[]
 }

@@ -9,9 +9,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { QueryResult } from 'pg'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
+import { QueryResult } from 'src/db-clients/client.interface'
 import { PaginationDto } from 'src/dtos/pagination.dto'
 import { PaginationData } from 'src/types/pagination'
 import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
