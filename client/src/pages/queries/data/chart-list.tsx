@@ -118,7 +118,7 @@ export const chartList = {
     group: 'Pie',
     icon: <PieChartOutlined />,
     label: 'Pie Chart',
-    chart: <Pie {...pieConfig} />,
+    chart: <Pie {...pieConfig} innerRadius={0} />,
   },
   ring: {
     group: 'Pie',
