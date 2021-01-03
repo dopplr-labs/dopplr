@@ -22,6 +22,7 @@
     "firebase": "^8.2.0",
     "history": "^5.0.0",
     "lodash-es": "^4.17.15",
+    "logrocket": "^1.0.14",
     "match-sorter": "^5.0.0",
     "monaco-languageclient": "^0.13.0",
     "react": "^16.14.0",
