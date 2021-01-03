@@ -17,12 +17,48 @@ const config = {
   autoFit: true,
 }
 
+const pieConfig = {
+  data: [],
+  angleField: 'value',
+  colorField: 'label',
+  interactions: [
+    { type: 'element-selected' },
+    { type: 'element-active' },
+    { type: 'pie-statistic-active' },
+  ],
+  statistic: {
+    title: {
+      style: {
+        whiteSpace: 'pre-wrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        fontSize: '16px',
+      },
+      customHtml: () => 'Total',
+    },
+    content: {
+      style: {
+        whiteSpace: 'pre-wrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        fontSize: '24px',
+      },
+    },
+  },
+}
+
 export const chartList = {
   line: {
     group: 'Line',
     icon: <LineChartOutlined />,
     label: 'Line Chart',
-    chart: <Line {...config} />,
+    chart: <Line {...config} smooth={false} />,
+  },
+  smoothLine: {
+    group: 'Line',
+    icon: <LineChartOutlined />,
+    label: 'Smooth Line Chart',
+    chart: <Line {...config} smooth={true} />,
   },
   area: {
     group: 'Area',
@@ -82,7 +118,13 @@ export const chartList = {
     group: 'Pie',
     icon: <PieChartOutlined />,
     label: 'Pie Chart',
-    chart: <Pie data={[]} angleField="value" colorField="label" />,
+    chart: <Pie {...pieConfig} innerRadius={0} />,
+  },
+  ring: {
+    group: 'Pie',
+    icon: <PieChartOutlined />,
+    label: 'Ring Chart',
+    chart: <Pie {...pieConfig} innerRadius={0.6} />,
   },
   scatter: {
     group: 'Other',
@@ -94,6 +136,7 @@ export const chartList = {
 
 export const chartOrder: ChartTypes[] = [
   'line',
+  'smoothLine',
   'area',
   'stackedArea',
   'stackedArea100',
@@ -104,6 +147,7 @@ export const chartOrder: ChartTypes[] = [
   'stackedBar',
   'stackedBar100',
   'pie',
+  'ring',
   'scatter',
 ]
 

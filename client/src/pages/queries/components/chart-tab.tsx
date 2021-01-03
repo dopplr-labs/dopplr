@@ -84,13 +84,7 @@ export default function ChartTab({ data }: ChartTabProps) {
           </div>
           <Form layout="vertical" className="w-96 h-full py=4 pl-4 border-l">
             <Form.Item label="Chart Type">
-              <Select
-                showSearch
-                value={chartType}
-                onChange={(value) => {
-                  setChartType(value)
-                }}
-              >
+              <Select showSearch value={chartType} onChange={setChartType}>
                 {chartGroups.map((group) => (
                   <Select.OptGroup label={group} key={group}>
                     {chartOrder
@@ -112,9 +106,7 @@ export default function ChartTab({ data }: ChartTabProps) {
                 placeholder="Add label"
                 className="w-full"
                 value={label}
-                onChange={(value) => {
-                  setLabel(value)
-                }}
+                onChange={setLabel}
               >
                 {data.fields.map((field) => (
                   <Select.Option key={field.name} value={field.name}>
@@ -126,12 +118,10 @@ export default function ChartTab({ data }: ChartTabProps) {
             <Form.Item label="Values">
               <Select
                 placeholder="Add values"
-                mode={chartType !== 'pie' ? 'multiple' : undefined}
+                mode="multiple"
                 className="w-full"
                 value={values}
-                onChange={(value) => {
-                  setValues(value)
-                }}
+                onChange={setValues}
               >
                 {data.fields.map((field) => (
                   <Select.Option key={field.name} value={field.name}>
