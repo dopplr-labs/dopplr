@@ -23,6 +23,10 @@ export async function testResourceConnection({
   database,
   username,
   password,
+  sslRequired,
+  selfCertificate,
+  clientKey,
+  clientCertificate,
 }: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>): Promise<{
   success: boolean
   message: string
@@ -37,6 +41,10 @@ export async function testResourceConnection({
       database,
       username,
       password,
+      sslRequired,
+      selfCertificate,
+      clientKey,
+      clientCertificate,
     },
   )
   return data
@@ -65,7 +73,11 @@ export async function createResource({
   database,
   username,
   password,
-}: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>): Promise<Resource> {
+  sslRequired,
+  selfCertificate,
+  clientKey,
+  clientCertificate,
+}: Partial<Resource>): Promise<Resource> {
   const { data } = await client.post<{ success: boolean; data: Resource }>(
     '/resources',
     {
@@ -76,6 +88,10 @@ export async function createResource({
       database,
       username,
       password,
+      sslRequired,
+      selfCertificate,
+      clientKey,
+      clientCertificate,
     },
   )
   return data.data
@@ -89,6 +105,10 @@ export async function updateResource({
   database,
   username,
   password,
+  sslRequired,
+  selfCertificate,
+  clientKey,
+  clientCertificate,
 }: Partial<Resource>): Promise<Resource> {
   const { data } = await client.patch<{ success: boolean; data: Resource }>(
     `/resources/${id}`,
@@ -99,6 +119,10 @@ export async function updateResource({
       database,
       username,
       password,
+      sslRequired,
+      selfCertificate,
+      clientKey,
+      clientCertificate,
     },
   )
   return data.data

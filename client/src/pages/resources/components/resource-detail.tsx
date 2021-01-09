@@ -41,58 +41,60 @@ export default function ResourceDetail() {
     },
   )
 
+  const [disabled, setDisabled] = useState(true)
+
   const resources: Resource[] | undefined = queryCache.getQueryData([
     'resources',
   ])
 
-  const [disabled, setDisabled] = useState(true)
+  const [editResource, { isLoading: updatingResource }] = useMutation(
+    updateResource,
+    {
+      onMutate: (updatedResource) => {
+        queryCache.setQueryData(
+          ['resources'],
+          resources?.map((resource) =>
+            resource.id === updatedResource.id
+              ? { ...resource, ...updatedResource }
+              : resource,
+          ),
+        )
+        queryCache.setQueryData(['resources', resourceId], {
+          ...resource,
+          ...updatedResource,
+        })
+      },
+      onSuccess: () => {
+        message.success('Resource updated successfully')
+      },
+    },
+  )
 
-  const [editResource] = useMutation(updateResource, {
-    onMutate: (updatedResource) => {
-      queryCache.setQueryData(
-        ['resources'],
-        resources?.map((resource) =>
-          resource.id === updatedResource.id
-            ? { ...resource, ...updatedResource }
-            : resource,
-        ),
-      )
-      queryCache.setQueryData(['resources', resourceId], {
-        ...resource,
-        ...updatedResource,
-      })
+  const [removeResource, { isLoading: removingResource }] = useMutation(
+    deleteResource,
+    {
+      onMutate: (deletedResource) => {
+        queryCache.setQueryData(
+          ['resources'],
+          resources?.filter((resource) => resource.id !== deletedResource.id),
+        )
+        queryCache.removeQueries(['resources', resourceId])
+        navigate('/resources')
+      },
     },
-    onSuccess: () => {
-      message.success('Resource updated successfully')
-    },
-  })
-
-  const [removeResource] = useMutation(deleteResource, {
-    onMutate: (deletedResource) => {
-      queryCache.setQueryData(
-        ['resources'],
-        resources?.filter((resource) => resource.id !== deletedResource.id),
-      )
-      queryCache.removeQueries(['resources', resourceId])
-      navigate('/resources')
-    },
-  })
+  )
 
   const onFinish = useCallback(
     (values: any) => {
-      const { name, host, port, database, username, password } = values
       const id = parseInt(resourceId)
       editResource({
         id,
-        name,
-        host,
-        port,
-        database,
-        username,
-        password,
+        sslRequired,
+        selfCertificate,
+        ...values,
       })
     },
-    [editResource, resourceId],
+    [editResource, resourceId, sslRequired, selfCertificate],
   )
 
   const confirmDelete = useCallback(() => {
@@ -108,12 +110,16 @@ export default function ResourceDetail() {
     })
   }, [removeResource, resourceId])
 
+  const [testingConnection, setTestingConnection] = useState(false)
   const pingConnection = useCallback(async () => {
+    setTestingConnection(true)
     try {
       const response = await testSavedResource(Number.parseInt(resourceId, 10))
       message.success(response.message)
     } catch (error) {
       message.error(error.message)
+    } finally {
+      setTestingConnection(false)
     }
   }, [resourceId])
 
@@ -295,35 +301,42 @@ export default function ResourceDetail() {
                 </Form.Item>
                 {selfCertificate ? (
                   <>
-                    <Form.Item name="clientKey" label="Client Key">
+                    <Form.Item
+                      name="clientKey"
+                      label="Client Key"
+                      rules={[
+                        {
+                          required: true,
+                          message:
+                            'Please enter client key when using self-signed certificate',
+                        },
+                      ]}
+                    >
                       <Input.TextArea
                         className="text-xs"
                         style={{ height: 108 }}
-                        placeholder="-----BEGIN CERTIFICATE-----
-              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-...
------END CERTIFICATE-----
-              "
+                        placeholder={
+                          '-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----'
+                        }
                       />
                     </Form.Item>
                     <Form.Item
                       name="clientCertificate"
                       label="Client Certificate"
+                      rules={[
+                        {
+                          required: true,
+                          message:
+                            'Please enter client certificate when using self-signed certificate',
+                        },
+                      ]}
                     >
                       <Input.TextArea
                         className="text-xs"
                         style={{ height: 108 }}
-                        placeholder="-----BEGIN CERTIFICATE-----
-              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-...
------END CERTIFICATE-----
-              "
+                        placeholder={
+                          '-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----'
+                        }
                       />
                     </Form.Item>
                   </>
@@ -339,13 +352,27 @@ export default function ResourceDetail() {
               </Button>
             </Link>
             <div className="flex-1" />
-            <Button htmlType="button" onClick={pingConnection}>
+            <Button
+              htmlType="button"
+              onClick={pingConnection}
+              loading={testingConnection}
+            >
               Test Connection
             </Button>
-            <Button htmlType="button" danger onClick={confirmDelete}>
+            <Button
+              htmlType="button"
+              danger
+              onClick={confirmDelete}
+              loading={removingResource}
+            >
               Delete
             </Button>
-            <Button type="primary" htmlType="submit" disabled={disabled}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={disabled}
+              loading={updatingResource}
+            >
               Save
             </Button>
           </div>
@@ -365,6 +392,9 @@ export default function ResourceDetail() {
     pingConnection,
     selfCertificate,
     sslRequired,
+    testingConnection,
+    removingResource,
+    updatingResource,
   ])
 
   return (

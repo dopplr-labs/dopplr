@@ -45,44 +45,32 @@ export default function CreateResource() {
   })
 
   function onFinish(values: any) {
-    const { name, host, port, database, username, password } = values
     addResource({
-      name,
       type: 'postgres', // need to change this in future
-      host,
-      port,
-      database,
-      username,
-      password,
+      sslRequired,
+      ...values,
     })
   }
 
-  async function pingConnection() {
-    await form.validateFields([
-      'host',
-      'port',
-      'database',
-      'username',
-      'password',
-    ])
+  const [testingConnection, setTestingConnection] = useState(false)
 
-    const {
-      name,
-      host,
-      port,
-      database,
-      username,
-      password,
-    } = form.getFieldsValue()
+  async function pingConnection() {
+    setTestingConnection(true)
     try {
+      await form.validateFields([
+        'host',
+        'port',
+        'database',
+        'username',
+        'password',
+        ...(selfCertificate ? ['clientKey', 'clientCertificate'] : []),
+      ])
+      const formValues = form.getFieldsValue()
       const response = await testResourceConnection({
-        name,
         type: 'postgres', // need to change this in future
-        host,
-        port,
-        database,
-        username,
-        password,
+        sslRequired,
+        selfCertificate,
+        ...formValues,
       })
       message.success(response.message)
     } catch (error) {
@@ -90,6 +78,8 @@ export default function CreateResource() {
         error.response?.data?.message ??
           'Something went wrong. Please try again',
       )
+    } finally {
+      setTestingConnection(false)
     }
   }
 
@@ -120,7 +110,7 @@ export default function CreateResource() {
         labelAlign="left"
         onFinish={onFinish}
       >
-        <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-secondary">
+        <div className="flex items-center justify-between px-6 py-4 space-x-4 border-b bg-background-primary">
           <div>
             <div className="text-base font-medium text-content-primary">
               Connect to {resource.title}
@@ -225,35 +215,42 @@ export default function CreateResource() {
               </Form.Item>
               {selfCertificate ? (
                 <>
-                  <Form.Item name="clientKey" label="Client Key">
+                  <Form.Item
+                    name="clientKey"
+                    label="Client Key"
+                    rules={[
+                      {
+                        required: true,
+                        message:
+                          'Please enter client key when using self-signed certificate',
+                      },
+                    ]}
+                  >
                     <Input.TextArea
                       className="text-xs"
                       style={{ height: 108 }}
-                      placeholder="-----BEGIN CERTIFICATE-----
-              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-...
------END CERTIFICATE-----
-              "
+                      placeholder={
+                        '-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----'
+                      }
                     />
                   </Form.Item>
                   <Form.Item
                     name="clientCertificate"
                     label="Client Certificate"
+                    rules={[
+                      {
+                        required: true,
+                        message:
+                          'Please enter client certificate when using self-signed certificate',
+                      },
+                    ]}
                   >
                     <Input.TextArea
                       className="text-xs"
                       style={{ height: 108 }}
-                      placeholder="-----BEGIN CERTIFICATE-----
-              MIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-              DTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4
-...
------END CERTIFICATE-----
-              "
+                      placeholder={
+                        '-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----'
+                      }
                     />
                   </Form.Item>
                 </>
@@ -273,7 +270,11 @@ export default function CreateResource() {
             </Button>
           </Link>
           <div className="flex-1" />
-          <Button htmlType="button" onClick={pingConnection}>
+          <Button
+            htmlType="button"
+            onClick={pingConnection}
+            loading={testingConnection}
+          >
             Test Connection
           </Button>
           <Button type="primary" htmlType="submit" loading={isLoading}>
