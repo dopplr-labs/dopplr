@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import { Button, Result } from 'antd'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { queryCache, useQuery } from 'react-query'
@@ -70,7 +70,6 @@ export default function Resources() {
     <PageLayout
       sidebar={
         <PageSideBar
-          icon={<DatabaseOutlined className="text-lg" />}
           title="Resources"
           description="Connect with your preferred database and fetch data to render in Tables"
           primaryAction={
