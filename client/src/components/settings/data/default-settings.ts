@@ -17,4 +17,5 @@ export const DefaultTextEditorSettings: BaseSettings = Object.freeze({
   cursorSurroundingLines: 0,
   cursorSurroundingLinesStyle: 'default',
   cursorWidth: 2,
+  vim: false,
 })

@@ -146,6 +146,13 @@ export const textEditorSettings: Group = {
           default: DefaultTextEditorSettings.fontLigatures as boolean,
           key: 'fontLigatures',
         },
+        {
+          type: ConfigType.CHECKBOX,
+          title: 'Vim Mode',
+          description: 'Enable vim key bindings',
+          default: false,
+          key: 'vim',
+        },
       ],
     },
   },

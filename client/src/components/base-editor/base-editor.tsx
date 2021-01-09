@@ -1,7 +1,9 @@
-import React, { forwardRef, useContext } from 'react'
+import React, { forwardRef, useContext, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import MonacoEditor from 'react-monaco-editor'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+// @ts-ignore
+import { initVimMode } from 'monaco-vim'
 import {
   BaseSettings,
   LineNumber,
@@ -25,23 +27,50 @@ const BaseEditor = forwardRef(
   ) => {
     const { textEditorSettings } = useContext(SettingsContext)
 
+    const vimEnabled = textEditorSettings.vim
+    const vimMode = useRef<any>(undefined)
+
+    const editor = useRef<monaco.editor.IStandaloneCodeEditor | undefined>(
+      undefined,
+    )
+    const vimActionsContainer = useRef<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+      if (editor.current && vimEnabled && vimActionsContainer.current) {
+        vimMode.current = initVimMode(
+          editor.current,
+          vimActionsContainer.current,
+        )
+      } else if (!vimEnabled && vimMode.current) {
+        vimMode.current.dispose()
+      }
+    }, [vimEnabled])
+
     return (
       <div className={clsx('editor h-full', className)} style={style}>
-        <MonacoEditor
-          language="pgsql"
-          theme="vs-light"
-          value={value}
-          onChange={setValue}
-          options={settingsRemap(textEditorSettings)}
-          ref={ref}
-          editorDidMount={(editor) => {
-            if (editorAction) {
-              editorAction.forEach((action) => {
-                editor.addAction(action)
-              })
-            }
-          }}
-        />
+        <div style={{ height: vimEnabled ? 'calc(100% - 24px)' : '100%' }}>
+          <MonacoEditor
+            language="pgsql"
+            theme="vs-light"
+            value={value}
+            onChange={setValue}
+            options={settingsRemap(textEditorSettings)}
+            ref={ref}
+            editorDidMount={(mountedEditor) => {
+              editor.current = mountedEditor
+              if (editorAction) {
+                editorAction.forEach((action) => {
+                  mountedEditor.addAction(action)
+                })
+              }
+            }}
+          />
+        </div>
+        {textEditorSettings.vim ? (
+          <div className="flex items-center h-6 px-2 text-xs border-t text-content-tertiary">
+            <div ref={vimActionsContainer} />
+          </div>
+        ) : null}
       </div>
     )
   },

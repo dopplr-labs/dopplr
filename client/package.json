@@ -26,6 +26,7 @@
     "logrocket": "^1.0.14",
     "match-sorter": "^5.0.0",
     "monaco-languageclient": "^0.13.0",
+    "monaco-vim": "^0.1.9",
     "react": "^16.14.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.14.0",
