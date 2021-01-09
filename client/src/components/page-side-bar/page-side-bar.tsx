@@ -2,7 +2,6 @@ import React from 'react'
 import Scrollbars from 'react-custom-scrollbars'
 
 type PageSideBarProps = {
-  icon?: React.ReactNode
   title?: string
   description?: string
   primaryAction?: React.ReactElement
@@ -10,7 +9,6 @@ type PageSideBarProps = {
 }
 
 export default function PageSideBar({
-  icon,
   title,
   description,
   primaryAction,
@@ -18,7 +16,7 @@ export default function PageSideBar({
 }: PageSideBarProps) {
   return (
     <div className="flex flex-col h-full">
-      {icon || title || description || primaryAction ? (
+      {title || description || primaryAction ? (
         <div className="p-4 mb-2 border-b">
           <div className="text-base font-medium text-content-primary">
             {title}
