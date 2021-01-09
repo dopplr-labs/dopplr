@@ -30,7 +30,7 @@ export default function TextEditorSettings() {
   )
 
   return (
-    <div className="flex space-x-8">
+    <div className="flex items-start space-x-8">
       <div className="flex-1 max-w-3xl space-y-8">
         {Object.keys(subGroupDict).map((subGroupKeys, idx) => (
           <SettingsGroup
@@ -41,11 +41,11 @@ export default function TextEditorSettings() {
           />
         ))}
       </div>
-      <div className="sticky flex flex-col border rounded-md top-8 h-120 w-120">
+      <div className="sticky border rounded-md top-8 w-120">
         <div className="px-6 py-3 space-x-2 text-base font-medium border-b text-content-primary bg-background-primary">
           Editor Preview
         </div>
-        <div className="flex-1">
+        <div className="h-96">
           <BaseEditor value={SAMPLE_QUERY} setValue={NO_OP} />
         </div>
       </div>
