@@ -2,7 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 const defaultConfig = require('tailwindcss/defaultConfig')
 
-const gray = colors.trueGray
+const gray = colors.blueGray
 const blue = colors.lightBlue
 
 module.exports = {
@@ -39,9 +39,9 @@ module.exports = {
           dark: blue['900'],
         },
         background: {
-          primary: gray['100'],
-          secondary: gray['200'],
-          tertiary: gray['300'],
+          primary: gray['50'],
+          secondary: gray['100'],
+          tertiary: gray['200'],
         },
       },
       fontSize: {

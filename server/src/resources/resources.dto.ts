@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsIn, IsOptional } from 'class-validator'
+import {
+  IsString,
+  IsNumber,
+  IsIn,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator'
 
 export class CreateResourceDto {
   @IsString()
@@ -21,6 +27,22 @@ export class CreateResourceDto {
 
   @IsString()
   password: string
+
+  @IsOptional()
+  @IsBoolean()
+  sslRequired?: boolean
+
+  @IsOptional()
+  @IsBoolean()
+  selfCertificate?: boolean
+
+  @IsOptional()
+  @IsString()
+  clientKey?: string
+
+  @IsOptional()
+  @IsString()
+  clientCertificate?: string
 }
 export class UpdateResourceDto {
   @IsOptional()
@@ -50,6 +72,22 @@ export class UpdateResourceDto {
   @IsOptional()
   @IsString()
   password: string
+
+  @IsOptional()
+  @IsBoolean()
+  sslRequired?: boolean
+
+  @IsOptional()
+  @IsBoolean()
+  selfCertificate?: boolean
+
+  @IsOptional()
+  @IsString()
+  clientKey?: string
+
+  @IsOptional()
+  @IsString()
+  clientCertificate?: string
 }
 
 export class TestResourceDto {
@@ -70,4 +108,20 @@ export class TestResourceDto {
 
   @IsString()
   password: string
+
+  @IsOptional()
+  @IsBoolean()
+  sslRequired?: boolean
+
+  @IsOptional()
+  @IsBoolean()
+  selfCertificate?: boolean
+
+  @IsOptional()
+  @IsString()
+  clientKey?: string
+
+  @IsOptional()
+  @IsString()
+  clientCertificate?: string
 }

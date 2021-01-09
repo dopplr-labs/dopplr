@@ -116,7 +116,7 @@ export class ResourcesService {
 
   /**
    * Test whether the configuration for a resource is valid or not
-   * by connecting to the corresponding database
+   * by connecting to the correspong database
    *
    * @param resource - Resource to be tested
    */

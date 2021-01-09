@@ -1,3 +1,4 @@
+import { ConnectionOptions } from 'tls'
 import { InternalServerErrorException } from '@nestjs/common'
 import { Client } from 'pg'
 import * as _ from 'lodash'
@@ -32,7 +33,23 @@ export class PgClient implements ClientInterface {
     password: this.resource.password,
     port: this.resource.port,
     database: this.resource.database,
+    ssl: this.sslConfig,
   })
+
+  private get sslConfig(): boolean | ConnectionOptions {
+    if (this.resource.sslRequired) {
+      if (this.resource.selfCertificate) {
+        return {
+          key: this.resource.clientKey,
+          cert: this.resource.clientCertificate,
+        }
+      }
+
+      return true
+    }
+
+    return false
+  }
 
   async testConnection() {
     try {

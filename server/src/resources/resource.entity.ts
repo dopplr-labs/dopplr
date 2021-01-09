@@ -48,4 +48,16 @@ export class Resource {
 
   @Column()
   uid: string
+
+  @Column({ nullable: true })
+  sslRequired?: boolean
+
+  @Column({ nullable: true })
+  selfCertificate?: boolean
+
+  @Column({ nullable: true })
+  clientKey?: string
+
+  @Column({ nullable: true })
+  clientCertificate?: string
 }

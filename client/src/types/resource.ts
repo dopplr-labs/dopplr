@@ -9,4 +9,8 @@ export type Resource = {
   database: string
   host: string
   port: number
+  sslRequired?: boolean
+  selfCertificate?: boolean
+  clientKey?: string
+  clientCertificate?: string
 }
