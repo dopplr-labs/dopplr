@@ -1,3 +1,5 @@
+import { Resource } from 'src/resources/resource.entity'
+
 export type QueryRow = {
   [column: string]: string
 }
@@ -23,15 +25,7 @@ export type TableDetail = {
   columns: ColumnDetail[]
 }
 
-export type ClientResource = {
-  type: string
-  host: string
-  port: number
-  database: string
-  username: string
-  password: string
-}
-
+export type ClientResource = Partial<Resource>
 export interface ClientInterface {
   testConnection: () => Promise<boolean>
   runQuery: <T = QueryRow>(query: string) => Promise<QueryResult<T>>
