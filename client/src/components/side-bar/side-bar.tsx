@@ -9,6 +9,13 @@ import { NavLink } from 'react-router-dom'
 
 const pages = [
   {
+    id: 'dashboard',
+    title: 'Dashboard',
+    icon: <BarChartOutlined />,
+    defaultRoute: '/dashboards',
+    routes: ['/dashboards', '/dashboards/:dashboardId?'],
+  },
+  {
     id: 'queries',
     title: 'Queries',
     icon: <CodeOutlined />,
@@ -25,13 +32,6 @@ const pages = [
       '/resources/:resourceId',
       '/resources/new/:resourceType',
     ],
-  },
-  {
-    id: 'dashboard',
-    title: 'Dashboard',
-    icon: <BarChartOutlined />,
-    defaultRoute: '/dashboards',
-    routes: ['/dashboards', '/dashboards/:dashboardId?'],
   },
   {
     id: 'settings',
