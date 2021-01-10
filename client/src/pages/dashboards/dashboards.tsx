@@ -1,21 +1,14 @@
 import React, { useMemo, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Button, Form, Modal, Input, Select, Menu } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
+import { dashboardList, categories } from './data/dashboard-data'
 
 export default function Dashboards() {
   const [show, setShow] = useState<boolean>(false)
-
-  const categories = useMemo(
-    () => [
-      { id: 1, name: 'Product' },
-      { id: 2, name: 'Marketing' },
-      { id: 3, name: 'Users' },
-    ],
-    [],
-  )
+  const navigate = useNavigate()
 
   function handleShowModal() {
     setShow(true)
@@ -29,37 +22,8 @@ export default function Dashboards() {
     setShow(false)
   }
 
-  const sidebarContent = useMemo(() => {
-    const dashboardList = [
-      {
-        id: 1,
-        name: 'Queries Executed',
-        description:
-          'Dashboard to monitor total queries executed, failed and saved by Dopplr users',
-        categoryId: 1,
-      },
-      {
-        id: 2,
-        name: 'Resources Created',
-        description:
-          'Dashboard to monitor most used databases by the users and total queries ran on them',
-        categoryId: 1,
-      },
-      {
-        id: 3,
-        name: 'Email Campaigns',
-        description: 'Most effective email campaigns going on right now',
-        categoryId: 2,
-      },
-      {
-        id: 4,
-        name: 'Paid Users',
-        description: 'Demography of all paid customers',
-        categoryId: 3,
-      },
-    ]
-
-    return (
+  const sidebarContent = useMemo(
+    () => (
       <Menu
         mode="inline"
         defaultOpenKeys={['sub-1']}
@@ -70,13 +34,21 @@ export default function Dashboards() {
             {dashboardList
               .filter((dashboard) => dashboard.categoryId === category.id)
               .map((dashboard) => (
-                <Menu.Item key={dashboard.id}>{dashboard.name}</Menu.Item>
+                <Menu.Item
+                  key={dashboard.id}
+                  onClick={() => {
+                    navigate(`/dashboards/${dashboard.id}`)
+                  }}
+                >
+                  {dashboard.name}
+                </Menu.Item>
               ))}
           </Menu.SubMenu>
         ))}
       </Menu>
-    )
-  }, [categories])
+    ),
+    [navigate],
+  )
 
   return (
     <>
