@@ -16,6 +16,7 @@ import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
 import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
 import EmptyDashboard from 'pages/dashboards/components/empty-dashboard'
+import Dashboard from 'pages/dashboards/components/dashboard'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import client from 'utils/client'
 import Logrocket from 'components/logrocket'
@@ -87,6 +88,11 @@ export function App() {
                   path="dashboards"
                 >
                   <Route protectedRoute element={<EmptyDashboard />} path="/" />
+                  <Route
+                    protectedRoute
+                    element={<Dashboard />}
+                    path=":dashboardId"
+                  />
                 </Route>
                 <Route
                   protectedRoute
