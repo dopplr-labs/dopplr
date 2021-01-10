@@ -13,6 +13,7 @@ import CreateResource from 'pages/resources/components/create-resource'
 import ResourceDetail from 'pages/resources/components/resource-detail'
 import Dashboards from 'pages/dashboards'
 import EmptyDashboard from 'pages/dashboards/components/empty-dashboard'
+import Dashboard from 'pages/dashboards/components/dashboard'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
@@ -68,16 +69,16 @@ export function App() {
                     protectedRoute
                     element={<Dashboards />}
                     path="dashboards"
-                  />
-                  <Route
-                    protectedRoute
-                    element={<Dashboards />}
-                    path="dashboards"
                   >
                     <Route
                       protectedRoute
                       element={<EmptyDashboard />}
                       path="/"
+                    />
+                    <Route
+                      protectedRoute
+                      element={<Dashboard />}
+                      path=":dashboardId"
                     />
                   </Route>
                   <Route
