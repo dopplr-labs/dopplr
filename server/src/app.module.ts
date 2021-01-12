@@ -7,8 +7,7 @@ import { QueriesModule } from './queries/queries.module'
 import { LanguageServer } from './language-server/language-server.module'
 import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
-import { ChartsModule } from './charts/charts.module';
-import { ChartsModule } from './charts/charts.module';
+import { ChartsModule } from './charts/charts.module'
 
 @Module({
   imports: [
