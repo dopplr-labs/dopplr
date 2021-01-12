@@ -1,17 +1,18 @@
-import { Chart } from 'src/charts/chart.entity'
-import { Resource } from 'src/resources/resource.entity'
+import { Query } from 'src/queries/query.entity'
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm'
 
+type ChartType = {}
+type ChartConfig = {}
+
 @Entity()
-export class Query {
+export class Chart {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -22,26 +23,26 @@ export class Query {
   updatedAt: Date
 
   @ManyToOne(
-    () => Resource,
-    resource => resource.queries,
+    () => Query,
+    query => query.charts,
     { eager: true },
   )
-  resource: Resource
-
-  @OneToMany(
-    () => Chart,
-    chart => chart.query,
-  )
-  charts: Chart[]
+  query: Query
 
   @Column({ length: 500, nullable: true })
-  name?: string
+  title?: string
 
   @Column()
-  query: string
+  label: string
 
   @Column()
-  isSaved: boolean
+  values: string[]
+
+  @Column()
+  chartType: ChartType
+
+  @Column()
+  config: ChartConfig
 
   @Column()
   uid: string
