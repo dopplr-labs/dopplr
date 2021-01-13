@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-type ChartType = {}
-type ChartConfig = {}
+export enum ChartType {}
+export type ChartConfig = {}
 
 @Entity()
 export class Chart {
@@ -30,18 +30,18 @@ export class Chart {
   query: Query
 
   @Column({ length: 500, nullable: true })
-  title?: string
+  name?: string
 
   @Column()
   label: string
 
-  @Column()
+  @Column({ array: true })
   values: string[]
 
-  @Column()
-  chartType: ChartType
+  @Column({ enum: ChartType })
+  type: ChartType
 
-  @Column()
+  @Column({ type: 'json' })
   config: ChartConfig
 
   @Column()

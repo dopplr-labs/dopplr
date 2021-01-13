@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common'
+import { AuthGuard } from 'src/auth/auth.guard'
+import { GetUser } from 'src/auth/get-user.decorator'
+import { Chart } from './chart.entity'
 import { ChartsService } from './charts.service'
 import { CreateChartDto } from './dto/create-chart.dto'
 import { UpdateChartDto } from './dto/update-chart.dto'
 
 @Controller('charts')
+@UseGuards(AuthGuard)
 export class ChartsController {
-  constructor(private readonly chartsService: ChartsService) {}
+  constructor(private chartsService: ChartsService) {}
 
   @Post()
-  create(@Body() createChartDto: CreateChartDto) {
-    return this.chartsService.create(createChartDto)
+  async createChart(
+    @Body() createChartDto: CreateChartDto,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Chart }> {
+    const chart = await this.chartsService.createChart(createChartDto, user)
+    return { success: true, data: chart }
   }
 
   @Get()

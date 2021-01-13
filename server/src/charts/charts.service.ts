@@ -1,12 +1,29 @@
 import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { User } from 'src/auth/user.types'
+import { Chart } from './chart.entity'
+import { ChartRepository } from './chart.repository'
 import { CreateChartDto } from './dto/create-chart.dto'
 import { UpdateChartDto } from './dto/update-chart.dto'
 
 @Injectable()
 export class ChartsService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create(createChartDto: CreateChartDto) {
-    return 'This action adds a new chart'
+  constructor(
+    @InjectRepository(ChartRepository)
+    private chartsRepository: ChartRepository,
+  ) {}
+
+  /**
+   * Create a chart
+   *
+   * @param createChartDto
+   * @param user
+   */
+  async createChart(
+    createChartDto: CreateChartDto,
+    user: User,
+  ): Promise<Chart> {
+    return this.chartsRepository.save({ ...createChartDto, uid: user.uid })
   }
 
   findAll() {
