@@ -7,12 +7,13 @@ import {
   Delete,
   UseGuards,
   Patch,
+  Query,
 } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { Chart } from './chart.entity'
 import { ChartsService } from './charts.service'
-import { CreateChartDto, UpdateChartDto } from './charts.dto'
+import { CreateChartDto, FilterChartDto, UpdateChartDto } from './charts.dto'
 
 @Controller('charts')
 @UseGuards(AuthGuard)
@@ -22,9 +23,9 @@ export class ChartsController {
   @Get()
   async getAllCharts(
     @GetUser() user,
-    @Param('query') query?: number,
+    @Query() filterChartDto?: FilterChartDto,
   ): Promise<{ success: boolean; data: Chart[] }> {
-    const charts = await this.chartsService.getAllCharts(user, query)
+    const charts = await this.chartsService.getAllCharts(user, filterChartDto)
     return { success: true, data: charts }
   }
 

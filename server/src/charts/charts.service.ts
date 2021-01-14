@@ -4,7 +4,7 @@ import { User } from 'src/auth/user.types'
 import { QueriesService } from 'src/queries/queries.service'
 import { Chart } from './chart.entity'
 import { ChartRepository } from './chart.repository'
-import { CreateChartDto, UpdateChartDto } from './charts.dto'
+import { CreateChartDto, FilterChartDto, UpdateChartDto } from './charts.dto'
 
 @Injectable()
 export class ChartsService {
@@ -21,12 +21,19 @@ export class ChartsService {
    * @param user
    * @param query
    */
-  async getAllCharts(user: User, query?: number): Promise<Chart[]> {
-    const charts = await this.chartsRepository.find({
-      order: { createdAt: 'ASC' },
-      where: { uid: user.uid, query: query },
-    })
-    return charts
+  getAllCharts(user: User, filterChartDto: FilterChartDto): Promise<Chart[]> {
+    const { query } = filterChartDto
+    if (query) {
+      return this.chartsRepository.find({
+        order: { createdAt: 'ASC' },
+        where: { uid: user.uid, query: { id: query } },
+      })
+    } else {
+      return this.chartsRepository.find({
+        order: { createdAt: 'ASC' },
+        where: { uid: user.uid },
+      })
+    }
   }
 
   /**

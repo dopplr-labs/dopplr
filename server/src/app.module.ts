@@ -25,7 +25,7 @@ import { ChartsModule } from './charts/charts.module'
         process.env.NODE_ENV === 'production'
           ? { rejectUnauthorized: false }
           : false,
-      synchronize: process.env.NODE_ENV === 'development',
+      synchronize: process.env.NODE_ENV !== 'production',
     }),
     ResourcesModule,
     QueriesModule,

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { ChartType } from './chart.entity'
 
@@ -15,8 +16,32 @@ export class CreateChartDto {
   @IsEnum(ChartType)
   type: ChartType
 
+  @Transform(parseInt)
   @IsNumber()
   query: number
 }
 
-export class UpdateChartDto {}
+export class UpdateChartDto {
+  @IsOptional()
+  @IsString()
+  name: string
+
+  @IsOptional()
+  @IsString()
+  label: string
+
+  @IsOptional()
+  @IsString({ each: true })
+  values: string[]
+
+  @IsOptional()
+  @IsEnum(ChartType)
+  type: ChartType
+}
+
+export class FilterChartDto {
+  @IsOptional()
+  @Transform(parseInt)
+  @IsNumber()
+  query?: number
+}
