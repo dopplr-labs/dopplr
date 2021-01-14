@@ -12,8 +12,7 @@ import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { Chart } from './chart.entity'
 import { ChartsService } from './charts.service'
-import { CreateChartDto } from './dto/create-chart.dto'
-import { UpdateChartDto } from './dto/update-chart.dto'
+import { CreateChartDto, UpdateChartDto } from './charts.dto'
 
 @Controller('charts')
 @UseGuards(AuthGuard)

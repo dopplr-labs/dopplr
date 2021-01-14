@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
+import { QueriesService } from 'src/queries/queries.service'
 import { Chart } from './chart.entity'
 import { ChartRepository } from './chart.repository'
-import { CreateChartDto } from './dto/create-chart.dto'
-import { UpdateChartDto } from './dto/update-chart.dto'
+import { CreateChartDto, UpdateChartDto } from './charts.dto'
 
 @Injectable()
 export class ChartsService {
   constructor(
     @InjectRepository(ChartRepository)
     private chartsRepository: ChartRepository,
+    @Inject(forwardRef(() => QueriesService))
+    private queriesService: QueriesService,
   ) {}
 
   /**
@@ -51,7 +53,13 @@ export class ChartsService {
     createChartDto: CreateChartDto,
     user: User,
   ): Promise<Chart> {
-    return this.chartsRepository.save({ ...createChartDto, uid: user.uid })
+    const { query: queryId } = createChartDto
+    const query = await this.queriesService.getQuery(queryId, user)
+    return this.chartsRepository.save({
+      ...createChartDto,
+      query,
+      uid: user.uid,
+    })
   }
 
   /**
