@@ -3,10 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   Delete,
   UseGuards,
+  Patch,
 } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
@@ -20,6 +20,24 @@ import { UpdateChartDto } from './dto/update-chart.dto'
 export class ChartsController {
   constructor(private chartsService: ChartsService) {}
 
+  @Get()
+  async getAllCharts(
+    @GetUser() user,
+    @Param('query') query?: number,
+  ): Promise<{ success: boolean; data: Chart[] }> {
+    const charts = await this.chartsService.getAllCharts(user, query)
+    return { success: true, data: charts }
+  }
+
+  @Get(':id')
+  async getQuery(
+    @Param('id') id: number,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Chart }> {
+    const chart = await this.chartsService.getChart(id, user)
+    return { success: true, data: chart }
+  }
+
   @Post()
   async createChart(
     @Body() createChartDto: CreateChartDto,
@@ -29,23 +47,22 @@ export class ChartsController {
     return { success: true, data: chart }
   }
 
-  @Get()
-  findAll() {
-    return this.chartsService.findAll()
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chartsService.findOne(+id)
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateChartDto: UpdateChartDto) {
-    return this.chartsService.update(+id, updateChartDto)
+  @Patch(':id')
+  async updateChart(
+    @Param('id') id: number,
+    @Body() updateChartDto: UpdateChartDto,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Chart }> {
+    const chart = await this.chartsService.updateChart(id, updateChartDto, user)
+    return { success: true, data: chart }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chartsService.remove(+id)
+  async deleteChart(
+    @Param('id') id: number,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Chart }> {
+    const chart = await this.chartsService.deleteChart(id, user)
+    return { success: true, data: chart }
   }
 }
