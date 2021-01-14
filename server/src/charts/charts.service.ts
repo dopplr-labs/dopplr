@@ -14,6 +14,34 @@ export class ChartsService {
   ) {}
 
   /**
+   * Returns all the charts
+   *
+   * @param user
+   * @param query
+   */
+  async getAllCharts(user: User, query?: number): Promise<Chart[]> {
+    const charts = await this.chartsRepository.find({
+      order: { createdAt: 'ASC' },
+      where: { uid: user.uid, query: query },
+    })
+    return charts
+  }
+
+  /**
+   * Returns the chart data
+   *
+   * @param id
+   * @param user
+   */
+  async getChart(id: number, user: User): Promise<Chart> {
+    const chart = await this.chartsRepository.findOne({
+      id,
+      uid: user.uid,
+    })
+    return chart
+  }
+
+  /**
    * Create a chart
    *
    * @param createChartDto
@@ -26,20 +54,32 @@ export class ChartsService {
     return this.chartsRepository.save({ ...createChartDto, uid: user.uid })
   }
 
-  findAll() {
-    return 'This action returns all charts'
+  /**
+   * Updates a particular chart
+   *
+   * @param id
+   * @param updateChartDto
+   * @param user
+   */
+  async updateChart(
+    id: number,
+    updateChartDto: UpdateChartDto,
+    user: User,
+  ): Promise<Chart> {
+    return this.chartsRepository
+      .update({ id, uid: user.uid }, updateChartDto)
+      .then(() => this.getChart(id, user))
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chart`
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateChartDto: UpdateChartDto) {
-    return `This action updates a #${id} chart`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} chart`
+  /**
+   * Delete a particular chart
+   *
+   * @param id
+   * @param user
+   */
+  async deleteChart(id: number, user: User): Promise<Chart> {
+    const chart = await this.getChart(id, user)
+    await this.chartsRepository.remove([chart])
+    return { ...chart, id }
   }
 }
