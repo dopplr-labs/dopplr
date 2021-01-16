@@ -19,27 +19,30 @@ export class ChartsService {
    * Returns all the charts
    *
    * @param user
-   * @param query
+   * @param query - query id to get all charts for a particular query
    */
-  getAllCharts(user: User, filterChartDto: FilterChartDto): Promise<Chart[]> {
+  async getAllCharts(
+    user: User,
+    filterChartDto: FilterChartDto,
+  ): Promise<Chart[]> {
     const { query } = filterChartDto
-    if (query) {
-      return this.chartsRepository.find({
-        order: { createdAt: 'ASC' },
-        where: { uid: user.uid, query: { id: query } },
-      })
-    } else {
-      return this.chartsRepository.find({
-        order: { createdAt: 'ASC' },
-        where: { uid: user.uid },
-      })
+    const where: { uid: string; query?: { id: number } } = {
+      uid: user.uid,
     }
+    if (query) {
+      where.query = { id: query }
+    }
+    const charts = await this.chartsRepository.find({
+      order: { createdAt: 'ASC' },
+      where,
+    })
+    return charts
   }
 
   /**
    * Returns the chart data
    *
-   * @param id
+   * @param id - id of the chart user wants to fetchs
    * @param user
    */
   async getChart(id: number, user: User): Promise<Chart> {
@@ -53,7 +56,7 @@ export class ChartsService {
   /**
    * Create a chart
    *
-   * @param createChartDto
+   * @param createChartDto - Data for creating a chart
    * @param user
    */
   async createChart(
@@ -72,8 +75,8 @@ export class ChartsService {
   /**
    * Updates a particular chart
    *
-   * @param id
-   * @param updateChartDto
+   * @param id - id of the chart user wants to update
+   * @param updateChartDto - Data for updating the chart
    * @param user
    */
   async updateChart(
@@ -89,7 +92,7 @@ export class ChartsService {
   /**
    * Delete a particular chart
    *
-   * @param id
+   * @param id - id of the chart user wants to delete
    * @param user
    */
   async deleteChart(id: number, user: User): Promise<Chart> {
