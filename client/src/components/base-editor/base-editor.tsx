@@ -114,8 +114,9 @@ function initEmacsMode(
 ) {
   const boundEditor = new EmacsExtension(editor)
   boundEditor.onDidMarkChange((ev: any) => {
-    if (actionsContainer !== null)
+    if (actionsContainer !== null) {
       actionsContainer.textContent = ev ? 'Mark Set!' : 'Mark Unset'
+    }
   })
   boundEditor.onDidChangeKey((str: string) => {
     if (actionsContainer !== null) actionsContainer.textContent = str

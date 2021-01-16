@@ -7,6 +7,7 @@ import { QueriesModule } from './queries/queries.module'
 import { LanguageServer } from './language-server/language-server.module'
 import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
+import { ChartsModule } from './charts/charts.module'
 
 @Module({
   imports: [
@@ -24,12 +25,13 @@ import { AuthMiddleware } from './auth/auth.middleware'
         process.env.NODE_ENV === 'production'
           ? { rejectUnauthorized: false }
           : false,
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
     }),
     ResourcesModule,
     QueriesModule,
     LanguageServer,
     AuthModule,
+    ChartsModule,
   ],
 })
 export class AppModule implements NestModule {

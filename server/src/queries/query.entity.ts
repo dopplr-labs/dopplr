@@ -1,3 +1,4 @@
+import { Chart } from 'src/charts/chart.entity'
 import { Resource } from 'src/resources/resource.entity'
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm'
 
 @Entity()
@@ -25,6 +27,12 @@ export class Query {
     { eager: true },
   )
   resource: Resource
+
+  @OneToMany(
+    () => Chart,
+    chart => chart.query,
+  )
+  charts: Chart[]
 
   @Column({ length: 500, nullable: true })
   name?: string

@@ -68,6 +68,7 @@ export class ResourcesService {
    * Create a resource
    *
    * @param createResourceDto - Data for creating resource
+   * @param user
    */
   async createResource(
     createResourceDto: CreateResourceDto,
