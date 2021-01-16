@@ -4,8 +4,8 @@
 name: Deploy to Firebase Hosting on PR
 on: pull_request
 env:
-  REACT_APP_API_BASE_URL: https://load-balancer-2070154787.us-east-2.elb.amazonaws.com
-  REACT_APP_LANGUAGE_SERVER_WS: wss://load-balancer-2070154787.us-east-2.elb.amazonaws.com
+  REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
+  REACT_APP_LANGUAGE_SERVER_WS: ${{ secrets.REACT_APP_LANGUAGE_SERVER_WS }}
   REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
   REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
   REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
