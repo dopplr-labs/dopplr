@@ -1,6 +1,7 @@
 import React from 'react'
 import { Tooltip } from 'antd'
 import { RectReadOnly } from 'react-use-measure'
+import { useLocation } from 'react-router-dom'
 import {
   BorderVerticleOutlined,
   DownOutlined,
@@ -21,6 +22,9 @@ export default function HorizontalOrientation({
   editor,
   tabContent,
 }: HorizontalOrientationProps) {
+  const { pathname } = useLocation()
+  const isSaved = pathname.split('/')[2] === 'saved'
+  const queryId = pathname.split('/')[3]
   return (
     <VerticalPane
       paneName="editor-vertical-pane"
