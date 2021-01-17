@@ -2,6 +2,7 @@ import React from 'react'
 import { Tooltip, Tabs } from 'antd'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { RectReadOnly } from 'react-use-measure'
+import { useLocation } from 'react-router-dom'
 import {
   BorderVerticleOutlined,
   DownOutlined,
@@ -9,6 +10,7 @@ import {
 } from '@ant-design/icons'
 import VerticalPane from 'components/vertical-pane'
 import Editor from 'components/editor'
+import EditorContext from 'contexts/editor-context'
 import { QueryResult } from 'types/query'
 import ResultsTable from './results-table'
 import ChartTab from './chart-tab'
@@ -36,6 +38,9 @@ export default function HorizontalOrientation({
   isRunningQuery,
   error,
 }: HorizontalOrientationProps) {
+  const { pathname } = useLocation()
+  const isSaved = pathname.split('/')[2] === 'saved'
+  const queryId = pathname.split('/')[3]
   return (
     <VerticalPane
       paneName="editor-vertical-pane"
@@ -99,7 +104,11 @@ export default function HorizontalOrientation({
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Charts" key="2">
-                  <ChartTab data={queryResult} />
+                  <EditorContext.Provider
+                    value={{ isSaved, queryId, queryResult }}
+                  >
+                    <ChartTab />
+                  </EditorContext.Provider>
                 </Tabs.TabPane>
               </Tabs>
             </div>
