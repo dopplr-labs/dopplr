@@ -7,8 +7,10 @@ import {
   RightOutlined,
   LeftOutlined,
 } from '@ant-design/icons'
+import { useLocation } from 'react-router-dom'
 import Editor from 'components/editor'
 import HorizontalPane from 'components/horizontal-pane'
+import EditorContext from 'contexts/editor-context'
 import { QueryResult } from 'types/query'
 import ResultsTable from './results-table'
 import ChartTab from './chart-tab'
@@ -36,6 +38,9 @@ export default function VerticalOrientation({
   isRunningQuery,
   error,
 }: VerticalOrientationProps) {
+  const { pathname } = useLocation()
+  const isSaved = pathname.split('/')[2] === 'saved'
+  const queryId = pathname.split('/')[3]
   return (
     <HorizontalPane
       paneName="editor-horizontal-pane"
@@ -100,7 +105,11 @@ export default function VerticalOrientation({
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Charts" key="2">
-                  <ChartTab data={queryResult} />
+                  <EditorContext.Provider
+                    value={{ isSaved, queryId, queryResult }}
+                  >
+                    <ChartTab />
+                  </EditorContext.Provider>
                 </Tabs.TabPane>
               </Tabs>
             </div>
