@@ -9,6 +9,7 @@ import {
   fetchHistory,
   fetchSavedQuery,
 } from 'pages/queries/queries-and-mutations'
+import { fetchResources } from 'pages/resources/queries'
 
 export enum TabType {
   NEW = 'new',
@@ -265,9 +266,12 @@ export async function resolveTabData(
 }
 
 async function resolveDataForNewTab(): Promise<TabData> {
+  const resources = await queryCache.fetchQuery(['resources'], fetchResources)
+
   return {
     name: 'Untitled Query',
     query: '',
+    resource: resources?.[0]?.id,
   }
 }
 
