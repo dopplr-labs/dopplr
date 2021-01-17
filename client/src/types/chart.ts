@@ -13,3 +13,12 @@ export type ChartTypes =
   | 'pie'
   | 'ring'
   | 'scatter'
+
+export type Chart = {
+  id: number
+  name: string
+  label: string
+  values: string[]
+  type: ChartTypes
+  query: number
+}
