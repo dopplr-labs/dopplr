@@ -21,6 +21,9 @@ export default function VerticalOrientation({
   containerBounds,
   tabContent,
 }: VerticalOrientationProps) {
+  const { pathname } = useLocation()
+  const isSaved = pathname.split('/')[2] === 'saved'
+  const queryId = pathname.split('/')[3]
   return (
     <HorizontalPane
       paneName="editor-horizontal-pane"
