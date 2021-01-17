@@ -237,7 +237,7 @@ export function TabProvider({ children }: { children: React.ReactElement }) {
 
 export async function resolveTabData(
   tabType: TabType,
-  id: ID,
+  id?: ID,
 ): Promise<TabData> {
   switch (tabType) {
     case TabType.NEW: {
@@ -245,10 +245,16 @@ export async function resolveTabData(
     }
 
     case TabType.HISTORY: {
+      if (!id) {
+        throw new Error('cannot fetch history data without any id')
+      }
       return resolveDataForHistoryTab(id)
     }
 
     case TabType.SAVED: {
+      if (!id) {
+        throw new Error('cannot fetch saved query data without any id')
+      }
       return resolveDataForSavedTab(id)
     }
 
