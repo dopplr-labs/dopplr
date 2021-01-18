@@ -1,4 +1,5 @@
 import { Result } from 'antd'
+import clsx from 'clsx'
 import EditorContext from 'contexts/editor-context'
 import { range } from 'lodash-es'
 import React, { useContext, useMemo } from 'react'
@@ -6,10 +7,17 @@ import Scrollbars from 'react-custom-scrollbars'
 import { useQuery } from 'react-query'
 import { fetchChartsForQuery } from '../chart-queries'
 
-export default function ChartsList() {
+type ChartsListProps = {
+  activeChartId: number
+  openChart: (id: number) => void
+}
+export default function ChartsList({
+  activeChartId,
+  openChart,
+}: ChartsListProps) {
   const { queryId } = useContext(EditorContext)
 
-  const { data: charts, isLoading, error } = useQuery(['charts'], () =>
+  const { data: charts, isLoading, error } = useQuery(['charts', queryId], () =>
     fetchChartsForQuery(parseInt(queryId)),
   )
 
@@ -31,16 +39,23 @@ export default function ChartsList() {
 
     if (charts) {
       return charts.map((chart) => (
-        <div key={chart.id} className="text-sm">
+        <div
+          key={chart.id}
+          className={clsx(
+            'w-full py-2 text-xs cursor-pointer hover:text-brand-primary',
+            chart.id === activeChartId ? 'text-brand-primary' : 'text-gray-700',
+          )}
+          onClick={() => openChart(chart.id)}
+        >
           {chart.name}
         </div>
       ))
     }
-  }, [isLoading, error, charts])
+  }, [isLoading, error, charts, openChart, activeChartId])
 
   return (
     <Scrollbars className="flex-1">
-      <div className="py-2 space-y-2">{chartsListContent}</div>
+      <div className="py-2">{chartsListContent}</div>
     </Scrollbars>
   )
 }
