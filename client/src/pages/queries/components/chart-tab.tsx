@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { Button } from 'antd'
 import {
   AreaChartOutlined,
@@ -10,9 +10,16 @@ import {
 import EditorContext from 'contexts/editor-context'
 import CreateChart from './create-chart'
 import ChartsList from './charts-list'
+import ChartDetail from './chart-detail'
 
 export default function ChartTab() {
   const { queryResult: data, isSaved } = useContext(EditorContext)
+
+  const [activeChartId, setActiveChartId] = useState<number>(-1)
+
+  function handleOpenChartDetail(id: number) {
+    setActiveChartId(id)
+  }
 
   const runQueryPlaceholder = useMemo(
     () => (
@@ -41,6 +48,18 @@ export default function ChartTab() {
     [],
   )
 
+  const chartTabContent = useMemo(() => {
+    if (!data) {
+      return runQueryPlaceholder
+    }
+
+    if (activeChartId === -1) {
+      return <CreateChart />
+    }
+
+    return <ChartDetail chartId={activeChartId} />
+  }, [data, runQueryPlaceholder, activeChartId])
+
   return (
     <div className="flex w-full h-full bg-white">
       <div className="flex-shrink-0 w-64 h-full border-r">
@@ -54,15 +73,27 @@ export default function ChartTab() {
               result
             </div>
             <div className="mt-4">
-              <Button icon={<PlusOutlined />} className="w-full" type="primary">
+              <Button
+                icon={<PlusOutlined />}
+                className="w-full"
+                type="primary"
+                onClick={() => {
+                  setActiveChartId(-1)
+                }}
+              >
                 Create New
               </Button>
             </div>
           </div>
-          {isSaved ? <ChartsList /> : null}
+          {isSaved ? (
+            <ChartsList
+              activeChartId={activeChartId}
+              openChart={handleOpenChartDetail}
+            />
+          ) : null}
         </div>
       </div>
-      {data ? <CreateChart /> : runQueryPlaceholder}
+      {chartTabContent}
     </div>
   )
 }
