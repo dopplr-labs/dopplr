@@ -1,11 +1,11 @@
 import React, { cloneElement, useMemo, useContext } from 'react'
 import { Form, Empty, Select, Input, Button, Tooltip } from 'antd'
-import { queryCache, useMutation } from 'react-query'
+import { queryCache, useMutation, useQuery } from 'react-query'
 import EditorContext from 'contexts/editor-context'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { ChartTypes } from 'types/chart'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
-import { createChart } from '../chart-queries'
+import { createChart, fetchChartsForQuery } from '../chart-queries'
 
 export default function CreateChart() {
   const { queryResult, isSaved, queryId } = useContext(EditorContext)
@@ -19,7 +19,7 @@ export default function CreateChart() {
     string | string[] | undefined
   >(`${queryId}-values`, undefined)
 
-  const [title, setTitle] = usePersistedSetState<string | undefined>(
+  const [title, setTitle] = usePersistedSetState<string>(
     `${queryId}-title`,
     'Untitled Chart',
   )
@@ -28,10 +28,18 @@ export default function CreateChart() {
     `${queryId}-chartType`,
     'line',
   )
+  const { data: charts } = useQuery(
+    ['charts', queryId],
+    () => fetchChartsForQuery(parseInt(queryId)),
+    { enabled: isSaved },
+  )
 
   const [addChart, { isLoading }] = useMutation(createChart, {
     onSuccess: (createdChart) => {
-      queryCache.setQueryData(['charts', queryId], [createdChart])
+      queryCache.setQueryData(
+        ['charts', queryId],
+        charts ? [...charts, createdChart] : [createdChart],
+      )
     },
   })
 
