@@ -15,7 +15,7 @@ export async function fetchChartsForQuery(queryId: number): Promise<Chart[]> {
   return data.data
 }
 
-export async function fetchChart(chartId: string): Promise<Chart> {
+export async function fetchChart(chartId: number): Promise<Chart> {
   const { data } = await client.get<{ success: boolean; data: Chart }>(
     `/charts/${chartId}`,
   )
