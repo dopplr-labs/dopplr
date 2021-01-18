@@ -33,7 +33,7 @@ export class ChartsService {
       where.query = { id: query }
     }
     const charts = await this.chartsRepository.find({
-      order: { createdAt: 'ASC' },
+      order: { createdAt: 'DESC' },
       where,
     })
     return charts
