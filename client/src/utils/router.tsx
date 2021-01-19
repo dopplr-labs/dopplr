@@ -1,10 +1,9 @@
-import { To, State } from 'history'
 import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useMatch } from 'react-router-dom'
 import { Subtract } from 'utility-types'
 
 type RouteParamsProps = {
-  params: Record<string, string>
+  params: ReturnType<typeof useParams>
 }
 
 export function withRouteParams<Props extends RouteParamsProps>(
@@ -20,16 +19,7 @@ export function withRouteParams<Props extends RouteParamsProps>(
   return WrappedComponent
 }
 
-export type NavigateFunction = {
-  (
-    to: To,
-    options?: {
-      replace?: boolean
-      state?: State
-    },
-  ): void
-  (delta: number): void
-}
+export type NavigateFunction = ReturnType<typeof useNavigate>
 
 type NavigationProps = {
   navigate: NavigateFunction
@@ -43,7 +33,27 @@ export function withNavigate<Props extends NavigationProps>(
     return <WrappingComponent {...(props as Props)} navigate={navigate} />
   }
 
-  WrappedComponent.displayName = `withRouteParams(${WrappingComponent.displayName})`
+  WrappedComponent.displayName = `withNavigation(${WrappingComponent.displayName})`
+
+  return WrappedComponent
+}
+
+export type RouteMatch = ReturnType<typeof useMatch>
+
+type RouteMatchProps = {
+  match: RouteMatch
+}
+
+export function withRouteMatch<Props extends RouteMatchProps>(
+  WrappingComponent: React.ComponentType<Props>,
+  pattern: string,
+): React.ComponentType<Subtract<Props, RouteMatchProps>> {
+  function WrappedComponent(props: Subtract<Props, RouteMatchProps>) {
+    const match = useMatch(pattern)
+    return <WrappingComponent {...(props as Props)} match={match} />
+  }
+
+  WrappedComponent.displayName = `withRouteMatch(${WrappingComponent.displayName})`
 
   return WrappedComponent
 }
