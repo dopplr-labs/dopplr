@@ -54,10 +54,15 @@ export default function ChartTab() {
     }
 
     if (activeChartId === -1) {
-      return <CreateChart />
+      return <CreateChart changeActiveChartId={handleOpenChartDetail} />
     }
 
-    return <ChartDetail chartId={activeChartId} />
+    return (
+      <ChartDetail
+        chartId={activeChartId}
+        changeActiveChartId={handleOpenChartDetail}
+      />
+    )
   }, [data, runQueryPlaceholder, activeChartId])
 
   return (
@@ -88,7 +93,7 @@ export default function ChartTab() {
           {isSaved ? (
             <ChartsList
               activeChartId={activeChartId}
-              openChart={handleOpenChartDetail}
+              changeActiveChartId={handleOpenChartDetail}
             />
           ) : null}
         </div>
