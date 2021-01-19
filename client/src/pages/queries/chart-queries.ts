@@ -37,14 +37,15 @@ export async function createChart({
 }
 
 export async function updateChart({
+  id,
   name,
   label,
   values,
   type,
   query,
 }: Partial<Chart>): Promise<Chart> {
-  const { data } = await client.post<{ success: boolean; data: Chart }>(
-    '/charts',
+  const { data } = await client.patch<{ success: boolean; data: Chart }>(
+    `/charts/${id}`,
     { name, label, values, type, query },
   )
   return data.data
