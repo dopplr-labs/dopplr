@@ -1,33 +1,23 @@
-import React, { cloneElement, useMemo, useContext } from 'react'
+import React, { cloneElement, useMemo, useContext, useState } from 'react'
 import { Form, Empty, Select, Input, Button, Tooltip } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import EditorContext from 'contexts/editor-context'
-import usePersistedSetState from 'hooks/use-persisted-state'
 import { ChartTypes } from 'types/chart'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 import { createChart, fetchChartsForQuery } from '../chart-queries'
 
-export default function CreateChart() {
+type CreateChartProps = {
+  changeActiveChartId: (id: number) => void
+}
+
+export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
   const { queryResult, isSaved, queryId } = useContext(EditorContext)
 
-  const [label, setLabel] = usePersistedSetState<string | undefined>(
-    `${queryId}-label`,
-    undefined,
-  )
+  const [label, setLabel] = useState<string | undefined>()
+  const [values, setValues] = useState<string[] | undefined>()
+  const [title, setTitle] = useState<string>('Untitled Chart')
+  const [chartType, setChartType] = useState<ChartTypes>('line')
 
-  const [values, setValues] = usePersistedSetState<
-    string | string[] | undefined
-  >(`${queryId}-values`, undefined)
-
-  const [title, setTitle] = usePersistedSetState<string>(
-    `${queryId}-title`,
-    'Untitled Chart',
-  )
-
-  const [chartType, setChartType] = usePersistedSetState<ChartTypes>(
-    `${queryId}-chartType`,
-    'line',
-  )
   const { data: charts } = useQuery(
     ['charts', queryId],
     () => fetchChartsForQuery(parseInt(queryId)),
@@ -38,29 +28,23 @@ export default function CreateChart() {
     onSuccess: (createdChart) => {
       queryCache.setQueryData(
         ['charts', queryId],
-        charts ? [...charts, createdChart] : [createdChart],
+        charts ? [createdChart, ...charts] : [createdChart],
       )
+      changeActiveChartId(createdChart.id)
     },
   })
 
   const chartData = useMemo(() => {
     if (label && values && queryResult) {
-      if (typeof values === 'string') {
-        return queryResult.rows.map((row) => {
-          return { label: row[label], value: row[values], type: values }
-        })
-      } else {
-        return values
-          .map((value) =>
-            queryResult.rows.map((row) => {
-              return { label: row[label], value: row[value], type: value }
-            }),
-          )
-          .flat()
-      }
-    } else {
-      return []
+      return values
+        .map((value) =>
+          queryResult.rows.map((row) => {
+            return { label: row[label], value: row[value], type: value }
+          }),
+        )
+        .flat()
     }
+    return []
   }, [label, values, queryResult])
 
   function handleCreateChart(values: any) {
