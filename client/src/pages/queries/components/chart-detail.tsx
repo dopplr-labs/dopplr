@@ -1,17 +1,34 @@
-import React, { useMemo, cloneElement, useContext, useState } from 'react'
-import { Result, Form, Select, Input, Button } from 'antd'
-import { useQuery } from 'react-query'
+import React, {
+  useMemo,
+  cloneElement,
+  useContext,
+  useState,
+  useCallback,
+} from 'react'
+import { Result, Form, Select, Input, Button, Modal, message } from 'antd'
+import { range } from 'lodash-es'
+import { queryCache, useMutation, useQuery } from 'react-query'
 import EditorContext from 'contexts/editor-context'
-import { ChartTypes } from 'types/chart'
-import { fetchChart } from '../chart-queries'
+import { Chart, ChartTypes } from 'types/chart'
+import {
+  deleteChart,
+  fetchChart,
+  fetchChartsForQuery,
+  updateChart,
+} from '../chart-queries'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 
 type ChartDetailProps = {
   chartId: number
+  changeActiveChartId: (id: number) => void
 }
 
-export default function ChartDetail({ chartId }: ChartDetailProps) {
-  const { queryResult } = useContext(EditorContext)
+export default function ChartDetail({
+  chartId,
+  changeActiveChartId,
+}: ChartDetailProps) {
+  const { queryResult, queryId } = useContext(EditorContext)
+  const [form] = Form.useForm()
 
   const [chartType, setChartType] = useState<ChartTypes>('line')
   const [label, setLabel] = useState<string | undefined>()
@@ -22,14 +39,83 @@ export default function ChartDetail({ chartId }: ChartDetailProps) {
     ['chart', chartId],
     () => fetchChart(chartId),
     {
-      onSuccess: (chart) => {
-        setTitle(chart.name)
-        setValues(chart.values)
-        setLabel(chart.label)
-        setChartType(chart.type)
+      onSettled: (chart) => {
+        if (chart) {
+          setTitle(chart.name)
+          setValues(chart.values)
+          setLabel(chart.label)
+          setChartType(chart.type)
+          form.setFieldsValue({
+            type: chart.type,
+            name: chart.name,
+            label: chart.label,
+            values: chart.values,
+          })
+        }
       },
     },
   )
+  const [disabled, setDisbaled] = useState<boolean>(true)
+
+  const { data: charts } = useQuery(['charts', queryId], () =>
+    fetchChartsForQuery(parseInt(queryId)),
+  )
+
+  const [editChart, { isLoading: isUpdatingChart }] = useMutation(updateChart, {
+    onMutate: (updatedChart) => {
+      queryCache.setQueryData(
+        ['charts', queryId],
+        charts?.map((chart) =>
+          chart.id === updatedChart.id ? { ...chart, ...updatedChart } : chart,
+        ),
+      )
+      queryCache.setQueryData(['chart', chartId], { ...chart, ...updatedChart })
+    },
+    onSuccess: () => {
+      message.success('Chart updated successfully')
+    },
+  })
+
+  const [removeChart, { isLoading: isRemovingChart }] = useMutation(
+    deleteChart,
+    {
+      onMutate: (deletedChart) => {
+        queryCache.setQueryData(
+          ['charts', queryId],
+          charts?.filter((chart) => chart.id !== deletedChart.id),
+        )
+        queryCache.removeQueries(['chart', chartId])
+        const updatedCharts: Chart[] | undefined = queryCache.getQueryData([
+          'charts',
+          queryId,
+        ])
+        changeActiveChartId(updatedCharts?.length ? updatedCharts[0].id : -1)
+      },
+    },
+  )
+
+  const onFinish = useCallback(
+    (values: any) => {
+      editChart({
+        id: chartId,
+        ...values,
+      })
+    },
+    [editChart, chartId],
+  )
+
+  const confirmDelete = useCallback(() => {
+    Modal.confirm({
+      title: 'Delete this chart?',
+      content: 'This action cannot be reverted',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        removeChart({ id: chartId })
+      },
+    })
+  }, [removeChart, chartId])
 
   const chartData = useMemo(() => {
     if (label && values && queryResult) {
@@ -46,7 +132,21 @@ export default function ChartDetail({ chartId }: ChartDetailProps) {
   const chartContent = useMemo(() => {
     if (isLoading) {
       return (
-        <div className="w-full h-full bg-background-secondary animate-pulse" />
+        <div className="flex flex-1 w-full h-full">
+          <div className="flex flex-col w-full px-4 pb-8 space-y-4">
+            <div className="w-48 h-8 bg-background-secondary animate-pulse" />
+            <div className="w-full h-full bg-background-secondary animate-pulse" />
+          </div>
+          <div className="flex-shrink-0 w-64 h-full pt-10 pl-4 space-y-8 border-l">
+            {range(5).map((val) => (
+              <div
+                key={val}
+                className="w-full h-8 bg-background-secondary animate-pulse"
+                style={{ opacity: 1 - val / 5 }}
+              />
+            ))}
+          </div>
+        </div>
       )
     }
 
@@ -58,13 +158,16 @@ export default function ChartDetail({ chartId }: ChartDetailProps) {
       return (
         <div className="flex flex-1 w-full h-full ">
           <div className="flex flex-col w-full px-4 pb-8 space-y-4">
-            <div className="font-semibold">{chart.name}</div>
-            {cloneElement(chartList[chart.type].chart, { data: chartData })}
+            <div className="font-semibold">{title}</div>
+            {cloneElement(chartList[chartType].chart, { data: chartData })}
           </div>
           <Form
             layout="vertical"
             className="flex-shrink-0 w-64 h-full pl-4 border-l"
-            initialValues={{ type: chartType, name: title, label, values }}
+            form={form}
+            // initialValues={{ type: chartType, name: title, label, values }}
+            onValuesChange={() => setDisbaled(false)}
+            onFinish={onFinish}
           >
             <Form.Item label="Chart Type" name="type">
               <Select showSearch value={chartType} onChange={setChartType}>
@@ -123,10 +226,20 @@ export default function ChartDetail({ chartId }: ChartDetailProps) {
               />
             </Form.Item>
             <div className="flex items-center justify-between">
-              <Button htmlType="button" danger>
+              <Button
+                htmlType="button"
+                danger
+                loading={isRemovingChart}
+                onClick={confirmDelete}
+              >
                 Delete
               </Button>
-              <Button htmlType="submit" type="primary">
+              <Button
+                htmlType="submit"
+                type="primary"
+                disabled={disabled}
+                loading={isUpdatingChart}
+              >
                 Save
               </Button>
             </div>
@@ -136,14 +249,20 @@ export default function ChartDetail({ chartId }: ChartDetailProps) {
     }
   }, [
     isLoading,
+    isRemovingChart,
+    isUpdatingChart,
     error,
     chart,
+    form,
+    onFinish,
     chartData,
     chartType,
     label,
-    queryResult?.fields,
+    queryResult,
     title,
     values,
+    disabled,
+    confirmDelete,
   ])
 
   return <>{chartContent}</>
