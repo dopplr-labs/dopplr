@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { queryCache, useMutation } from 'react-query'
 import { Dropdown, Menu, Modal } from 'antd'
@@ -8,6 +8,7 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons'
 import { SavedQuery, SavedQueryPage } from 'types/query'
+import { TabsContext, TabType } from 'components/tabs-provider'
 import RenameQueryModal from './rename-query-modal'
 
 import { deleteQuery } from '../queries-and-mutations'
@@ -23,6 +24,7 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
     setRenameModalVisible(false)
   }
 
+  const { closeTab } = useContext(TabsContext)
   const [deleteQueryMutation] = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
       queryCache.setQueryData(
@@ -36,6 +38,7 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
             : [],
       )
       queryCache.removeQueries(['saved-query', deletedQueryId])
+      closeTab(TabType.SAVED, deletedQueryId)
     },
   })
 

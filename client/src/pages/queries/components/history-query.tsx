@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { Dropdown, Menu } from 'antd'
 import {
   DeleteOutlined,
@@ -8,6 +8,7 @@ import {
 import { queryCache, useMutation } from 'react-query'
 import { History, HistoryPage } from 'types/history'
 import { Link } from 'react-router-dom'
+import { TabsContext, TabType } from 'components/tabs-provider'
 import { deleteQuery } from '../queries-and-mutations'
 import SaveQueryModal from './save-query-modal'
 
@@ -19,6 +20,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
     setSaveModalVisible(false)
   }
 
+  const { closeTab } = useContext(TabsContext)
   const [deleteQueryMutation] = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
       queryCache.setQueryData(
@@ -32,6 +34,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
             : [],
       )
       queryCache.removeQueries(['history', deletedQueryId])
+      closeTab(TabType.HISTORY, deletedQueryId)
     },
   })
 
@@ -65,7 +68,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
   return (
     <>
       <Link
-        className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer hover:bg-background-primary group"
+        className="flex items-center justify-between py-1 pl-8 pr-3 space-x-1 text-xs cursor-pointer select-none hover:bg-background-primary group"
         to={`/queries/history/${query.id}`}
       >
         <div className="w-full text-xs truncate" title={query.query}>
