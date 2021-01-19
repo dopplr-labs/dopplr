@@ -11,9 +11,6 @@ import Home from 'pages/home'
 import ResourcesList from 'pages/resources/components/resources-list'
 import CreateResource from 'pages/resources/components/create-resource'
 import ResourceDetail from 'pages/resources/components/resource-detail'
-import UnsavedQueryEditorTab from 'pages/queries/components/unsaved-query-editor-tab'
-import HistoryEditorTab from 'pages/queries/components/history-editor-tab'
-import SavedQueryEditorTab from 'pages/queries/components/saved-query-editor-tab'
 import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import client from 'utils/client'
@@ -66,18 +63,12 @@ export function App() {
                   />
                   <Route path=":resourceId" element={<ResourceDetail />} />
                 </Route>
-                <Route protectedRoute element={<Queries />} path="queries">
+                <Route protectedRoute path="queries">
+                  <Route protectedRoute path="" element={<Queries />} />
                   <Route
-                    path="new/:tabId"
-                    element={<UnsavedQueryEditorTab />}
-                  />
-                  <Route
-                    path="history/:historyId"
-                    element={<HistoryEditorTab />}
-                  />
-                  <Route
-                    path="saved/:queryId"
-                    element={<SavedQueryEditorTab />}
+                    protectedRoute
+                    path=":tabType/:id"
+                    element={<Queries />}
                   />
                 </Route>
                 <Route
