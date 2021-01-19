@@ -9,11 +9,11 @@ import { fetchChartsForQuery } from '../chart-queries'
 
 type ChartsListProps = {
   activeChartId: number
-  openChart: (id: number) => void
+  changeActiveChartId: (id: number) => void
 }
 export default function ChartsList({
   activeChartId,
-  openChart,
+  changeActiveChartId,
 }: ChartsListProps) {
   const { queryId } = useContext(EditorContext)
 
@@ -24,7 +24,7 @@ export default function ChartsList({
   const chartsListContent = useMemo(() => {
     if (isLoading) {
       return range(5).map((val) => (
-        <div key={val} className="px-4 py-1">
+        <div key={val} className="py-1 pr-4">
           <div
             className="w-full h-4 bg-background-secondary animate-pulse"
             style={{ opacity: 1 - val / 5 }}
@@ -45,13 +45,13 @@ export default function ChartsList({
             'w-full py-2 text-xs cursor-pointer hover:text-brand-primary',
             chart.id === activeChartId ? 'text-brand-primary' : 'text-gray-700',
           )}
-          onClick={() => openChart(chart.id)}
+          onClick={() => changeActiveChartId(chart.id)}
         >
           {chart.name}
         </div>
       ))
     }
-  }, [isLoading, error, charts, openChart, activeChartId])
+  }, [isLoading, error, charts, changeActiveChartId, activeChartId])
 
   return (
     <Scrollbars className="flex-1">
