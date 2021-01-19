@@ -2,7 +2,12 @@ import React, { createContext } from 'react'
 import { QueryResult } from 'types/query'
 import * as uuid from 'uuid'
 import { noop } from 'utils/noop'
-import { NavigateFunction, withNavigate, withRouteParams } from 'utils/router'
+import {
+  NavigateFunction,
+  RouteMatch,
+  withNavigate,
+  withRouteMatch,
+} from 'utils/router'
 import { queryCache } from 'react-query'
 import { fetchResources } from 'pages/resources/queries'
 import {
@@ -66,7 +71,7 @@ export const TabsContext = createContext<{
 
 type TabsProviderProps = {
   children: React.ReactElement
-  params: Record<string, string>
+  match: RouteMatch
   navigate: NavigateFunction
 }
 
@@ -99,39 +104,17 @@ class TabsProvider extends React.Component<
     return [tabType as TabType, rest.join('-')]
   }
 
+  static getTabIdFromTabTypeAndId(tabType: TabType, id: string): string {
+    return `${tabType}-${id}`
+  }
+
   state = {
     tabs: TabsProvider.getInitialTabs(),
     activeTabId: undefined,
   } as TabsProviderState
 
   componentDidMount() {
-    const { params = {} } = this.props
-    const { tabType, id } = params
-    const { tabs } = this.state
-
-    // if the user opens /queries page, then there won't be any tabType or id
-    if (!tabType) {
-      // in that case, check if we already have some, then open the first tab
-      if (tabs.length !== 0) {
-        const [
-          firstTabType,
-          firstTabId,
-        ] = TabsProvider.getTabTypeAndIdFromTabId(tabs[0].id)
-        this.openTab(firstTabType, firstTabId)
-      } else {
-        // else open a new tab
-        this.openTab(TabType.NEW)
-      }
-    } else if (tabType && id) {
-      // if we have both tabType and id, then check if the tabType is one of 'new', 'saved', 'history'
-      // then open the correct
-      if (tabType in TabType) {
-        this.openTab(tabType as TabType, id)
-      } else {
-        // else open a new tab
-        this.openTab(TabType.NEW)
-      }
-    }
+    this.openTabForActiveRoute()
   }
 
   componentDidUpdate(
@@ -142,6 +125,10 @@ class TabsProvider extends React.Component<
 
     if (this.state.activeTabId !== prevState.activeTabId) {
       this.updateRoute()
+    }
+
+    if (this.props.match !== prevProps.match) {
+      this.openTabForActiveRoute()
     }
   }
 
@@ -172,6 +159,54 @@ class TabsProvider extends React.Component<
       navigate(`/queries/${tabType}/${id}`)
     } else {
       navigate('/queries')
+    }
+  }
+
+  openTabForActiveRoute = () => {
+    const { match } = this.props
+    // if there is no match, that means the route is not for queries page
+    // in that case, don't do anything
+    if (!match) {
+      return
+    }
+
+    const { params = {} } = match
+    const { tabType, id } = params
+    const { tabs, activeTabId } = this.state
+
+    // to prevent loops, we should not proceed if the activeTabId matches the tabId we
+    // get from route params
+    // this check would prevent us from going into infinite loop when we are updating the
+    // route in the updateRoute method and then we are opening tab in this method
+    if (
+      TabsProvider.getTabIdFromTabTypeAndId(tabType as TabType, id) ===
+      activeTabId
+    ) {
+      return
+    }
+
+    // if the user opens /queries page, then there won't be any tabType or id
+    if (!tabType) {
+      // in that case, check if we already have some, then open the first tab
+      if (tabs.length !== 0) {
+        const [
+          firstTabType,
+          firstTabId,
+        ] = TabsProvider.getTabTypeAndIdFromTabId(tabs[0].id)
+        this.openTab(firstTabType, firstTabId)
+      } else {
+        // else open a new tab
+        this.openTab(TabType.NEW)
+      }
+    } else if (tabType && id) {
+      // if we have both tabType and id, then check if the tabType is one of 'new', 'saved', 'history'
+      // then open the correct
+      if (Object.values(TabType).includes(tabType as TabType)) {
+        this.openTab(tabType as TabType, id)
+      } else {
+        // else open a new tab
+        this.openTab(TabType.NEW)
+      }
     }
   }
 
@@ -439,4 +474,6 @@ class TabsProvider extends React.Component<
   }
 }
 
-export default withNavigate(withRouteParams(TabsProvider))
+export default withNavigate(
+  withRouteMatch(TabsProvider, 'queries/:tabType/:id'),
+)
