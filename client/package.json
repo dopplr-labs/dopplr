@@ -46,6 +46,7 @@
     "sql-formatter": "^2.3.3",
     "three": "^0.123.0",
     "typescript": "~3.7.2",
+    "utility-types": "^3.10.0",
     "uuid": "^8.3.1",
     "vscode-ws-jsonrpc": "^0.2.0"
   },
