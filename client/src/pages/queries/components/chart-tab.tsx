@@ -82,6 +82,7 @@ export default function ChartTab() {
                 icon={<PlusOutlined />}
                 className="w-full"
                 type="primary"
+                disabled={activeChartId === -1}
                 onClick={() => {
                   setActiveChartId(-1)
                 }}

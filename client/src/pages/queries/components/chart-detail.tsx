@@ -130,7 +130,7 @@ export default function ChartDetail({
   }, [queryResult, label, values])
 
   const chartContent = useMemo(() => {
-    if (isLoading) {
+    if (isLoading || !chartData) {
       return (
         <div className="flex flex-1 w-full h-full">
           <div className="flex flex-col w-full px-4 pb-8 space-y-4">
@@ -165,7 +165,6 @@ export default function ChartDetail({
             layout="vertical"
             className="flex-shrink-0 w-64 h-full pl-4 border-l"
             form={form}
-            // initialValues={{ type: chartType, name: title, label, values }}
             onValuesChange={() => setDisbaled(false)}
             onFinish={onFinish}
           >
