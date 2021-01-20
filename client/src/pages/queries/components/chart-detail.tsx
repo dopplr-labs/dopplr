@@ -156,8 +156,14 @@ export default function ChartDetail({
 
     if (chart) {
       return (
-        <div className="flex flex-1 w-full h-full ">
-          <div className="flex flex-col w-full px-4 pb-8 space-y-4">
+        <div
+          className="flex w-full h-full"
+          style={{ width: 'calc(100% - 16rem)' }}
+        >
+          <div
+            className="flex flex-col px-4 pb-8 space-y-4"
+            style={{ width: 'calc(100% - 16rem)' }}
+          >
             <div className="font-semibold">{title}</div>
             {cloneElement(chartList[chartType].chart, { data: chartData })}
           </div>
