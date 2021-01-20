@@ -1,5 +1,5 @@
 import React, { cloneElement, useMemo, useContext, useState } from 'react'
-import { Form, Empty, Select, Input, Button, Tooltip } from 'antd'
+import { Form, Empty, Select, Input, Button, Tooltip, message } from 'antd'
 import { queryCache, useMutation, useQuery } from 'react-query'
 import EditorContext from 'contexts/editor-context'
 import { ChartTypes } from 'types/chart'
@@ -30,6 +30,7 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
         ['charts', queryId],
         charts ? [createdChart, ...charts] : [createdChart],
       )
+      message.success('Chart created successfully')
       changeActiveChartId(createdChart.id)
     },
   })
