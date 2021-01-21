@@ -8,7 +8,7 @@ import {
   message,
   Result,
 } from 'antd'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { resourcesList } from './resources-list'
@@ -34,9 +34,10 @@ export default function CreateResource() {
 
   const { data: resources } = useQuery(['resources'], fetchResources)
 
-  const [addResource, { isLoading }] = useMutation(createResource, {
+  const queryClient = useQueryClient()
+  const { mutate: addResource, isLoading } = useMutation(createResource, {
     onSuccess: (createdResource) => {
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['resources'],
         resources ? [...resources, createdResource] : [createdResource],
       )

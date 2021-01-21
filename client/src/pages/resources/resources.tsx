@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Result } from 'antd'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { queryCache, useQuery } from 'react-query'
+import { useQueryClient, useQuery } from 'react-query'
 import { range } from 'lodash-es'
 import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
@@ -12,13 +12,14 @@ import { fetchResources } from './queries'
 export default function Resources() {
   const { pathname } = useLocation()
 
+  const queryClient = useQueryClient()
   const { data: resources, isLoading, error } = useQuery(
     ['resources'],
     fetchResources,
     {
       onSuccess: (data) => {
         data.forEach((resource) => {
-          queryCache.setQueryData(
+          queryClient.setQueryData(
             ['resources', resource.id.toString()],
             resource,
           )
