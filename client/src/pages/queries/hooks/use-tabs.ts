@@ -3,8 +3,12 @@ import usePersistedSetState from 'hooks/use-persisted-state'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { usePrevious } from 'hooks/use-previous'
 import { difference } from 'lodash-es'
+import { useQueryClient } from 'react-query'
+import { Modal } from 'antd'
+import { TabData } from '../types'
+import { isTabUnsaved } from '../utils/tab'
 
-export function useTabs() {
+export function useTabs(tabsData: Record<string, TabData>) {
   const [tabs, setTabs] = usePersistedSetState<string[]>(
     'query-editor-tabs',
     [],
@@ -52,6 +56,8 @@ export function useTabs() {
 
   const navigate = useNavigate()
 
+  const queryClient = useQueryClient()
+
   /**
    * Helper function to remove tab. This is called when the user clicks
    * on close button in the tab
@@ -60,23 +66,48 @@ export function useTabs() {
    */
   const removeTab = useCallback(
     (tabRoute: string) => {
-      const activeTabRoute = `${tabType}/${id}`
-      if (tabRoute === activeTabRoute) {
-        const tabIndexToBeRemoved = tabs.indexOf(tabRoute)
-        const nextIndex =
-          tabIndexToBeRemoved !== 0 ? tabIndexToBeRemoved - 1 : tabs.length - 1
-        const nextTabRoute = tabs[nextIndex]
-        // if there only 1 tab left to closed then the nextTabRoute would be same as
-        // tabRoute and this is going to closed, we can easily remove this tab
-        if (nextTabRoute && nextTabRoute !== tabRoute) {
-          navigate(`/queries/${nextTabRoute}`)
-        } else {
-          navigate('/queries/new')
+      function closeTab() {
+        const activeTabRoute = `${tabType}/${id}`
+        if (tabRoute === activeTabRoute) {
+          const tabIndexToBeRemoved = tabs.indexOf(tabRoute)
+          const nextIndex =
+            tabIndexToBeRemoved !== 0
+              ? tabIndexToBeRemoved - 1
+              : tabs.length - 1
+          const nextTabRoute = tabs[nextIndex]
+          // if there only 1 tab left to closed then the nextTabRoute would be same as
+          // tabRoute and this is going to closed, we can easily remove this tab
+          if (nextTabRoute && nextTabRoute !== tabRoute) {
+            navigate(`/queries/${nextTabRoute}`)
+          } else {
+            navigate('/queries/new')
+          }
         }
+        setTabs((prevTabs) => prevTabs.filter((tab) => tab !== tabRoute))
       }
-      setTabs((prevTabs) => prevTabs.filter((tab) => tab !== tabRoute))
+
+      // check if tab has unsaved changes or not
+      const originalTabData = queryClient.getQueryData([
+        'tabs',
+        tabRoute,
+      ]) as TabData
+      const tabData = tabsData[tabRoute]
+      const tabUnsaved = isTabUnsaved(tabData, originalTabData)
+
+      // @TODO add this to the setting, so that user could close multiple tabs
+      // without seeing the modal
+      if (tabUnsaved) {
+        Modal.confirm({
+          title: 'Close tab',
+          content:
+            'This query has unsaved changes. Are you sure you want to close it?',
+          onOk: closeTab,
+        })
+      } else {
+        closeTab()
+      }
     },
-    [navigate, setTabs, tabs, tabType, id],
+    [navigate, tabType, id, tabs, setTabs, tabsData, queryClient],
   )
 
   /**

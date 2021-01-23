@@ -1,65 +1,66 @@
 import { useCallback, useContext } from 'react'
 import { useQuery, useQueryClient } from 'react-query'
-import TabDataContext from '../contexts/tab-data-context'
+import TabsDataContext from '../contexts/tabs-data-context'
 import fetchTabData from '../queries-and-mutations'
+import { isTabUnsaved } from '../utils/tab'
 
 export function useTabData(tabRoute: string) {
-  const { tabData, setTabData } = useContext(TabDataContext)
-  const { query, resourceId, name } = tabData[tabRoute] ?? {}
+  const { tabsData, setTabsData } = useContext(TabsDataContext)
+  const { query, resourceId, name } = tabsData[tabRoute] ?? {}
   const [tabType, id] = tabRoute.split('/')
 
   const updateQuery = useCallback(
     (updatedQuery: string) => {
-      setTabData((prevData) => {
-        if (typeof prevData[tabRoute] === 'undefined') {
+      setTabsData((prevData) => {
+        if (prevData[tabRoute]?.query === updatedQuery) {
           return prevData
         }
         return {
           ...prevData,
           [tabRoute]: {
-            ...prevData[tabRoute],
+            ...(prevData[tabRoute] ?? {}),
             query: updatedQuery,
           },
         }
       })
     },
-    [tabRoute, setTabData],
+    [tabRoute, setTabsData],
   )
 
   const updateResourceId = useCallback(
     (updatedResourceId?: number) => {
-      setTabData((prevData) => {
-        if (typeof prevData[tabRoute] === 'undefined') {
+      setTabsData((prevData) => {
+        if (prevData[tabRoute]?.resourceId === updatedResourceId) {
           return prevData
         }
         return {
           ...prevData,
           [tabRoute]: {
-            ...prevData[tabRoute],
+            ...(prevData[tabRoute] ?? {}),
             resourceId: updatedResourceId,
           },
         }
       })
     },
-    [tabRoute, setTabData],
+    [tabRoute, setTabsData],
   )
 
   const updateName = useCallback(
     (updatedName: string) => {
-      setTabData((prevData) => {
-        if (typeof prevData[tabRoute] === 'undefined') {
+      setTabsData((prevData) => {
+        if (prevData[tabRoute]?.name === updatedName) {
           return prevData
         }
         return {
           ...prevData,
           [tabRoute]: {
-            ...prevData[tabRoute],
+            ...(prevData[tabRoute] ?? {}),
             name: updatedName,
           },
         }
       })
     },
-    [tabRoute, setTabData],
+    [tabRoute, setTabsData],
   )
 
   const queryClient = useQueryClient()
@@ -88,18 +89,15 @@ export function useTabData(tabRoute: string) {
     },
   })
 
-  const hasUnsavedChanges = originalTabData
-    ? originalTabData.name !== name ||
-      originalTabData.resourceId !== resourceId ||
-      originalTabData.query !== query
-    : false
-
   return {
     tabType,
     id,
     isLoadingTabData,
     originalTabDataError,
-    hasUnsavedChanges,
+    hasUnsavedChanges: isTabUnsaved(
+      { query, name, resourceId },
+      originalTabData,
+    ),
     originalTabData,
     query,
     updateQuery,
