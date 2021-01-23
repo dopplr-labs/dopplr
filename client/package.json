@@ -10,9 +10,9 @@
     "@types/jest": "^24.0.0",
     "@types/match-sorter": "^5.0.0",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
+    "@types/react": "^17.0.0",
     "@types/react-custom-scrollbars": "^4.0.7",
-    "@types/react-dom": "^16.9.0",
+    "@types/react-dom": "^17.0.0",
     "@types/react-infinite-scroller": "^1.2.1",
     "@types/sql-formatter": "^2.3.0",
     "@types/uuid": "^8.3.0",
@@ -53,7 +53,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "patch-package"
   },
   "browserslist": {
     "production": [
@@ -78,6 +79,7 @@
     "less": "^3.12.2",
     "less-loader": "^7.0.2",
     "monaco-editor-webpack-plugin": "^2.0.0",
+    "patch-package": "^6.2.2",
     "postcss": "^8.1.10",
     "tailwindcss": "^2.0.1"
   },

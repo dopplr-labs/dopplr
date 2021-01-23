@@ -1,0 +1,37 @@
+diff --git a/node_modules/react-scripts/config/webpack.config.js b/node_modules/react-scripts/config/webpack.config.js
+index eddca1b..30cfaa5 100644
+--- a/node_modules/react-scripts/config/webpack.config.js
++++ b/node_modules/react-scripts/config/webpack.config.js
+@@ -389,7 +389,7 @@ module.exports = function (webpackEnv) {
+             // smaller than specified limit in bytes as data URLs to avoid requests.
+             // A missing `test` is equivalent to a match.
+             {
+-              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
++              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
+               loader: require.resolve('url-loader'),
+               options: {
+                 limit: imageInlineSizeLimit,
+@@ -437,14 +437,6 @@ module.exports = function (webpackEnv) {
+                 plugins: [
+                   [
+                     require.resolve('babel-plugin-named-asset-import'),
+-                    {
+-                      loaderMap: {
+-                        svg: {
+-                          ReactComponent:
+-                            '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+-                        },
+-                      },
+-                    },
+                   ],
+                   isEnvDevelopment &&
+                     shouldUseReactRefresh &&
+@@ -750,7 +742,7 @@ module.exports = function (webpackEnv) {
+           // The formatter is invoked directly in WebpackDevServerUtils during development
+           formatter: isEnvProduction ? typescriptFormatter : undefined,
+         }),
+-      new ESLintPlugin({
++      false && new ESLintPlugin({
+         // Plugin options
+         extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+         formatter: require.resolve('react-dev-utils/eslintFormatter'),
