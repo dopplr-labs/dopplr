@@ -139,7 +139,7 @@ export default function ResourceDetail() {
               </div>
             </div>
             <img
-              src={require('images/resources/postgres-logo.png')}
+              src={require('images/resources/postgres-logo.png').default}
               className="w-6 h-6"
               alt="Postgres"
             />
@@ -204,7 +204,7 @@ export default function ResourceDetail() {
               </div>
             </div>
             <img
-              src={require('images/resources/postgres-logo.png')}
+              src={require('images/resources/postgres-logo.png').default}
               className="w-6 h-6"
               alt="Postgres"
             />

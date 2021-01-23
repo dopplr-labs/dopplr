@@ -8,7 +8,7 @@ export default function Navbar() {
   return (
     <div className="relative z-50 flex items-center h-12 px-8 shadow-xl bg-brand-dark">
       <img
-        src={require('images/logo-transparent.svg')}
+        src={require('images/logo-transparent.svg').default}
         alt="Dopplr"
         className="w-8 h-8 mr-2"
       />
