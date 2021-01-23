@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { queryCache, useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { Dropdown, Menu, Modal } from 'antd'
 import {
   DeleteOutlined,
@@ -23,9 +23,10 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
     setRenameModalVisible(false)
   }
 
-  const [deleteQueryMutation] = useMutation(deleteQuery, {
+  const queryClient = useQueryClient()
+  const { mutate: deleteQueryMutation } = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['saved-queries'],
         (savedQueries: SavedQueryPage[] | undefined) =>
           savedQueries
@@ -35,7 +36,7 @@ export default function SingleSavedQuery({ query }: SavedQueryProps) {
               }))
             : [],
       )
-      queryCache.removeQueries(['saved-query', deletedQueryId])
+      queryClient.removeQueries(['saved-query', deletedQueryId])
     },
   })
 

@@ -3,15 +3,46 @@ import { matchSorter } from 'match-sorter'
 import { SearchOutlined } from '@ant-design/icons'
 import { Input, Result } from 'antd'
 import { useQuery } from 'react-query'
-import { range } from 'lodash-es'
 import Scrollbars from 'react-custom-scrollbars'
 import { ColumnsField } from 'types/schema'
+import { useParams } from 'react-router-dom'
 import { fetchSchema } from '../queries-and-mutations'
 import SchemaTable from './schema-table'
+import ListSkeletonLoader from './list-skeleton-loader'
+import { useTabData } from '../hooks/use-tab-data'
+import CreateResourceMessage from './create-resource-message'
 
-type SchemaTabProps = { resourceId: number }
+export default function SchemaTab() {
+  const { tabType, id } = useParams()
+  const { isLoadingTabData, originalTabDataError, resourceId } = useTabData(
+    `${tabType}/${id}`,
+  )
 
-export default function SchemaTab({ resourceId }: SchemaTabProps) {
+  if (isLoadingTabData) {
+    return <ListSkeletonLoader />
+  }
+
+  if (originalTabDataError) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Result
+          status="warning"
+          subTitle={(originalTabDataError as Error).message}
+        />
+      </div>
+    )
+  }
+
+  if (!resourceId) {
+    return <CreateResourceMessage />
+  }
+
+  return <ResourceSchema resourceId={resourceId} />
+}
+
+type ResourceSchemaProps = { resourceId: number }
+
+function ResourceSchema({ resourceId }: ResourceSchemaProps) {
   const { isLoading, data: schema, error } = useQuery(
     ['schema', resourceId],
     () => fetchSchema(resourceId),
@@ -29,18 +60,7 @@ export default function SchemaTab({ resourceId }: SchemaTabProps) {
 
   const schemaContent = useMemo(() => {
     if (isLoading) {
-      return (
-        <div className="px-3 space-y-4">
-          <div className="w-full h-8 mb-2 rounded bg-background-secondary animate-pulse" />
-          {range(10).map((val) => (
-            <div
-              key={val}
-              className="w-full h-4 bg-background-secondary animate-pulse"
-              style={{ opacity: 1 - val / 10 }}
-            />
-          ))}
-        </div>
-      )
+      return <ListSkeletonLoader />
     }
 
     if (filteredSchema) {
@@ -56,9 +76,9 @@ export default function SchemaTab({ resourceId }: SchemaTabProps) {
               }}
             />
           </div>
-          {filteredSchema?.map((table: any) => (
+          {filteredSchema?.map((table) => (
             <SchemaTable
-              key={table.table}
+              key={table.name}
               table={table}
               resourceId={resourceId}
             />

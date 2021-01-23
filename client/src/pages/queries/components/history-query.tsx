@@ -5,7 +5,7 @@ import {
   EllipsisOutlined,
   SaveOutlined,
 } from '@ant-design/icons'
-import { queryCache, useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { History, HistoryPage } from 'types/history'
 import { Link } from 'react-router-dom'
 import { deleteQuery } from '../queries-and-mutations'
@@ -19,9 +19,10 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
     setSaveModalVisible(false)
   }
 
-  const [deleteQueryMutation] = useMutation(deleteQuery, {
+  const queryClient = useQueryClient()
+  const { mutate: deleteQueryMutation } = useMutation(deleteQuery, {
     onMutate: (deletedQueryId) => {
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['history'],
         (history: HistoryPage[] | undefined) =>
           history
@@ -31,7 +32,7 @@ export default function HistoryQuery({ query }: HistoryQueryProps) {
               }))
             : [],
       )
-      queryCache.removeQueries(['history', deletedQueryId])
+      queryClient.removeQueries(['history', deletedQueryId])
     },
   })
 

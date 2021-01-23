@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Input, message, Modal } from 'antd'
-import { queryCache, useMutation } from 'react-query'
+import { useQueryClient, useMutation } from 'react-query'
 import { SavedQuery, SavedQueryPage } from 'types/query'
 import { updateQuery } from '../queries-and-mutations'
 
@@ -19,10 +19,11 @@ export default function RenameQueryModal({
 }: RenameQueryModalProps) {
   const [form] = Form.useForm()
 
-  const [updateQueryMutation] = useMutation(updateQuery, {
+  const queryClient = useQueryClient()
+  const { mutate: updateQueryMutation } = useMutation(updateQuery, {
     onMutate: (updatedQuery) => {
       onRequestClose()
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['saved-queries'],
         (savedQueries: SavedQueryPage[] | undefined) =>
           savedQueries
@@ -36,7 +37,7 @@ export default function RenameQueryModal({
               }))
             : [],
       )
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['saved-query', queryId],
         (savedQuery: SavedQuery | undefined) =>
           ({

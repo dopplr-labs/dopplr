@@ -1,33 +1,42 @@
 import React, { useCallback, useMemo } from 'react'
 import { Button, Empty, Modal, Result, Spin } from 'antd'
 import dayjs from 'dayjs'
-import { groupBy, range } from 'lodash-es'
+import { groupBy } from 'lodash-es'
 import InfiniteScroll from 'react-infinite-scroller'
 import Scrollbars from 'react-custom-scrollbars'
-import { queryCache, useMutation, useInfiniteQuery } from 'react-query'
+import { useMutation, useInfiniteQuery, useQueryClient } from 'react-query'
 import { DeleteOutlined } from '@ant-design/icons'
 import { clearHistoryQuery, fetchHistories } from '../queries-and-mutations'
 import DayHistory from './day-history'
+import ListSkeletonLoader from './list-skeleton-loader'
 
 export default function HistoriesTab() {
-  const { isLoading, data, fetchMore, error } = useInfiniteQuery(
+  const queryClient = useQueryClient()
+  const {
+    isLoading,
+    data,
+    fetchNextPage,
+    error,
+    hasNextPage,
+  } = useInfiniteQuery(
     ['history'],
-    fetchHistories,
+    ({ pageParam }) => fetchHistories(pageParam),
     {
-      getFetchMore: (lastGroup) => lastGroup.meta.nextPage,
-      onSuccess: (pages) => {
+      getNextPageParam: (lastGroup) =>
+        lastGroup.meta.hasMore ? lastGroup.meta.nextPage : undefined,
+      onSuccess: ({ pages }) => {
         pages.forEach((page) => {
           page.items.forEach((history) => {
-            queryCache.setQueryData(['history', history.id], history)
+            queryClient.setQueryData(['history', history.id], history)
           })
         })
       },
     },
   )
 
-  const [clearAllHistory] = useMutation(clearHistoryQuery, {
+  const { mutate: clearAllHistory } = useMutation(clearHistoryQuery, {
     onMutate: () => {
-      queryCache.refetchQueries(['history'])
+      queryClient.refetchQueries(['history'])
     },
   })
 
@@ -46,21 +55,15 @@ export default function HistoriesTab() {
 
   const historyContent = useMemo(() => {
     if (isLoading) {
-      return (
-        <div className="p-4 space-y-4">
-          {range(10).map((val) => (
-            <div
-              key={val}
-              className="w-full h-4 bg-background-secondary animate-pulse"
-              style={{ opacity: 1 - val / 10 }}
-            />
-          ))}
-        </div>
-      )
+      return <ListSkeletonLoader />
     }
 
-    if (data && data[0].items.length) {
-      const history = data.map((page) => page.items).flat()
+    if (data) {
+      const history = data.pages.map((page) => page.items).flat()
+
+      if (history.length === 0) {
+        return null
+      }
 
       const groupedHistory = groupBy(history, (item) => {
         const today = dayjs().format('DD MMMM')
@@ -79,8 +82,8 @@ export default function HistoriesTab() {
         <>
           <InfiniteScroll
             pageStart={0}
-            loadMore={() => fetchMore()}
-            hasMore={data[data.length - 1].meta.hasMore}
+            loadMore={() => fetchNextPage()}
+            hasMore={hasNextPage}
             loader={
               <div className="flex items-center justify-center py-2" key={0}>
                 <Spin tip="Loading..." size="small" />
@@ -112,14 +115,14 @@ export default function HistoriesTab() {
         />
       </div>
     )
-  }, [isLoading, data, error, fetchMore])
+  }, [isLoading, data, error, fetchNextPage, hasNextPage])
 
   return (
     <div className="flex flex-col h-full">
       <Scrollbars className="flex-1" autoHide>
         {historyContent}
       </Scrollbars>
-      {data && data[0].items.length > 0 ? (
+      {data && data.pages[0].items.length > 0 ? (
         <div className="border-t">
           <Button
             onClick={confirmDeleteHistory}
