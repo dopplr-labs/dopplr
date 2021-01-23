@@ -11,18 +11,19 @@ import HistoriesTab from './components/histories-tab'
 import SavedQueriesTab from './components/saved-queries-tab'
 import SchemaTab from './components/schema-tab'
 import TabsContext from './contexts/tabs-context'
-import TabDataContext from './contexts/tab-data-context'
+import TabsDataContext from './contexts/tabs-data-context'
+import QueryEditor from './components/query-editor'
 
 export default function Queries() {
   const { tabType, id } = useParams()
   const { pathname } = useLocation()
 
-  const { tabs, removeTab, updateTabRoute } = useTabs()
-
-  const [tabData, setTabData] = usePersistedSetState<Record<string, TabData>>(
+  const [tabsData, setTabsData] = usePersistedSetState<Record<string, TabData>>(
     'query-tabs-data',
     {},
   )
+
+  const { tabs, removeTab, updateTabRoute } = useTabs(tabsData)
 
   if (pathname === '/queries') {
     if (tabs.length > 0) {
@@ -47,7 +48,7 @@ export default function Queries() {
         updateTabRoute,
       }}
     >
-      <TabDataContext.Provider value={{ tabData, setTabData }}>
+      <TabsDataContext.Provider value={{ tabsData, setTabsData }}>
         <div className="flex flex-1 h-full">
           <HorizontalPane
             paneName="tab-horizontal-pane"
@@ -83,10 +84,12 @@ export default function Queries() {
           {/* Tab content */}
           <div className="flex flex-col flex-1 overflow-hidden">
             <TabsList />
-            <div className="flex-1" />
+            <div className="flex-1">
+              <QueryEditor />
+            </div>
           </div>
         </div>
-      </TabDataContext.Provider>
+      </TabsDataContext.Provider>
     </TabsContext.Provider>
   )
 }
