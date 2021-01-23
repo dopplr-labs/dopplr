@@ -42,7 +42,7 @@ export class ChartsService {
   /**
    * Returns the chart data
    *
-   * @param id - id of the chart user wants to fetchs
+   * @param id - id of the chart user wants to fetch
    * @param user
    */
   async getChart(id: number, user: User): Promise<Chart> {
