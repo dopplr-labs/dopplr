@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react'
 import { Navigate, Routes } from 'react-router-dom'
-import { QueryClientProvider, useQuery, QueryClient } from 'react-query'
-import { message, Spin } from 'antd'
+import { QueryClientProvider, QueryClient } from 'react-query'
+import { Spin } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Route from 'components/route'
 import Auth from 'components/auth'
@@ -13,15 +13,10 @@ import CreateResource from 'pages/resources/components/create-resource'
 import ResourceDetail from 'pages/resources/components/resource-detail'
 import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
-import client from 'utils/client'
 import Logrocket from 'components/logrocket'
+import HealthCheck from 'components/health-check'
 
-async function fetchHealthStatus() {
-  const { data } = await client.get('/health/knock-knock')
-  return data
-}
-
-const SHOW_DEV_TOOLS = false
+const SHOW_DEV_TOOLS = true
 
 const queryClient = new QueryClient()
 
@@ -31,17 +26,6 @@ const Resources = lazy(() => import('pages/resources'))
 const SettingsPanel = lazy(() => import('pages/settings-panel'))
 
 export function App() {
-  useQuery('health', fetchHealthStatus, {
-    refetchOnWindowFocus: false,
-    enabled: process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS,
-    onSuccess: () => {
-      message.success('Server working fine')
-    },
-    onError: () => {
-      message.error('Server not working')
-    },
-  })
-
   return (
     <QueryClientProvider client={queryClient}>
       <>
@@ -106,7 +90,10 @@ export function App() {
           </Settings>
         </Auth>
         {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
-          <ReactQueryDevtools />
+          <>
+            <ReactQueryDevtools />
+            <HealthCheck />
+          </>
         ) : null}
       </>
     </QueryClientProvider>
