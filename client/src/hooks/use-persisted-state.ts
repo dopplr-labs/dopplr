@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { CacheImplementation, LocalStorageCache } from 'utils/cache'
 import { getDataFromLocalStorage } from 'utils/local-storage'
 
+const localStorageCache = new LocalStorageCache()
+
 export function usePersistedSetState<T extends any>(
   key: string,
   initialState: T,
-  cache: CacheImplementation = new LocalStorageCache(),
+  cache: CacheImplementation = localStorageCache,
 ): [T, React.Dispatch<React.SetStateAction<T>>, () => void] {
   const [state, setState] = useState(() =>
     getDataFromLocalStorage(key, initialState),
