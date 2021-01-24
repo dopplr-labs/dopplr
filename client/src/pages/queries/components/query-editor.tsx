@@ -22,6 +22,7 @@ import ResultsTable from './results-table'
 import { TabType } from '../types'
 import SaveQueryButton from './save-query-button'
 import UpdateQueryButton from './update-query-button'
+import QueryName from './query-name'
 
 const runResultCache = new Cache()
 
@@ -85,7 +86,14 @@ export default function QueryEditor() {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex items-center px-4 py-3 space-x-3 border-b">
         <ResourceSelector resource={resourceId} onChange={updateResourceId} />
-        <div className="flex-1" />
+        {tabType === TabType.SAVED ? (
+          <>
+            {/* Move the logic of converting id to number into a common utility */}
+            <QueryName savedQueryId={Number.parseInt(id, 10)} />
+          </>
+        ) : (
+          <div className="flex-1" />
+        )}
         {queryResult?.timeToRunQuery ? (
           <div className="text-xs text-content-tertiary">
             Took{' '}

@@ -1,21 +1,17 @@
 import { Input, message } from 'antd'
 import React, { useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
+import { useTabData } from '../hooks/use-tab-data'
 import { updateQuery } from '../queries-and-mutations'
 
 type QueryNameProps = {
   savedQueryId: number
-  name: string
-  originalName: string
-  updateName: (querName: string) => void
 }
 
-export default function QueryName({
-  savedQueryId,
-  name,
-  originalName,
-  updateName,
-}: QueryNameProps) {
+export default function QueryName({ savedQueryId }: QueryNameProps) {
+  const { name, updateName, originalTabData } = useTabData(
+    `saved/${savedQueryId}`,
+  )
   const [editQueryName, setEditQueryName] = useState(false)
 
   const queryClient = useQueryClient()
@@ -23,10 +19,11 @@ export default function QueryName({
     onSuccess: (updatedData) => {
       queryClient.setQueryData(['saved-queries', savedQueryId], updatedData)
       queryClient.refetchQueries(['saved-queries'])
+      queryClient.refetchQueries(['tabs', `saved/${savedQueryId}`])
     },
     onError: (updationError) => {
       message.error((updationError as any).message)
-      updateName(originalName)
+      updateName(originalTabData?.name as string)
     },
   })
 

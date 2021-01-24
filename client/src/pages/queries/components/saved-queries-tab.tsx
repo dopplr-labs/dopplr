@@ -164,7 +164,7 @@ function SavedQuery({ query }: SavedQueryProps) {
   return (
     <>
       <Link
-        to={`saved/${query.id}`}
+        to={`/queries/saved/${query.id}`}
         className="flex items-center justify-between px-3 py-2 text-xs cursor-pointer group hover:bg-background-primary"
         title={`${query.name}\n${query.query}`}
       >

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Form, Input, message, Modal } from 'antd'
 import { useQueryClient, useMutation } from 'react-query'
-import { SavedQuery, SavedQueryPage } from 'types/query'
 import { updateQuery } from '../queries-and-mutations'
+import { useTabData } from '../hooks/use-tab-data'
 
 type RenameQueryModalProps = {
   visible: boolean
@@ -19,37 +19,22 @@ export default function RenameQueryModal({
 }: RenameQueryModalProps) {
   const [form] = Form.useForm()
 
+  const { updateName } = useTabData(`saved/${queryId}`)
+
   const queryClient = useQueryClient()
-  const { mutate: updateQueryMutation } = useMutation(updateQuery, {
-    onMutate: (updatedQuery) => {
-      onRequestClose()
-      queryClient.setQueryData(
-        ['saved-queries'],
-        (savedQueries: SavedQueryPage[] | undefined) =>
-          savedQueries
-            ? savedQueries.map((page) => ({
-                ...page,
-                items: page.items.map((item) =>
-                  item.id === updatedQuery.queryId
-                    ? { ...item, name: updatedQuery.name ?? item.name }
-                    : item,
-                ),
-              }))
-            : [],
-      )
-      queryClient.setQueryData(
-        ['saved-query', queryId],
-        (savedQuery: SavedQuery | undefined) =>
-          ({
-            ...savedQuery,
-            name: updatedQuery?.name ?? savedQuery?.name,
-          } as SavedQuery),
-      )
+  const { mutate: updateQueryMutation, isLoading: renamingQuery } = useMutation(
+    updateQuery,
+    {
+      onSuccess: (updatedData) => {
+        message.success('Query updated successfully')
+        updateName(updatedData.name)
+        queryClient.setQueryData(['saved-queries', queryId], updatedData)
+        queryClient.refetchQueries(['saved-queries'])
+        queryClient.refetchQueries(['tabs', `saved/${queryId}`])
+        onRequestClose()
+      },
     },
-    onSuccess: () => {
-      message.success('Query updated successfully')
-    },
-  })
+  )
 
   function handleFinish() {
     const { queryName } = form.getFieldsValue()
@@ -74,6 +59,9 @@ export default function RenameQueryModal({
       onOk={handleOk}
       onCancel={handleCancel}
       destroyOnClose
+      okButtonProps={{
+        loading: renamingQuery,
+      }}
     >
       <Form
         layout="vertical"
