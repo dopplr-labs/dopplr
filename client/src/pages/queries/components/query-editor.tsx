@@ -19,6 +19,9 @@ import ResourceSelector from './resource-selector'
 import HorizontalOrientation from './horizontal-orientation'
 import VerticalOrientation from './vertical-orientation'
 import ResultsTable from './results-table'
+import { TabType } from '../types'
+import SaveQueryButton from './save-query-button'
+import UpdateQueryButton from './update-query-button'
 
 const runResultCache = new Cache()
 
@@ -111,6 +114,14 @@ export default function QueryEditor() {
         >
           Beautify
         </Button>
+        {tabType !== TabType.SAVED ? (
+          <SaveQueryButton query={query} resourceId={resourceId} />
+        ) : (
+          <>
+            {/* Move the logic of converting id to number into a common utility */}
+            <UpdateQueryButton savedQueryId={Number.parseInt(id, 10)} />
+          </>
+        )}
       </div>
       <div
         className={clsx(

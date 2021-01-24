@@ -137,7 +137,7 @@ export default async function fetchTabData(
   queryClient: QueryClient,
   tabRoute: string,
 ): Promise<TabData> {
-  const [tabType, id] = tabRoute.split('/')
+  const [tabType, tabId] = tabRoute.split('/')
 
   switch (tabType) {
     case TabType.NEW: {
@@ -145,6 +145,7 @@ export default async function fetchTabData(
     }
 
     case TabType.HISTORY: {
+      const id = Number.parseInt(tabId)
       if (typeof id !== 'number') {
         throw new Error('Invalid history id')
       }
@@ -152,6 +153,7 @@ export default async function fetchTabData(
     }
 
     case TabType.SAVED: {
+      const id = Number.parseInt(tabId)
       if (typeof id !== 'number') {
         throw new Error('Invalid saved query id')
       }
