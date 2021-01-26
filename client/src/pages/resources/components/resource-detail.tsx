@@ -12,7 +12,7 @@ import {
 } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useQuery, useMutation, queryCache } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { Resource } from 'types/resource'
 import {
   deleteResource,
@@ -43,15 +43,16 @@ export default function ResourceDetail() {
 
   const [disabled, setDisabled] = useState(true)
 
-  const resources: Resource[] | undefined = queryCache.getQueryData([
+  const queryClient = useQueryClient()
+  const resources: Resource[] | undefined = queryClient.getQueryData([
     'resources',
   ])
 
-  const [editResource, { isLoading: updatingResource }] = useMutation(
+  const { mutate: editResource, isLoading: updatingResource } = useMutation(
     updateResource,
     {
       onMutate: (updatedResource) => {
-        queryCache.setQueryData(
+        queryClient.setQueryData(
           ['resources'],
           resources?.map((resource) =>
             resource.id === updatedResource.id
@@ -59,7 +60,7 @@ export default function ResourceDetail() {
               : resource,
           ),
         )
-        queryCache.setQueryData(['resources', resourceId], {
+        queryClient.setQueryData(['resources', resourceId], {
           ...resource,
           ...updatedResource,
         })
@@ -70,15 +71,15 @@ export default function ResourceDetail() {
     },
   )
 
-  const [removeResource, { isLoading: removingResource }] = useMutation(
+  const { mutate: removeResource, isLoading: removingResource } = useMutation(
     deleteResource,
     {
       onMutate: (deletedResource) => {
-        queryCache.setQueryData(
+        queryClient.setQueryData(
           ['resources'],
           resources?.filter((resource) => resource.id !== deletedResource.id),
         )
-        queryCache.removeQueries(['resources', resourceId])
+        queryClient.removeQueries(['resources', resourceId])
         navigate('/resources')
       },
     },
@@ -138,7 +139,7 @@ export default function ResourceDetail() {
               </div>
             </div>
             <img
-              src={require('images/resources/postgres-logo.png')}
+              src={require('images/resources/postgres-logo.png').default}
               className="w-6 h-6"
               alt="Postgres"
             />
@@ -203,7 +204,7 @@ export default function ResourceDetail() {
               </div>
             </div>
             <img
-              src={require('images/resources/postgres-logo.png')}
+              src={require('images/resources/postgres-logo.png').default}
               className="w-6 h-6"
               alt="Postgres"
             />

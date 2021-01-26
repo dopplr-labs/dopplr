@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GoogleOutlined, GithubOutlined } from '@ant-design/icons'
 import AuthContext from 'contexts/auth-context'
-// import BreathingDots from './components/breathing-dots'
 
 export default function Login() {
   const { user, signInWithGoogle, signInWithGithub } = useContext(AuthContext)
@@ -18,7 +17,7 @@ export default function Login() {
     <div className="flex w-screen h-screen bg-white">
       <div className="flex flex-col items-center justify-center flex-shrink-0 h-full p-8 bg-white shadow-md w-96">
         <img
-          src={require('images/logo-transparent.svg')}
+          src={require('images/logo-transparent.svg').default}
           className="w-16 h-16 mb-4"
           alt="Dopplr"
         />

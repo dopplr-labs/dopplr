@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { DraggableCore } from 'react-draggable'
 import usePersistedSetState from 'hooks/use-persisted-state'
 
-type HorizontalPaneProps = {
+export type HorizontalPaneProps = {
   render: (props: {
     paneWidth: number
     isPaneClose?: boolean

@@ -2,6 +2,10 @@ import { QueryResult, SavedQuery, SavedQueryPage } from 'types/query'
 import { History, HistoryPage } from 'types/history'
 import { SchemaResult } from 'types/schema'
 import client from 'utils/client'
+import { truncate } from 'lodash-es'
+import { fetchResources } from 'pages/resources/queries'
+import { QueryClient } from 'react-query'
+import { TabData, TabType } from './types'
 
 export async function runQuery({
   resource,
@@ -28,7 +32,7 @@ export async function fetchSchema(id: number) {
   return data.data
 }
 
-export async function fetchHistories(key: string, page = 1) {
+export async function fetchHistories(page = 1) {
   const { data } = await client.get<{
     success: boolean
     data: HistoryPage
@@ -62,7 +66,7 @@ export async function clearHistoryQuery() {
   return data
 }
 
-export async function fetchSavedQueries(key: string, page = 1) {
+export async function fetchSavedQueries(page = 1) {
   const { data } = await client.get<{
     success: boolean
     data: SavedQueryPage
@@ -127,4 +131,76 @@ export async function updateQuery({
   )
 
   return data.data
+}
+
+export default async function fetchTabData(
+  queryClient: QueryClient,
+  tabRoute: string,
+): Promise<TabData> {
+  const [tabType, tabId] = tabRoute.split('/')
+
+  switch (tabType) {
+    case TabType.NEW: {
+      return fetchNewTabData(queryClient)
+    }
+
+    case TabType.HISTORY: {
+      const id = Number.parseInt(tabId)
+      if (typeof id !== 'number') {
+        throw new Error('Invalid history id')
+      }
+      return fetchHistoryTabData(queryClient, id)
+    }
+
+    case TabType.SAVED: {
+      const id = Number.parseInt(tabId)
+      if (typeof id !== 'number') {
+        throw new Error('Invalid saved query id')
+      }
+      return fetchSavedTabData(queryClient, id)
+    }
+
+    default: {
+      throw new Error('Invalid tab type')
+    }
+  }
+}
+
+async function fetchNewTabData(queryClient: QueryClient): Promise<TabData> {
+  const resources = await queryClient.fetchQuery(['resources'], () =>
+    fetchResources(),
+  )
+  return {
+    resourceId: resources?.[0]?.id,
+    name: 'Untitled Query',
+    query: '',
+  }
+}
+
+async function fetchHistoryTabData(
+  queryClient: QueryClient,
+  id: number,
+): Promise<TabData> {
+  const history = await queryClient.fetchQuery(['history', id], () =>
+    fetchHistory(id),
+  )
+  return {
+    resourceId: history.resource?.id,
+    name: truncate(history.query, { length: 20 }),
+    query: history.query,
+  }
+}
+
+async function fetchSavedTabData(
+  queryClient: QueryClient,
+  id: number,
+): Promise<TabData> {
+  const savedQuery = await queryClient.fetchQuery(['saved-query', id], () =>
+    fetchSavedQuery(id),
+  )
+  return {
+    resourceId: savedQuery.resource?.id,
+    name: savedQuery.name,
+    query: savedQuery.query,
+  }
 }

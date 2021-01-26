@@ -1,6 +1,5 @@
 import React from 'react'
-import { Tooltip, Tabs } from 'antd'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { Tooltip } from 'antd'
 import { RectReadOnly } from 'react-use-measure'
 import {
   BorderVerticleOutlined,
@@ -8,33 +7,19 @@ import {
   UpOutlined,
 } from '@ant-design/icons'
 import VerticalPane from 'components/vertical-pane'
-import Editor from 'components/editor'
-import { QueryResult } from 'types/query'
-import ResultsTable from './results-table'
-import ChartTab from './chart-tab'
 
 type HorizontalOrientationProps = {
-  handleVerticalSplit: () => void
-  resourceId: number
-  query: string
-  setQuery: (udpatedValue: string) => void
-  editorAction: monaco.editor.IActionDescriptor[]
+  toggleOrientation: () => void
   containerBounds: RectReadOnly
-  queryResult: QueryResult | null
-  isRunningQuery: boolean
-  error: any
+  editor: React.ReactElement
+  tabContent: (headerIcons: React.ReactElement) => React.ReactElement
 }
 
 export default function HorizontalOrientation({
-  handleVerticalSplit,
-  resourceId,
-  query,
-  setQuery,
-  editorAction,
+  toggleOrientation,
   containerBounds,
-  queryResult,
-  isRunningQuery,
-  error,
+  editor,
+  tabContent,
 }: HorizontalOrientationProps) {
   return (
     <VerticalPane
@@ -53,7 +38,7 @@ export default function HorizontalOrientation({
             >
               <button
                 className="focus:outline-none"
-                onClick={handleVerticalSplit}
+                onClick={toggleOrientation}
               >
                 <BorderVerticleOutlined />
               </button>
@@ -73,35 +58,12 @@ export default function HorizontalOrientation({
                 className="w-full"
                 style={{ height: containerBounds.height - paneHeight }}
               >
-                <Editor
-                  resourceId={resourceId}
-                  value={query}
-                  setValue={setQuery}
-                  editorAction={editorAction}
-                />
+                {editor}
               </div>
             ) : null}
             <div className="relative border-t" style={{ height: paneHeight }}>
               {dragHandle}
-              <Tabs
-                defaultActiveKey="1"
-                size="small"
-                className="w-full h-full px-4 py-1 queries-tab"
-                tabBarExtraContent={headerIcons}
-              >
-                <Tabs.TabPane tab="Table" key="1">
-                  <div className="w-full h-full">
-                    <ResultsTable
-                      data={queryResult}
-                      isLoading={isRunningQuery}
-                      error={error}
-                    />
-                  </div>
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Charts" key="2">
-                  <ChartTab data={queryResult} />
-                </Tabs.TabPane>
-              </Tabs>
+              {tabContent(headerIcons)}
             </div>
           </>
         )

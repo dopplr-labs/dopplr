@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Input, message, Modal } from 'antd'
-import { queryCache, useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { SavedQuery } from 'types/query'
 import { saveQuery } from '../queries-and-mutations'
 
@@ -21,11 +21,12 @@ export default function SaveQueryModal({
 }: SaveQueryModalProps) {
   const [form] = Form.useForm()
 
-  const [saveQueryMutation] = useMutation(saveQuery, {
+  const queryClient = useQueryClient()
+  const { mutate: saveQueryMutation } = useMutation(saveQuery, {
     onSuccess: async (savedQuery) => {
       onRequestClose()
       onSave?.(savedQuery)
-      await queryCache.refetchQueries(['saved-queries'])
+      await queryClient.refetchQueries(['saved-queries'])
       message.success('Query saved successfully')
     },
   })
