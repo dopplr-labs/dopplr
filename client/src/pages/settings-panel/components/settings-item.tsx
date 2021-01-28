@@ -63,8 +63,8 @@ export default function SettingsItem({
               onSelect={(value) => onChangeSettings(config.key, value)}
             >
               {config.options.map((option, idx) => (
-                <Select.Option key={idx} value={option[1]}>
-                  {option[0]}
+                <Select.Option key={idx} value={option.value}>
+                  {option.key}
                 </Select.Option>
               ))}
             </Select>

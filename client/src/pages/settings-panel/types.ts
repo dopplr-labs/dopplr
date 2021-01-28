@@ -17,7 +17,10 @@ export type SelectConfig = {
   title: string
   description: string
   default: string | number
-  options: [string, string | number][]
+  options: {
+    key: string // shown in UI
+    value: string | number // actual value used
+  }[]
   key: string
 }
 
@@ -29,12 +32,14 @@ export type CheckboxConfig = {
   key: string
 }
 
+// collection of logically related settings items
 export type SubGroup = {
   title: string
   description: string
   configs: (InputConfig | SelectConfig | CheckboxConfig)[]
 }
 
+// collection of smaller groups of settings
 export type Group = {
   title: string
   subGroupDict: {
