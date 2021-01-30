@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { QueryResult } from 'types/query'
 import { Cache } from 'utils/cache'
 import Editor from 'components/editor'
+import EditorContext from 'contexts/editor-context'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { formatDuration } from 'utils/time'
 import sqlFormatter from 'sql-formatter'
@@ -23,6 +24,7 @@ import { TabType } from '../types'
 import SaveQueryButton from './save-query-button'
 import UpdateQueryButton from './update-query-button'
 import QueryName from './query-name'
+import ChartTab from './chart-tab'
 
 const runResultCache = new Cache()
 
@@ -35,6 +37,7 @@ export default function QueryEditor() {
   const { tabType, id } = useParams()
   const tabRoute = `${tabType}/${id}`
 
+  const isSaved = tabType === 'saved'
   const {
     isLoadingTabData,
     resourceId,
@@ -176,7 +179,11 @@ export default function QueryEditor() {
                 </div>
               </Tabs.TabPane>
               <Tabs.TabPane tab="Charts" key="chart">
-                <div />
+                <EditorContext.Provider
+                  value={{ isSaved, queryId: id, queryResult }}
+                >
+                  <ChartTab />
+                </EditorContext.Provider>
               </Tabs.TabPane>
             </Tabs>
           )}

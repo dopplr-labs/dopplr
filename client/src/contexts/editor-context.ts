@@ -4,11 +4,11 @@ import { QueryResult } from 'types/query'
 const EditorContext = createContext<{
   isSaved: boolean
   queryId: string
-  queryResult: QueryResult | null
+  queryResult: QueryResult | undefined
 }>({
   isSaved: false,
   queryId: '',
-  queryResult: null,
+  queryResult: undefined,
 })
 
 export default EditorContext

@@ -16,7 +16,7 @@ import TextEditorSettings from 'pages/settings-panel/components/text-editor-sett
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
 
-const SHOW_DEV_TOOLS = true
+const SHOW_DEV_TOOLS = false
 
 const queryClient = new QueryClient()
 

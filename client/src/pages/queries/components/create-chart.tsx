@@ -1,6 +1,6 @@
 import React, { cloneElement, useMemo, useContext, useState } from 'react'
 import { Form, Empty, Select, Input, Button, Tooltip, message } from 'antd'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import EditorContext from 'contexts/editor-context'
 import { ChartTypes } from 'types/chart'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
@@ -24,9 +24,11 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
     { enabled: isSaved },
   )
 
-  const [addChart, { isLoading }] = useMutation(createChart, {
+  const queryClient = useQueryClient()
+
+  const { mutate: addChart, isLoading } = useMutation(createChart, {
     onSuccess: (createdChart) => {
-      queryCache.setQueryData(
+      queryClient.setQueryData(
         ['charts', queryId],
         charts ? [createdChart, ...charts] : [createdChart],
       )

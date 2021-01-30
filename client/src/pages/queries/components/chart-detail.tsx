@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { Result, Form, Select, Input, Button, Modal, message } from 'antd'
 import { range } from 'lodash-es'
-import { queryCache, useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import EditorContext from 'contexts/editor-context'
 import { Chart, ChartTypes } from 'types/chart'
 import {
@@ -61,31 +61,41 @@ export default function ChartDetail({
     fetchChartsForQuery(parseInt(queryId)),
   )
 
-  const [editChart, { isLoading: isUpdatingChart }] = useMutation(updateChart, {
-    onMutate: (updatedChart) => {
-      queryCache.setQueryData(
-        ['charts', queryId],
-        charts?.map((chart) =>
-          chart.id === updatedChart.id ? { ...chart, ...updatedChart } : chart,
-        ),
-      )
-      queryCache.setQueryData(['chart', chartId], { ...chart, ...updatedChart })
-    },
-    onSuccess: () => {
-      message.success('Chart updated successfully')
-    },
-  })
+  const queryClient = useQueryClient()
 
-  const [removeChart, { isLoading: isRemovingChart }] = useMutation(
+  const { mutate: editChart, isLoading: isUpdatingChart } = useMutation(
+    updateChart,
+    {
+      onMutate: (updatedChart) => {
+        queryClient.setQueryData(
+          ['charts', queryId],
+          charts?.map((chart) =>
+            chart.id === updatedChart.id
+              ? { ...chart, ...updatedChart }
+              : chart,
+          ),
+        )
+        queryClient.setQueryData(['chart', chartId], {
+          ...chart,
+          ...updatedChart,
+        })
+      },
+      onSuccess: () => {
+        message.success('Chart updated successfully')
+      },
+    },
+  )
+
+  const { mutate: removeChart, isLoading: isRemovingChart } = useMutation(
     deleteChart,
     {
       onMutate: (deletedChart) => {
-        queryCache.setQueryData(
+        queryClient.setQueryData(
           ['charts', queryId],
           charts?.filter((chart) => chart.id !== deletedChart.id),
         )
-        queryCache.removeQueries(['chart', chartId])
-        const updatedCharts: Chart[] | undefined = queryCache.getQueryData([
+        queryClient.removeQueries(['chart', chartId])
+        const updatedCharts: Chart[] | undefined = queryClient.getQueryData([
           'charts',
           queryId,
         ])
