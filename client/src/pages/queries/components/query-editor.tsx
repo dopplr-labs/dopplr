@@ -36,8 +36,8 @@ enum PaneOrientation {
 export default function QueryEditor() {
   const { tabType, id } = useParams()
   const tabRoute = `${tabType}/${id}`
-
   const isSaved = tabType === 'saved'
+
   const {
     isLoadingTabData,
     resourceId,
