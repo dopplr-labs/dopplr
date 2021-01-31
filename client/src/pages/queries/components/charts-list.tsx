@@ -10,7 +10,7 @@ import { fetchChartsForQuery } from '../chart-queries'
 
 export default function ChartsList() {
   const { queryId } = useContext(EditorContext)
-  const [searchParams, setSearchParams] = useSearchParams({ chart: 'new' })
+  const [searchParams, setSearchParams] = useSearchParams()
   const activeChartId = searchParams.get('chart')
 
   const handleOpenChartDetail = useCallback(
@@ -20,8 +20,16 @@ export default function ChartsList() {
     [setSearchParams],
   )
 
-  const { data: charts, isLoading, error } = useQuery(['charts', queryId], () =>
-    fetchChartsForQuery(parseInt(queryId)),
+  const { data: charts, isLoading, error } = useQuery(
+    ['charts', queryId],
+    () => fetchChartsForQuery(parseInt(queryId)),
+    {
+      onSettled: (data) => {
+        if (data?.length && !searchParams.get('chart')) {
+          handleOpenChartDetail(data[0].id.toString())
+        }
+      },
+    },
   )
 
   const chartsListContent = useMemo(() => {
@@ -50,7 +58,9 @@ export default function ChartsList() {
               ? 'text-brand-primary'
               : 'text-gray-700',
           )}
-          onClick={() => handleOpenChartDetail(chart.id.toString())}
+          onClick={() => {
+            handleOpenChartDetail(chart.id.toString())
+          }}
         >
           {chart.name}
         </div>

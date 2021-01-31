@@ -69,7 +69,7 @@ export default function QueryEditor() {
     QueryResult | undefined
   >(`${tabRoute}-query-result`, undefined, runResultCache)
 
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams({ tab: 'result' })
 
   if (isLoadingTabData) {
     return <QueryEditorSkeleton />
@@ -160,13 +160,14 @@ export default function QueryEditor() {
           }
           tabContent={(headerIcons) => (
             <Tabs
-              activeKey={searchParams.get('tab') ?? 'result'}
+              activeKey={searchParams.get('tab') ?? undefined}
               onChange={(tabKey) => {
                 setSearchParams({ tab: tabKey })
               }}
               size="small"
               className="w-full h-full px-4 py-1 queries-tab"
               tabBarExtraContent={headerIcons}
+              destroyInactiveTabPane
             >
               <Tabs.TabPane tab="Table" key="result">
                 <div className="w-full h-full">

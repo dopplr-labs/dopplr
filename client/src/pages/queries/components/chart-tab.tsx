@@ -77,19 +77,21 @@ export default function ChartTab() {
               Plot different charts according to your requirement using query
               result
             </div>
-            <div className="mt-4">
-              <Button
-                icon={<PlusOutlined />}
-                className="w-full"
-                type="primary"
-                disabled={activeChartId === 'new'}
-                onClick={() => {
-                  handleOpenChartDetail('new')
-                }}
-              >
-                Create New
-              </Button>
-            </div>
+            {activeChartId !== 'new' ? (
+              <div className="mt-4">
+                <Button
+                  icon={<PlusOutlined />}
+                  className="w-full"
+                  type="primary"
+                  disabled={activeChartId === 'new'}
+                  onClick={() => {
+                    handleOpenChartDetail('new')
+                  }}
+                >
+                  Create New
+                </Button>
+              </div>
+            ) : null}
           </div>
           {isSaved ? <ChartsList /> : null}
         </div>

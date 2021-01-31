@@ -22,7 +22,7 @@ import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 
 export default function ChartDetail() {
   const { queryResult, queryId } = useContext(EditorContext)
-  const [searchParams, setSearchParams] = useSearchParams({ chart: 'new' })
+  const [searchParams, setSearchParams] = useSearchParams()
   const activeChartId = searchParams.get('chart')
 
   const [form] = Form.useForm()
@@ -98,9 +98,7 @@ export default function ChartDetail() {
           'charts',
           queryId,
         ])
-        handleOpenChartDetail(
-          updatedCharts?.length ? updatedCharts[0].id.toString() : 'new',
-        )
+        handleOpenChartDetail(updatedCharts?.[0].id.toString() ?? 'new')
       },
     },
   )
