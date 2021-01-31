@@ -1,21 +1,24 @@
+import React, { useCallback, useContext, useMemo } from 'react'
 import { Result } from 'antd'
 import clsx from 'clsx'
 import EditorContext from 'contexts/editor-context'
 import { range } from 'lodash-es'
-import React, { useContext, useMemo } from 'react'
 import Scrollbars from 'react-custom-scrollbars'
 import { useQuery } from 'react-query'
+import { useSearchParams } from 'react-router-dom'
 import { fetchChartsForQuery } from '../chart-queries'
 
-type ChartsListProps = {
-  activeChartId: number
-  changeActiveChartId: (id: number) => void
-}
-export default function ChartsList({
-  activeChartId,
-  changeActiveChartId,
-}: ChartsListProps) {
+export default function ChartsList() {
   const { queryId } = useContext(EditorContext)
+  const [searchParams, setSearchParams] = useSearchParams({ chart: 'new' })
+  const activeChartId = searchParams.get('chart')
+
+  const handleOpenChartDetail = useCallback(
+    (id: string) => {
+      setSearchParams({ tab: 'chart', chart: id })
+    },
+    [setSearchParams],
+  )
 
   const { data: charts, isLoading, error } = useQuery(['charts', queryId], () =>
     fetchChartsForQuery(parseInt(queryId)),
@@ -43,15 +46,17 @@ export default function ChartsList({
           key={chart.id}
           className={clsx(
             'w-full py-2 text-xs cursor-pointer hover:text-brand-primary',
-            chart.id === activeChartId ? 'text-brand-primary' : 'text-gray-700',
+            chart.id.toString() === activeChartId
+              ? 'text-brand-primary'
+              : 'text-gray-700',
           )}
-          onClick={() => changeActiveChartId(chart.id)}
+          onClick={() => handleOpenChartDetail(chart.id.toString())}
         >
           {chart.name}
         </div>
       ))
     }
-  }, [isLoading, error, charts, changeActiveChartId, activeChartId])
+  }, [isLoading, error, charts, activeChartId, handleOpenChartDetail])
 
   return (
     <Scrollbars className="flex-1">
