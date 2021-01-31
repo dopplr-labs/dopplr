@@ -1,22 +1,31 @@
-import React, { cloneElement, useMemo, useContext, useState } from 'react'
+import React, {
+  cloneElement,
+  useMemo,
+  useContext,
+  useState,
+  useCallback,
+} from 'react'
 import { Form, Empty, Select, Input, Button, Tooltip, message } from 'antd'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import EditorContext from 'contexts/editor-context'
-import { ChartTypes } from 'types/chart'
+import { ChartType } from 'types/chart'
+import { FormFieldData } from 'types/form-fields'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 import { createChart, fetchChartsForQuery } from '../chart-queries'
 
 type CreateChartProps = {
-  changeActiveChartId: (id: number) => void
+  changeActiveChartId: (id: string) => void
 }
 
 export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
   const { queryResult, isSaved, queryId } = useContext(EditorContext)
 
-  const [label, setLabel] = useState<string | undefined>()
-  const [values, setValues] = useState<string[] | undefined>()
-  const [title, setTitle] = useState<string>('Untitled Chart')
-  const [chartType, setChartType] = useState<ChartTypes>('line')
+  const [fields, setFields] = useState<FormFieldData[]>([
+    { name: ['type'], value: ChartType.LINE },
+    { name: ['name'], value: 'Untitled Chart' },
+    { name: ['label'] },
+    { name: ['values'] },
+  ])
 
   const { data: charts } = useQuery(
     ['charts', queryId],
@@ -33,13 +42,21 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
         charts ? [createdChart, ...charts] : [createdChart],
       )
       message.success('Chart created successfully')
-      changeActiveChartId(createdChart.id)
+      changeActiveChartId(createdChart.id.toString())
     },
   })
+  const label =
+    fields[fields.findIndex((field) => field.name[0] === 'label')].value
+  const values =
+    fields[fields.findIndex((field) => field.name[0] === 'values')].value
+  const name =
+    fields[fields.findIndex((field) => field.name[0] === 'name')].value
+  const type =
+    fields[fields.findIndex((field) => field.name[0] === 'type')].value
 
   const chartData = useMemo(() => {
     if (label && values && queryResult) {
-      return values
+      return (values as string[])
         .map((value) =>
           queryResult.rows.map((row) => {
             return { label: row[label], value: row[value], type: value }
@@ -48,11 +65,15 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
         .flat()
     }
     return []
-  }, [label, values, queryResult])
+  }, [queryResult, label, values])
 
   function handleCreateChart(values: any) {
     addChart({ ...values, query: parseInt(queryId) })
   }
+
+  const onChange = useCallback((newFields) => {
+    setFields(newFields)
+  }, [])
 
   return (
     <div className="flex w-full h-full" style={{ width: 'calc(100% - 16rem)' }}>
@@ -62,8 +83,10 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
       >
         {label && values ? (
           <>
-            <div className="font-semibold">{title}</div>
-            {cloneElement(chartList[chartType].chart, { data: chartData })}
+            <div className="font-semibold">{name}</div>
+            {cloneElement(chartList[type as ChartType].chart, {
+              data: chartData,
+            })}
           </>
         ) : (
           <Empty description={<span>Select data to plot chart</span>} />
@@ -72,11 +95,14 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
       <Form
         layout="vertical"
         className="flex-shrink-0 w-64 h-full pl-4 border-l"
-        initialValues={{ type: chartType, name: title, label, values }}
+        fields={fields}
+        onFieldsChange={(_, allFields) => {
+          onChange(allFields)
+        }}
         onFinish={handleCreateChart}
       >
         <Form.Item label="Chart Type" name="type">
-          <Select showSearch value={chartType} onChange={setChartType}>
+          <Select showSearch>
             {chartGroups.map((group) => (
               <Select.OptGroup label={group} key={group}>
                 {chartOrder
@@ -94,12 +120,7 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
           </Select>
         </Form.Item>
         <Form.Item label="Label" name="label">
-          <Select
-            placeholder="Add label"
-            className="w-full"
-            value={label}
-            onChange={setLabel}
-          >
+          <Select placeholder="Add label" className="w-full">
             {queryResult?.fields.map((field) => (
               <Select.Option key={field.name} value={field.name}>
                 {field.name}
@@ -108,13 +129,7 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
           </Select>
         </Form.Item>
         <Form.Item label="Values" name="values">
-          <Select
-            placeholder="Add values"
-            mode="multiple"
-            className="w-full"
-            value={values}
-            onChange={setValues}
-          >
+          <Select placeholder="Add values" mode="multiple" className="w-full">
             {queryResult?.fields.map((field) => (
               <Select.Option key={field.name} value={field.name}>
                 {field.name}
@@ -123,13 +138,7 @@ export default function CreateChart({ changeActiveChartId }: CreateChartProps) {
           </Select>
         </Form.Item>
         <Form.Item label="Chart Title" name="name">
-          <Input
-            placeholder="Enter chart title"
-            value={title}
-            onChange={({ target: { value } }) => {
-              setTitle(value)
-            }}
-          />
+          <Input placeholder="Enter chart title" />
         </Form.Item>
         {isSaved ? (
           <Button
