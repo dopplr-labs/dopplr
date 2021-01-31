@@ -8,8 +8,10 @@ import React, {
 import { Result, Form, Select, Input, Button, Modal, message } from 'antd'
 import { range } from 'lodash-es'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useSearchParams } from 'react-router-dom'
 import EditorContext from 'contexts/editor-context'
-import { Chart, ChartTypes } from 'types/chart'
+import { Chart, ChartType } from 'types/chart'
+import { FormFieldData } from 'types/form-fields'
 import {
   deleteChart,
   fetchChart,
@@ -18,44 +20,43 @@ import {
 } from '../chart-queries'
 import { chartGroups, chartList, chartOrder } from '../data/chart-list'
 
-type ChartDetailProps = {
-  chartId: number
-  changeActiveChartId: (id: number) => void
-}
-
-export default function ChartDetail({
-  chartId,
-  changeActiveChartId,
-}: ChartDetailProps) {
+export default function ChartDetail() {
   const { queryResult, queryId } = useContext(EditorContext)
+  const [searchParams, setSearchParams] = useSearchParams({ chart: 'new' })
+  const activeChartId = searchParams.get('chart')
+
   const [form] = Form.useForm()
 
-  const [chartType, setChartType] = useState<ChartTypes>('line')
-  const [label, setLabel] = useState<string | undefined>()
-  const [values, setValues] = useState<string[] | undefined>()
-  const [title, setTitle] = useState<string>('Untitled Chart')
+  const [fields, setFields] = useState<FormFieldData[]>([
+    { name: ['type'] },
+    { name: ['name'] },
+    { name: ['label'] },
+    { name: ['values'] },
+  ])
+
+  const handleOpenChartDetail = useCallback(
+    (id: string) => {
+      setSearchParams({ tab: 'chart', chart: id })
+    },
+    [setSearchParams],
+  )
 
   const { data: chart, isLoading, error } = useQuery(
-    ['chart', chartId],
-    () => fetchChart(chartId),
+    ['chart', activeChartId],
+    () => fetchChart(parseInt(activeChartId ?? '')),
     {
       onSettled: (chart) => {
         if (chart) {
-          setTitle(chart.name)
-          setValues(chart.values)
-          setLabel(chart.label)
-          setChartType(chart.type)
-          form.setFieldsValue({
-            type: chart.type,
-            name: chart.name,
-            label: chart.label,
-            values: chart.values,
-          })
+          setFields([
+            { name: ['type'], value: chart.type },
+            { name: ['name'], value: chart.name },
+            { name: ['label'], value: chart.label },
+            { name: ['values'], value: chart.values },
+          ])
         }
       },
     },
   )
-  const [disabled, setDisbaled] = useState<boolean>(true)
 
   const { data: charts } = useQuery(['charts', queryId], () =>
     fetchChartsForQuery(parseInt(queryId)),
@@ -66,7 +67,7 @@ export default function ChartDetail({
   const { mutate: editChart, isLoading: isUpdatingChart } = useMutation(
     updateChart,
     {
-      onMutate: (updatedChart) => {
+      onSuccess: (updatedChart) => {
         queryClient.setQueryData(
           ['charts', queryId],
           charts?.map((chart) =>
@@ -75,12 +76,10 @@ export default function ChartDetail({
               : chart,
           ),
         )
-        queryClient.setQueryData(['chart', chartId], {
+        queryClient.setQueryData(['chart', activeChartId], {
           ...chart,
           ...updatedChart,
         })
-      },
-      onSuccess: () => {
         message.success('Chart updated successfully')
       },
     },
@@ -89,29 +88,32 @@ export default function ChartDetail({
   const { mutate: removeChart, isLoading: isRemovingChart } = useMutation(
     deleteChart,
     {
-      onMutate: (deletedChart) => {
+      onSuccess: (deletedChart) => {
         queryClient.setQueryData(
           ['charts', queryId],
           charts?.filter((chart) => chart.id !== deletedChart.id),
         )
-        queryClient.removeQueries(['chart', chartId])
+        queryClient.removeQueries(['chart', activeChartId])
         const updatedCharts: Chart[] | undefined = queryClient.getQueryData([
           'charts',
           queryId,
         ])
-        changeActiveChartId(updatedCharts?.length ? updatedCharts[0].id : -1)
+        handleOpenChartDetail(
+          updatedCharts?.length ? updatedCharts[0].id.toString() : 'new',
+        )
       },
     },
   )
 
+  const onChange = useCallback((newFields) => {
+    setFields(newFields)
+  }, [])
+
   const onFinish = useCallback(
     (values: any) => {
-      editChart({
-        id: chartId,
-        ...values,
-      })
+      editChart({ id: activeChartId, ...values })
     },
-    [editChart, chartId],
+    [activeChartId, editChart],
   )
 
   const confirmDelete = useCallback(() => {
@@ -122,14 +124,18 @@ export default function ChartDetail({
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        removeChart({ id: chartId })
+        removeChart({ id: parseInt(activeChartId ?? '') })
       },
     })
-  }, [removeChart, chartId])
+  }, [removeChart, activeChartId])
 
   const chartData = useMemo(() => {
+    const label =
+      fields[fields.findIndex((field) => field.name[0] === 'label')].value
+    const values =
+      fields[fields.findIndex((field) => field.name[0] === 'values')].value
     if (label && values && queryResult) {
-      return values
+      return (values as string[])
         .map((value) =>
           queryResult.rows.map((row) => {
             return { label: row[label], value: row[value], type: value }
@@ -137,7 +143,8 @@ export default function ChartDetail({
         )
         .flat()
     }
-  }, [queryResult, label, values])
+    return undefined
+  }, [queryResult, fields])
 
   const chartContent = useMemo(() => {
     if (isLoading || !chartData) {
@@ -165,6 +172,10 @@ export default function ChartDetail({
     }
 
     if (chart) {
+      const name =
+        fields[fields.findIndex((field) => field.name[0] === 'name')].value
+      const type =
+        fields[fields.findIndex((field) => field.name[0] === 'type')].value
       return (
         <div
           className="flex w-full h-full"
@@ -174,18 +185,23 @@ export default function ChartDetail({
             className="flex flex-col px-4 pb-8 space-y-4"
             style={{ width: 'calc(100% - 16rem)' }}
           >
-            <div className="font-semibold">{title}</div>
-            {cloneElement(chartList[chartType].chart, { data: chartData })}
+            <div className="font-semibold">{name}</div>
+            {cloneElement(chartList[type as ChartType].chart, {
+              data: chartData,
+            })}
           </div>
           <Form
             layout="vertical"
             className="flex-shrink-0 w-64 h-full pl-4 border-l"
             form={form}
-            onValuesChange={() => setDisbaled(false)}
+            fields={fields}
+            onFieldsChange={(_, allFields) => {
+              onChange(allFields)
+            }}
             onFinish={onFinish}
           >
             <Form.Item label="Chart Type" name="type">
-              <Select showSearch value={chartType} onChange={setChartType}>
+              <Select showSearch>
                 {chartGroups.map((group) => (
                   <Select.OptGroup label={group} key={group}>
                     {chartOrder
@@ -203,12 +219,7 @@ export default function ChartDetail({
               </Select>
             </Form.Item>
             <Form.Item label="Label" name="label">
-              <Select
-                placeholder="Add label"
-                className="w-full"
-                value={label}
-                onChange={setLabel}
-              >
+              <Select placeholder="Add label" className="w-full">
                 {queryResult?.fields.map((field) => (
                   <Select.Option key={field.name} value={field.name}>
                     {field.name}
@@ -221,8 +232,6 @@ export default function ChartDetail({
                 placeholder="Add values"
                 mode="multiple"
                 className="w-full"
-                value={values}
-                onChange={setValues}
               >
                 {queryResult?.fields.map((field) => (
                   <Select.Option key={field.name} value={field.name}>
@@ -232,13 +241,7 @@ export default function ChartDetail({
               </Select>
             </Form.Item>
             <Form.Item label="Chart Title" name="name">
-              <Input
-                placeholder="Enter chart title"
-                value={title}
-                onChange={({ target: { value } }) => {
-                  setTitle(value)
-                }}
-              />
+              <Input placeholder="Enter chart title" />
             </Form.Item>
             <div className="flex items-center justify-between">
               <Button
@@ -252,7 +255,7 @@ export default function ChartDetail({
               <Button
                 htmlType="submit"
                 type="primary"
-                disabled={disabled}
+                disabled={!form.isFieldsTouched()}
                 loading={isUpdatingChart}
               >
                 Save
@@ -264,20 +267,17 @@ export default function ChartDetail({
     }
   }, [
     isLoading,
-    isRemovingChart,
-    isUpdatingChart,
+    chartData,
     error,
     chart,
-    form,
+    fields,
+    onChange,
     onFinish,
-    chartData,
-    chartType,
-    label,
+    form,
     queryResult,
-    title,
-    values,
-    disabled,
     confirmDelete,
+    isRemovingChart,
+    isUpdatingChart,
   ])
 
   return <>{chartContent}</>
