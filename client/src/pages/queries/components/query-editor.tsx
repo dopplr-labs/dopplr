@@ -36,7 +36,6 @@ enum PaneOrientation {
 export default function QueryEditor() {
   const { tabType, id } = useParams()
   const tabRoute = `${tabType}/${id}`
-  const isSaved = tabType === 'saved'
 
   const {
     isLoadingTabData,
@@ -180,7 +179,11 @@ export default function QueryEditor() {
               </Tabs.TabPane>
               <Tabs.TabPane tab="Charts" key="chart">
                 <EditorContext.Provider
-                  value={{ isSaved, queryId: id, queryResult }}
+                  value={{
+                    isSaved: tabType === TabType.SAVED,
+                    queryId: id,
+                    queryResult,
+                  }}
                 >
                   <ChartTab />
                 </EditorContext.Provider>
