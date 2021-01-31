@@ -7,7 +7,7 @@ import {
   PieChartOutlined,
   DotChartOutlined,
 } from '@ant-design/icons'
-import { ChartTypes } from 'types/chart'
+import { ChartType } from 'types/chart'
 
 const config = {
   data: [],
@@ -134,21 +134,21 @@ export const chartList = {
   },
 }
 
-export const chartOrder: ChartTypes[] = [
-  'line',
-  'smoothLine',
-  'area',
-  'stackedArea',
-  'stackedArea100',
-  'column',
-  'stackedColumn',
-  'stackedColumn100',
-  'bar',
-  'stackedBar',
-  'stackedBar100',
-  'pie',
-  'ring',
-  'scatter',
+export const chartOrder: ChartType[] = [
+  ChartType.LINE,
+  ChartType.SMOOTH_LINE,
+  ChartType.AREA,
+  ChartType.STACKED_AREA,
+  ChartType.STACKED_AREA_100,
+  ChartType.COLUMN,
+  ChartType.STACKED_COLUMN,
+  ChartType.STACKED_COLUMN_100,
+  ChartType.BAR,
+  ChartType.STACKED_BAR,
+  ChartType.STACKED_BAR_100,
+  ChartType.PIE,
+  ChartType.RING,
+  ChartType.SCATTER,
 ]
 
 export const chartGroups = ['Line', 'Area', 'Column', 'Bar', 'Pie', 'Other']
