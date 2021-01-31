@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo } from 'react'
 import { Button } from 'antd'
 import {
   AreaChartOutlined,
@@ -7,6 +7,7 @@ import {
   PieChartOutlined,
   PlusOutlined,
 } from '@ant-design/icons'
+import { useSearchParams } from 'react-router-dom'
 import EditorContext from 'contexts/editor-context'
 import CreateChart from './create-chart'
 import ChartsList from './charts-list'
@@ -15,11 +16,15 @@ import ChartDetail from './chart-detail'
 export default function ChartTab() {
   const { queryResult: data, isSaved } = useContext(EditorContext)
 
-  const [activeChartId, setActiveChartId] = useState<number>(-1)
+  const [searchParams, setSearchParams] = useSearchParams({ chart: 'new' })
+  const activeChartId = searchParams.get('chart')
 
-  function handleOpenChartDetail(id: number) {
-    setActiveChartId(id)
-  }
+  const handleOpenChartDetail = useCallback(
+    (id: string) => {
+      setSearchParams({ tab: 'chart', chart: id })
+    },
+    [setSearchParams],
+  )
 
   const runQueryPlaceholder = useMemo(
     () => (
@@ -53,17 +58,12 @@ export default function ChartTab() {
       return runQueryPlaceholder
     }
 
-    if (activeChartId === -1) {
+    if (activeChartId === 'new') {
       return <CreateChart changeActiveChartId={handleOpenChartDetail} />
     }
 
-    return (
-      <ChartDetail
-        chartId={activeChartId}
-        changeActiveChartId={handleOpenChartDetail}
-      />
-    )
-  }, [data, runQueryPlaceholder, activeChartId])
+    return <ChartDetail />
+  }, [data, runQueryPlaceholder, activeChartId, handleOpenChartDetail])
 
   return (
     <div className="flex w-full h-full bg-white">
@@ -82,21 +82,16 @@ export default function ChartTab() {
                 icon={<PlusOutlined />}
                 className="w-full"
                 type="primary"
-                disabled={activeChartId === -1}
+                disabled={activeChartId === 'new'}
                 onClick={() => {
-                  setActiveChartId(-1)
+                  handleOpenChartDetail('new')
                 }}
               >
                 Create New
               </Button>
             </div>
           </div>
-          {isSaved ? (
-            <ChartsList
-              activeChartId={activeChartId}
-              changeActiveChartId={handleOpenChartDetail}
-            />
-          ) : null}
+          {isSaved ? <ChartsList /> : null}
         </div>
       </div>
       {chartTabContent}
