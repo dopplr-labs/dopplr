@@ -30,18 +30,14 @@ export default function Resources() {
 
   const resourcesList = useMemo(() => {
     if (isLoading) {
-      return (
-        <>
-          {range(5).map((val) => (
-            <div key={val} className="px-4 py-1">
-              <div
-                className="w-full h-4 bg-background-secondary animate-pulse"
-                style={{ opacity: 1 - val / 5 }}
-              />
-            </div>
-          ))}
-        </>
-      )
+      return range(5).map((val) => (
+        <div key={val} className="px-4 py-1">
+          <div
+            className="w-full h-4 bg-background-secondary animate-pulse"
+            style={{ opacity: 1 - val / 5 }}
+          />
+        </div>
+      ))
     }
 
     if (error) {
@@ -49,19 +45,15 @@ export default function Resources() {
     }
 
     if (resources) {
-      return (
-        <>
-          {resources?.map((resource) => (
-            <PageSideBarLink
-              to={`/resources/${resource.id}`}
-              key={resource.id}
-              badge={resource.type}
-            >
-              {resource.name}
-            </PageSideBarLink>
-          ))}
-        </>
-      )
+      return resources.map((resource) => (
+        <PageSideBarLink
+          to={`/resources/${resource.id}`}
+          key={resource.id}
+          badge={resource.type}
+        >
+          {resource.name}
+        </PageSideBarLink>
+      ))
     }
 
     return null
