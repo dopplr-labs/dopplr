@@ -33,6 +33,13 @@ export default function ChartDetail() {
     { name: ['label'] },
     { name: ['values'] },
   ])
+  const formValues = useMemo(() => {
+    const formValues: Record<string, any> = {}
+    fields.forEach(({ name, value }) => {
+      formValues[name[0]] = value
+    })
+    return formValues
+  }, [fields])
 
   const handleOpenChartDetail = useCallback(
     (id: string) => {
@@ -128,10 +135,7 @@ export default function ChartDetail() {
   }, [removeChart, activeChartId])
 
   const chartData = useMemo(() => {
-    const label =
-      fields[fields.findIndex((field) => field.name[0] === 'label')].value
-    const values =
-      fields[fields.findIndex((field) => field.name[0] === 'values')].value
+    const { label, values } = formValues
     if (label && values && queryResult) {
       return (values as string[])
         .map((value) =>
@@ -142,7 +146,7 @@ export default function ChartDetail() {
         .flat()
     }
     return undefined
-  }, [queryResult, fields])
+  }, [queryResult, formValues])
 
   const chartContent = useMemo(() => {
     if (isLoading || !chartData) {
@@ -170,10 +174,7 @@ export default function ChartDetail() {
     }
 
     if (chart) {
-      const name =
-        fields[fields.findIndex((field) => field.name[0] === 'name')].value
-      const type =
-        fields[fields.findIndex((field) => field.name[0] === 'type')].value
+      const { name, type } = formValues
       return (
         <div
           className="flex w-full h-full"
@@ -268,6 +269,7 @@ export default function ChartDetail() {
     chartData,
     error,
     chart,
+    formValues,
     fields,
     onChange,
     onFinish,
