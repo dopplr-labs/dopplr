@@ -32,3 +32,9 @@ export const categories = [
   { id: '2', name: 'Marketing' },
   { id: '3', name: 'Users' },
 ]
+
+export const layout = [
+  { x: 0, y: 0, w: 3, h: 2, i: '24' },
+  { x: 3, y: 0, w: 3, h: 2, i: '23' },
+  { x: 6, y: 0, w: 3, h: 2, i: '22' },
+]
