@@ -1,3 +1,5 @@
+import { Resource } from './resource'
+
 export enum ChartType {
   LINE = 'line',
   SMOOTH_LINE = 'smoothLine',
@@ -15,11 +17,19 @@ export enum ChartType {
   SCATTER = 'scatter',
 }
 
+export type Query = {
+  id: number
+  isSaved: boolean
+  name: string
+  query: string
+  resource: Resource
+}
+
 export type Chart = {
   id: number
   name: string
   label: string
   values: string[]
   type: ChartType
-  query: number
+  query: Query
 }
