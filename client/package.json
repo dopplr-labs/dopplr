@@ -30,6 +30,7 @@
     "monaco-themes": "^0.3.3",
     "monaco-vim": "^0.1.9",
     "react": "^17.0.1",
+    "react-ace": "^9.3.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.3",
@@ -50,7 +51,7 @@
     "vscode-ws-jsonrpc": "^0.2.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "FAST_REFRESH=false craco start",
     "build": "craco build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-app-rewired test",
     "eject": "react-scripts eject",
