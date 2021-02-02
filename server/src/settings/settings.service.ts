@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { text } from 'express'
 import { User } from 'src/auth/user.types'
-import { TextEditorSettingsRepository } from './settings-repository'
-import { TextEditorSettingsUpdateDto } from './settings.dto'
-import { TextEditorSettings } from './settings.entity'
+import { SettingsRepository } from './settings-repository'
+import { TextEditorSettingsUpdateDto } from './dtos/settings.dto'
+import { TextEditorSettings } from './settings.types'
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @InjectRepository(TextEditorSettingsRepository)
-    private textEditorSettingsRepository: TextEditorSettingsRepository,
+    @InjectRepository(SettingsRepository)
+    private settingsRepository: SettingsRepository,
   ) {}
 
   /**
@@ -22,33 +21,39 @@ export class SettingsService {
     const where: { uid: string } = {
       uid: user.uid,
     }
-    const textEditorSettings = await this.textEditorSettingsRepository.findOne({
+    const settings = await this.settingsRepository.findOne({
       where,
     })
 
-    return textEditorSettings
+    return settings.textEditorSettings
   }
 
   /**
    * Updates user text editor settings
    *
-   * @param id - id of the settings row, user wants to update
    * @param textEditorSettingsUpdateDto - Data for updating the text editor settings
    * @param user - user object
    */
   async updateTextEditorSettings(
-    id: number,
     textEditorSettingsUpdateDto: TextEditorSettingsUpdateDto,
     user: User,
   ): Promise<TextEditorSettings> {
-    return this.textEditorSettingsRepository
-      .update(
-        {
-          id,
-          uid: user.uid,
-        },
-        textEditorSettingsUpdateDto,
-      )
-      .then(() => this.getTextEditorSettings(user))
+    const where: { uid: string } = {
+      uid: user.uid,
+    }
+    const settings = await this.settingsRepository.findOne({
+      where,
+    })
+    const updatedSettings = await this.settingsRepository.preload({
+      id: settings.id,
+      uid: settings.uid,
+      textEditorSettings: {
+        ...settings.textEditorSettings,
+        ...textEditorSettingsUpdateDto,
+      },
+    })
+
+    const savedSettings = await this.settingsRepository.save(updatedSettings)
+    return savedSettings.textEditorSettings
   }
 }

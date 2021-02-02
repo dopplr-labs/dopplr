@@ -4,49 +4,31 @@ export enum KeyBinding {
   EMACS = 'emacs',
 }
 
-export type LineNumber = 'on' | 'off' | 'relative' | 'interval'
-export type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid'
-export type WordWrap = 'off' | 'on' | 'wordWrapColumn' | 'bounded'
+export enum LineNumber {
+  ON = 'on',
+  OFF = 'off',
+  RELATIVE = 'relative',
+  INTERVAL = 'interval',
+}
 
-export type MinimapScale = 1 | 2 | 3
-export type MiniMapShowSlider = 'always' | 'mouseover'
-export type MiniMapSide = 'right' | 'left'
-export type MiniMapSize = 'proportional' | 'fill' | 'fit'
-export type CursorStyle =
-  | 'line'
-  | 'block'
-  | 'underline'
-  | 'line-thin'
-  | 'block-outline'
-  | 'underline-thin'
-export type CursorSurroundingLinesStyle = 'default' | 'all'
+export enum WordWrap {
+  OFF = 'off',
+  ON = 'on',
+  WORD_WRAP_COLUMN = 'wordWrapColumn',
+  BOUNDED = 'bounded',
+}
 
 export type TextEditorSettings = {
   lineNumbers: LineNumber
   wordWrap: WordWrap
+  tabSize: number
   // font settings
   fontFamily: string
   fontWeight: string
   fontSize: number
   lineHeight: number
-  fontLigatures: boolean
-  cursorWidth: number
   // keybinding settings
-  keyBinding: KeyBinding.NONE
+  keyBinding: KeyBinding
   // theme settings
   theme: string
-  //minimap settings
-  minimapEnable: boolean
-  minimapMaxColumn: number
-  minimapRenderCharacters: boolean
-  minimapScale: number
-  minimapShowSlider: MiniMapShowSlider
-  minimapSide: MiniMapSide
-  minimapSize: MiniMapSize
-  // cursor settings
-  cursorBlinking: CursorBlinking
-  cursorSmoothCaretAnimation: boolean
-  cursorSurroundingLines: number
-  cursorStyle: CursorStyle
-  cursorSurroundingLinesStyle: CursorSurroundingLinesStyle
 }
