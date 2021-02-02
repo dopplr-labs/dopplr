@@ -4,33 +4,21 @@ import GridLayout from 'react-grid-layout'
 import useMeasure from 'react-use-measure'
 import { Result } from 'antd'
 import { SettingOutlined, ShareAltOutlined } from '@ant-design/icons'
-import { range } from 'lodash-es'
-import { dashboardList } from '../data/dashboard-data'
+import usePersistedSetState from 'hooks/use-persisted-state'
+import { dashboardList, layout } from '../data/dashboard-data'
+import Chart from './chart'
 
 export default function Dashboard() {
   const { dashboardId } = useParams()
   const [measureContainer, containerBounds] = useMeasure()
+  const [gridLayout, setGridLayout] = usePersistedSetState('layout', layout)
 
   const dashboardData =
     dashboardList[
       dashboardList.findIndex((dashboard) => dashboard.id === dashboardId)
     ]
 
-  const layout = useMemo(
-    () =>
-      range(10).map((item) => {
-        const y = Math.ceil(Math.random() * 4) + 1
-        return {
-          x: (item * 3) % 12,
-          y: Math.floor(item / 4) * y,
-          w: 3,
-          h: y,
-          i: item.toString(),
-        }
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dashboardId],
-  )
+  const chartIds = useMemo(() => ['24', '23', '22'], [])
 
   const dashboardContent = useMemo(() => {
     if (!dashboardData) {
@@ -64,24 +52,30 @@ export default function Dashboard() {
             </button>
           </div>
           <GridLayout
-            layout={layout}
+            layout={gridLayout}
             rowHeight={80}
             cols={12}
             width={containerBounds.width}
+            onDragStop={setGridLayout}
+            onResizeStop={setGridLayout}
           >
-            {range(10).map((item) => (
-              <div
-                key={item.toString()}
-                className="flex items-center justify-center bg-gray-200 "
-              >
-                {item}
+            {chartIds.map((chartId) => (
+              <div key={chartId}>
+                <Chart chartId={chartId} />
               </div>
             ))}
           </GridLayout>
         </div>
       )
     }
-  }, [dashboardData, measureContainer, containerBounds.width, layout])
+  }, [
+    dashboardData,
+    measureContainer,
+    containerBounds.width,
+    gridLayout,
+    setGridLayout,
+    chartIds,
+  ])
 
   return <>{dashboardContent}</>
 }
