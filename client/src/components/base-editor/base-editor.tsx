@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { forwardRef, useContext } from 'react'
 import clsx from 'clsx'
 import useMeasure from 'react-use-measure'
 import AceEditor from 'react-ace'
@@ -61,52 +61,58 @@ type BaseEditorProps = {
   style?: React.CSSProperties
 }
 
-export default function BaseEditor({
-  value,
-  setValue,
-  syntax = 'pgsql',
-  className,
-  style,
-}: BaseEditorProps) {
-  const [measure, containerBounds] = useMeasure()
+const BaseEditor = forwardRef(
+  (
+    { value, setValue, syntax = 'pgsql', className, style }: BaseEditorProps,
+    ref: React.Ref<AceEditor>,
+  ) => {
+    const [measure, containerBounds] = useMeasure()
 
-  const { textEditorSettings } = useContext(SettingsContext)
+    const { textEditorSettings } = useContext(SettingsContext)
 
-  return (
-    <div
-      ref={measure}
-      className={clsx('w-full h-full', className)}
-      style={style}
-    >
-      <AceEditor
-        mode={syntax}
-        theme={textEditorSettings.theme}
-        value={value}
-        onChange={setValue}
-        width={`${containerBounds?.width ?? 0}px`}
-        height={`${containerBounds?.height ?? 0}px`}
-        enableBasicAutocompletion
-        enableLiveAutocompletion
-        editorProps={{ $blockScrolling: true }}
-        keyboardHandler={
-          textEditorSettings.keyBinding === KeyBinding.NONE
-            ? undefined
-            : textEditorSettings.keyBinding
-        }
-        fontSize={textEditorSettings.fontSize}
-        setOptions={{
-          fontSize: textEditorSettings.fontSize,
-          fontFamily: textEditorSettings.fontFamily,
-          scrollPastEnd: true,
-          wrap: textEditorSettings.wordWrap,
-          autoScrollEditorIntoView: true,
-          showLineNumbers: textEditorSettings.lineNumbers,
-        }}
-        style={{
-          lineHeight: `${textEditorSettings.lineHeight}px`,
-          fontWeight: textEditorSettings.fontWeight,
-        }}
-      />
-    </div>
-  )
-}
+    return (
+      <div
+        ref={measure}
+        className={clsx('w-full h-full', className)}
+        style={style}
+      >
+        <AceEditor
+          ref={ref}
+          mode={syntax}
+          theme={textEditorSettings.theme}
+          value={value}
+          onChange={setValue}
+          width={`${containerBounds?.width ?? 0}px`}
+          height={`${containerBounds?.height ?? 0}px`}
+          enableBasicAutocompletion
+          enableLiveAutocompletion
+          editorProps={{ $blockScrolling: true }}
+          keyboardHandler={
+            textEditorSettings.keyBinding === KeyBinding.NONE
+              ? undefined
+              : textEditorSettings.keyBinding
+          }
+          fontSize={textEditorSettings.fontSize}
+          setOptions={{
+            fontSize: textEditorSettings.fontSize,
+            fontFamily: textEditorSettings.fontFamily,
+            scrollPastEnd: true,
+            wrap: textEditorSettings.wordWrap,
+            autoScrollEditorIntoView: true,
+            showLineNumbers: textEditorSettings.lineNumbers,
+            tabSize: textEditorSettings.tabSize,
+            useSoftTabs: true,
+          }}
+          style={{
+            lineHeight: `${textEditorSettings.lineHeight}px`,
+            fontWeight: textEditorSettings.fontWeight,
+          }}
+        />
+      </div>
+    )
+  },
+)
+
+BaseEditor.displayName = 'BaseEditor'
+
+export default BaseEditor
