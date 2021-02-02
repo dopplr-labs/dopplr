@@ -12,15 +12,22 @@ export type InputConfig = {
   key: string
 }
 
+export type SelectOption = {
+  key: string // shown in UI
+  value: string | number // actual value used
+}
+
+export type SelectGroup = {
+  groupName: string
+  options: SelectOption[]
+}
+
 export type SelectConfig = {
   type: ConfigType.SELECT
   title: string
   description: string
   default: string | number
-  options: {
-    key: string // shown in UI
-    value: string | number // actual value used
-  }[]
+  options: (SelectOption | SelectGroup)[]
   key: string
 }
 

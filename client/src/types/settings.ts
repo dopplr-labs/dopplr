@@ -6,6 +6,7 @@ export enum KeyBinding {
   NONE = 'none',
   VIM = 'vim',
   EMACS = 'emacs',
+  VSCODE = 'vscode',
 }
 
 export type LineNumber = 'on' | 'off' | 'relative' | 'interval'

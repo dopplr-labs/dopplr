@@ -9,7 +9,7 @@ type SettingsProps = {
 
 export default function Settings({ children }: SettingsProps) {
   const [textEditorSettings, setTextEditorSettings] = usePersistedSetState(
-    'text-editor-settings',
+    'user-settings',
     DefaultTextEditorSettings,
   )
 

@@ -1,7 +1,14 @@
 import React, { useMemo } from 'react'
 import { BaseSettings } from 'types/settings'
 import { Input, Select, Checkbox, InputNumber } from 'antd'
-import { InputConfig, CheckboxConfig, SelectConfig, ConfigType } from '../types'
+import {
+  InputConfig,
+  CheckboxConfig,
+  SelectConfig,
+  ConfigType,
+  SelectOption,
+  SelectGroup,
+} from '../types'
 
 type SettingItemProps = {
   config: InputConfig | CheckboxConfig | SelectConfig
@@ -62,11 +69,35 @@ export default function SettingsItem({
               value={settings[config.key] as string | number}
               onSelect={(value) => onChangeSettings(config.key, value)}
             >
-              {config.options.map((option, idx) => (
-                <Select.Option key={idx} value={option.value}>
-                  {option.key}
-                </Select.Option>
-              ))}
+              {config.options.map((option, idx) => {
+                if ((option as SelectGroup).groupName) {
+                  return (
+                    <Select.OptGroup label={(option as SelectGroup).groupName}>
+                      {(option as SelectGroup).options.map(
+                        (innerOptions, innerIdx) => {
+                          return (
+                            <Select.Option
+                              key={innerIdx}
+                              value={innerOptions.value}
+                            >
+                              {innerOptions.key}
+                            </Select.Option>
+                          )
+                        },
+                      )}
+                    </Select.OptGroup>
+                  )
+                }
+
+                return (
+                  <Select.Option
+                    key={idx}
+                    value={(option as SelectOption).value}
+                  >
+                    {(option as SelectOption).key}
+                  </Select.Option>
+                )
+              })}
             </Select>
             <div className="text-xs text-content-tertiary">
               {config.description}
