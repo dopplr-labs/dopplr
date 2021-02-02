@@ -23,6 +23,13 @@ export const textEditorSettings: Group = {
           default: false,
           key: 'wordWrap',
         },
+        {
+          type: ConfigType.INPUT,
+          title: 'Tab Size',
+          description: 'The number of spaces a tab is equal to.',
+          default: DefaultTextEditorSettings.tabSize as number,
+          key: 'tabSize',
+        },
       ],
     },
     font: {

@@ -72,7 +72,10 @@ export default function SettingsItem({
               {config.options.map((option, idx) => {
                 if ((option as SelectGroup).groupName) {
                   return (
-                    <Select.OptGroup label={(option as SelectGroup).groupName}>
+                    <Select.OptGroup
+                      label={(option as SelectGroup).groupName}
+                      key={idx}
+                    >
                       {(option as SelectGroup).options.map(
                         (innerOptions, innerIdx) => {
                           return (
