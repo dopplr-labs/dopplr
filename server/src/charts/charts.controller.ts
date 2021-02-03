@@ -30,7 +30,7 @@ export class ChartsController {
   }
 
   @Get(':id')
-  async getQuery(
+  async getChart(
     @Param('id') id: number,
     @GetUser() user,
   ): Promise<{ success: boolean; data: Chart }> {
