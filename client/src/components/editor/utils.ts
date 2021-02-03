@@ -75,7 +75,7 @@ export function getCompletionsFromSchema(schema: SchemaResult[]) {
     table: tableKeywords,
     column: Object.keys(columnKeywords).map((key) => ({
       name: key,
-      value: columnKeywords[key],
+      value: key,
       score: 50,
       meta: columnKeywords[key],
     })),
@@ -109,9 +109,9 @@ const schemaCompleter: ace.Ace.Completer = {
     if (prefix[prefix.length - 1] === '.') {
       const tableName = prefix.substring(0, prefix.length - 1)
       callback(null, table.concat(tableColumn[tableName]))
-      return
+    } else {
+      callback(null, [...table, ...column])
     }
-    callback(null, table.concat(column))
   },
 }
 
