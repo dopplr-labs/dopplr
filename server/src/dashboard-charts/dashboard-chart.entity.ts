@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { Chart } from 'src/charts/chart.entity'
+import { Dashboard } from 'src/dashboards/dashboard.entity'
 
 @Entity()
 export class DashboardChart {
@@ -22,8 +23,16 @@ export class DashboardChart {
   @ManyToOne(
     () => Chart,
     chart => chart.dashboardCharts,
+    { eager: true },
   )
   chart: Chart
+
+  @ManyToOne(
+    () => Dashboard,
+    dashboard => dashboard.dashboardCharts,
+    { eager: true },
+  )
+  dashboard: Dashboard
 
   @Column()
   uid: string
