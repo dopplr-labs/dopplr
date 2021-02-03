@@ -1,6 +1,5 @@
 const CracoEsbuildPlugin = require('craco-esbuild')
 const CracoLessPlugin = require('craco-less')
-const MonacoEditorWebpackPlugin = require('monaco-editor-webpack-plugin')
 const defaultTailwindConfig = require('tailwindcss/defaultTheme')
 const tailwindConfig = require('./tailwind.config')
 
@@ -47,16 +46,6 @@ module.exports = {
       },
     },
   ],
-  webpack: {
-    alias: {
-      vscode: require.resolve('monaco-languageclient/lib/vscode-compatibility'),
-    },
-    plugins: [
-      new MonacoEditorWebpackPlugin({
-        languages: ['sql', 'pgsql'],
-      }),
-    ],
-  },
   style: {
     postcss: {
       plugins: [

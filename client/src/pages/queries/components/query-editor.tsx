@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Button, Tabs } from 'antd'
 import { CaretRightFilled, CodeOutlined } from '@ant-design/icons'
 import { useMutation, useQueryClient } from 'react-query'
@@ -12,6 +12,7 @@ import EditorContext from 'contexts/editor-context'
 import usePersistedSetState from 'hooks/use-persisted-state'
 import { formatDuration } from 'utils/time'
 import sqlFormatter from 'sql-formatter'
+import SettingsContext from 'contexts/settings-context'
 import { useTabData } from '../hooks/use-tab-data'
 import { runQuery } from '../queries-and-mutations'
 import CreateResourceMessage from './create-resource-message'
@@ -36,6 +37,8 @@ enum PaneOrientation {
 export default function QueryEditor() {
   const { tabType, id } = useParams()
   const tabRoute = `${tabType}/${id}`
+
+  const { textEditorSettings } = useContext(SettingsContext)
 
   const {
     isLoadingTabData,
@@ -119,7 +122,13 @@ export default function QueryEditor() {
         <Button
           icon={<CodeOutlined />}
           onClick={() => {
-            updateQuery(sqlFormatter.format(query.replace(/\r\n/g, '\n')))
+            updateQuery(
+              sqlFormatter.format(query.replace(/\r\n/g, '\n'), {
+                indent: Array.from({ length: textEditorSettings.tabSize })
+                  .fill(' ')
+                  .join(''),
+              }),
+            )
           }}
         >
           Beautify

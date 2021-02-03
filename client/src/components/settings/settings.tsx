@@ -1,6 +1,7 @@
 import React from 'react'
 import SettingsContext from 'contexts/settings-context'
 import usePersistedSetState from 'hooks/use-persisted-state'
+import { merge } from 'lodash-es'
 import { DefaultTextEditorSettings } from './data/default-settings'
 
 type SettingsProps = {
@@ -9,7 +10,7 @@ type SettingsProps = {
 
 export default function Settings({ children }: SettingsProps) {
   const [textEditorSettings, setTextEditorSettings] = usePersistedSetState(
-    'text-editor-settings',
+    'user-settings',
     DefaultTextEditorSettings,
   )
 
@@ -26,7 +27,11 @@ export default function Settings({ children }: SettingsProps) {
   return (
     <SettingsContext.Provider
       value={{
-        textEditorSettings,
+        textEditorSettings: merge(
+          {},
+          DefaultTextEditorSettings,
+          textEditorSettings,
+        ),
         onChangeTextEditorSettings,
       }}
     >

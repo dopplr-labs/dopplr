@@ -16,7 +16,7 @@ export class CreateChartDto {
   @IsEnum(ChartType)
   type: ChartType
 
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   query: number
 }
@@ -41,7 +41,7 @@ export class UpdateChartDto {
 
 export class FilterChartDto {
   @IsOptional()
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   query?: number
 }

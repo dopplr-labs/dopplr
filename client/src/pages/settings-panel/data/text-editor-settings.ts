@@ -1,6 +1,6 @@
 import { DefaultTextEditorSettings } from 'components/settings/data/default-settings'
-import { Group, ConfigType } from '../types'
 import { KeyBinding } from 'types/settings'
+import { Group, ConfigType } from '../types'
 
 export const textEditorSettings: Group = {
   title: 'Text Editor',
@@ -10,30 +10,25 @@ export const textEditorSettings: Group = {
       description: 'Customize basic editor settings.',
       configs: [
         {
-          type: ConfigType.SELECT,
+          type: ConfigType.CHECKBOX,
           title: 'Line Numbers',
           description: 'Control the rendering of line numbers.',
-          default: DefaultTextEditorSettings.lineNumbers as string,
-          options: [
-            { key: 'on', value: 'on' },
-            { key: 'off', value: 'off' },
-            { key: 'relative', value: 'relative' },
-            { key: 'interval', value: 'interval' },
-          ],
+          default: true,
           key: 'lineNumbers',
         },
         {
-          type: ConfigType.SELECT,
+          type: ConfigType.CHECKBOX,
           title: 'Word Wrap',
           description: 'Control the wrapping of the editor.',
-          default: DefaultTextEditorSettings.wordwrap as string,
-          options: [
-            { key: 'on', value: 'on' },
-            { key: 'off', value: 'off' },
-            { key: 'wordWrapColumn', value: 'wordWrapColumn' },
-            { key: 'bounded', value: 'bounded' },
-          ],
+          default: false,
           key: 'wordWrap',
+        },
+        {
+          type: ConfigType.INPUT,
+          title: 'Tab Size',
+          description: 'The number of spaces a tab is equal to.',
+          default: DefaultTextEditorSettings.tabSize as number,
+          key: 'tabSize',
         },
       ],
     },
@@ -59,22 +54,15 @@ export const textEditorSettings: Group = {
           type: ConfigType.INPUT,
           title: 'Line Height',
           description: 'Controls the line height.',
-          default: DefaultTextEditorSettings.lineHeight as string,
+          default: DefaultTextEditorSettings.lineHeight,
           key: 'lineHeight',
         },
         {
           type: ConfigType.INPUT,
           title: 'Font Weight',
           description: 'Controls the font size.',
-          default: DefaultTextEditorSettings.fontWeight as number,
+          default: DefaultTextEditorSettings.fontWeight,
           key: 'fontWeight',
-        },
-        {
-          type: ConfigType.CHECKBOX,
-          title: 'Font Ligature',
-          description: 'Controls whether font ligature is used',
-          default: DefaultTextEditorSettings.fontLigatures as boolean,
-          key: 'fontLigatures',
         },
       ],
     },
@@ -91,6 +79,7 @@ export const textEditorSettings: Group = {
             { key: 'None', value: KeyBinding.NONE },
             { key: 'Vim', value: KeyBinding.VIM },
             { key: 'Emacs', value: KeyBinding.EMACS },
+            { key: 'VSCode', value: KeyBinding.VSCODE },
           ],
           key: 'keyBinding',
         },
@@ -106,205 +95,170 @@ export const textEditorSettings: Group = {
           description: 'Controls the theme used by the editor',
           default: DefaultTextEditorSettings.theme as string,
           options: [
-            { key: 'Default', value: 'default' },
-            { key: 'Active4D', value: 'Active4D' },
-            { key: 'All Hallows Eve', value: 'All Hallows Eve' },
-            { key: 'Amy', value: 'Amy' },
-            { key: 'Birds of Paradise', value: 'Birds of Paradise' },
-            { key: 'Blackboard', value: 'Blackboard' },
-            { key: 'Brilliance Black', value: 'Brilliance Black' },
-            { key: 'Brilliance Dull', value: 'Brilliance Dull' },
-            { key: 'Chrome DevTools', value: 'Chrome DevTools' },
-            { key: 'Clouds Midnight', value: 'Clouds Midnight' },
-            { key: 'Clouds', value: 'Clouds' },
-            { key: 'Cobalt', value: 'Cobalt' },
-            { key: 'Dawn', value: 'Dawn' },
-            { key: 'Dominion Day', value: 'Dominion Day' },
-            { key: 'Dreamweaver', value: 'Dreamweaver' },
-            { key: 'Eiffel', value: 'Eiffel' },
-            { key: 'Espresso Libre', value: 'Espresso Libre' },
-            { key: 'GitHub', value: 'GitHub' },
-            { key: 'IDEL', value: 'IDEL' },
-            { key: 'idleFingers', value: 'idleFingers' },
-            { key: 'iPlastic', value: 'iPlastic' },
-            { key: 'Katzenmilch', value: 'Katzenmilch' },
-            { key: 'krTheme', value: 'krTheme' },
-            { key: 'Kuroir Theme', value: 'Kuroir Theme' },
-            { key: 'LAZY', value: 'LAZY' },
-            { key: 'MagicWB (Amiga)', value: 'MagicWB (Amiga)' },
-            { key: 'Merbivore Soft', value: 'Merbivore Soft' },
-            { key: 'Merbivore', value: 'Merbivore' },
-            { key: 'monoindustrial', value: 'monoindustrial' },
-            { key: 'Monokai Bright', value: 'Monokai Bright' },
-            { key: 'Monakai', value: 'Monokai' },
-            { key: 'Night Owl', value: 'Night Owl' },
-            { key: 'Oceanic Next', value: 'Oceanic Next' },
-            { key: 'Pastels on Dark', value: 'Pastels on Dark' },
-            { key: 'Slush and Poppies', value: 'Slush and Poppies' },
-            { key: 'Solarized-dark', value: 'Solarized-dark' },
-            { key: 'Solarized-light', value: 'Solarized-light' },
-            { key: 'SpaceCadet', value: 'SpaceCadet' },
-            { key: 'Sunburst', value: 'Sunburst' },
-            { key: 'Textmate (Mac Classic)', value: 'Textmate (Mac Classic)' },
-            { key: 'themelist', value: 'themelist' },
-            { key: 'Tomorrow-Night-Blue', value: 'Tomorrow-Night-Blue' },
-            { key: 'Tomorrow-Night-Bright', value: 'Tomorrow-Night-Bright' },
-            { key: 'Tomorrow-Night-Eight', value: 'Tomorrow-Night-Eight' },
-            { key: 'Tomorrow-Night', value: 'Tomorrow-Night' },
-            { key: 'Tomorrow', value: 'Tomorrow' },
-            { key: 'Twilight', value: 'Twilight' },
-            { key: 'Upstream Sunburst', value: 'Upstream Sunburst' },
-            { key: 'Vibrant Ink', value: 'Vibrant Ink' },
-            { key: 'Xcode_default', value: 'Xcode_default' },
-            { key: 'Zenburnesque', value: 'Zenburnesque' },
+            {
+              groupName: 'Light Theme',
+              options: [
+                {
+                  key: 'Chrome',
+                  value: 'chrome',
+                },
+                {
+                  key: 'Clouds',
+                  value: 'clouds',
+                },
+                {
+                  key: 'Crimson Editor',
+                  value: 'crimson_editor',
+                },
+                {
+                  key: 'Dawn',
+                  value: 'dawn',
+                },
+                {
+                  key: 'Dreamweaver',
+                  value: 'dreamweaver',
+                },
+                {
+                  key: 'Eclipse',
+                  value: 'eclipse',
+                },
+                {
+                  key: 'GitHub',
+                  value: 'github',
+                },
+                {
+                  key: 'IPlastic',
+                  value: 'iplastic',
+                },
+                {
+                  key: 'Solarized Light',
+                  value: 'solarized_light',
+                },
+                {
+                  key: 'TextMate',
+                  value: 'textmate',
+                },
+                {
+                  key: 'Tomorrow',
+                  value: 'tomorrow',
+                },
+                {
+                  key: 'Xcode',
+                  value: 'xcode',
+                },
+                {
+                  key: 'Kuroir',
+                  value: 'kuroir',
+                },
+                {
+                  key: 'KatzenMilch',
+                  value: 'katzenmilch',
+                },
+                {
+                  key: 'SQL Server',
+                  value: 'sqlserver',
+                },
+              ],
+            },
+            {
+              groupName: 'Dark Theme',
+              options: [
+                {
+                  key: 'Ambiance',
+                  value: 'ambiance',
+                },
+                {
+                  key: 'Chaos',
+                  value: 'chaos',
+                },
+                {
+                  key: 'Clouds Midnight',
+                  value: 'clouds_midnight',
+                },
+                {
+                  key: 'Dracula',
+                  value: 'dracula',
+                },
+                {
+                  key: 'Cobalt',
+                  value: 'cobalt',
+                },
+                {
+                  key: 'Gruvbox',
+                  value: 'gruvbox',
+                },
+                {
+                  key: 'Green on Black',
+                  value: 'gob',
+                },
+                {
+                  key: 'idle Fingers',
+                  value: 'idle_fingers',
+                },
+                {
+                  key: 'krTheme',
+                  value: 'kr_theme',
+                },
+                {
+                  key: 'Merbivore',
+                  value: 'merbivore',
+                },
+                {
+                  key: 'Merbivore Soft',
+                  value: 'merbivore_soft',
+                },
+                {
+                  key: 'Mono Industrial',
+                  value: 'mono_industrial',
+                },
+                {
+                  key: 'Monokai',
+                  value: 'monokai',
+                },
+                {
+                  key: 'Nord Dark',
+                  value: 'nord_dark',
+                },
+                {
+                  key: 'Pastel on dark',
+                  value: 'pastel_on_dark',
+                },
+                {
+                  key: 'Solarized Dark',
+                  value: 'solarized_dark',
+                },
+                {
+                  key: 'Terminal',
+                  value: 'terminal',
+                },
+                {
+                  key: 'Tomorrow Night',
+                  value: 'tomorrow_night',
+                },
+                {
+                  key: 'Tomorrow Night Blue',
+                  value: 'tomorrow_night_blue',
+                },
+                {
+                  key: 'Tomorrow Night Bright',
+                  value: 'tomorrow_night_bright',
+                },
+                {
+                  key: 'Tomorrow Night 80s',
+                  value: 'tomorrow_night_eighties',
+                },
+                {
+                  key: 'Twilight',
+                  value: 'twilight',
+                },
+                {
+                  key: 'Vibrant Ink',
+                  value: 'vibrant_ink',
+                },
+              ],
+            },
           ],
           key: 'theme',
-        },
-      ],
-    },
-    minimap: {
-      title: 'Minimap',
-      description: 'Customize minimap settings.',
-      configs: [
-        {
-          type: ConfigType.CHECKBOX,
-          title: 'Minimap',
-          description: 'Controls whether font minimap is enabled',
-          default: DefaultTextEditorSettings.minimapEnable as boolean,
-          key: 'minimapEnable',
-        },
-        {
-          type: ConfigType.INPUT,
-          title: 'Max Column',
-          description:
-            'Limits the width of the minimap to render at most a certain number of columns.',
-          default: DefaultTextEditorSettings.minimapMaxColumn as number,
-          key: 'minimapMaxColumn',
-        },
-        {
-          type: ConfigType.CHECKBOX,
-          title: 'Render Characters',
-          description:
-            'Render the actual characters on a line as opposed to color blocks.',
-          default: DefaultTextEditorSettings.minimapRenderCharacters as boolean,
-          key: 'minimapRenderCharacters',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Scale',
-          description: 'Scale of content drawn in the minimap.',
-          default: DefaultTextEditorSettings.minimapScale as number,
-          options: [
-            { key: '1', value: 1 },
-            { key: '2', value: 2 },
-            { key: '3', value: 3 },
-          ],
-          key: 'minimapScale',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Show Slider',
-          description: 'Controls when the minimap slider is shown.',
-          default: DefaultTextEditorSettings.minimapShowSlider as string,
-          options: [
-            { key: 'always', value: 'always' },
-            { key: 'mouseover', value: 'mouseover' },
-          ],
-          key: 'minimapShowSlider',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Side',
-          description: 'Controls the side where to render the minimap.',
-          default: DefaultTextEditorSettings.minimapSide as string,
-          options: [
-            { key: 'right', value: 'right' },
-            { key: 'left', value: 'left' },
-          ],
-          key: 'minimapSide',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Size',
-          description: 'Controls the size of minimap.',
-          default: DefaultTextEditorSettings.minimapSize as string,
-          options: [
-            { key: 'proportional', value: 'proportional' },
-            { key: 'full', value: 'full' },
-            { key: 'fit', value: 'fit' },
-          ],
-          key: 'minimapSize',
-        },
-      ],
-    },
-    cursor: {
-      title: 'Cursor',
-      description: 'Customize cursor settings.',
-      configs: [
-        {
-          type: ConfigType.SELECT,
-          title: 'Cursor Blinking',
-          description: 'Control the cursor animation style.',
-          default: DefaultTextEditorSettings.cursorBlinking as string,
-          options: [
-            { key: 'blink', value: 'blink' },
-            { key: 'smooth', value: 'smooth' },
-            { key: 'phase', value: 'phase' },
-            { key: 'expand', value: 'expand' },
-            { key: 'block-outline', value: 'solid' },
-          ],
-          key: 'cursorBlinking',
-        },
-        {
-          type: ConfigType.CHECKBOX,
-          title: 'Cursor Smooth Caret Animation',
-          description:
-            'Controls whether the smooth caret animation should be enabled.',
-          default: DefaultTextEditorSettings.cursorSmoothCaretAnimation as boolean,
-          key: 'cursorSmoothCaretAnimation',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Cursor Style',
-          description: 'Control the cursor style.',
-          default: DefaultTextEditorSettings.cursorStyle as string,
-          options: [
-            { key: 'line', value: 'line' },
-            { key: 'block', value: 'block' },
-            { key: 'underline', value: 'underline' },
-            { key: 'line-thin', value: 'line-thin' },
-            { key: 'block-outline', value: 'block-outline' },
-            { key: 'underline-thin', value: 'underline-thin' },
-          ],
-          key: 'cursorStyle',
-        },
-        {
-          type: ConfigType.INPUT,
-          title: 'Cursor Surrounding Lines',
-          description:
-            'Controls the minimal number of visible leading and trailing lines surrounding the cursor.',
-          default: DefaultTextEditorSettings.cursorSurroundingLines as number,
-          key: 'cursorSurroundingLines',
-        },
-        {
-          type: ConfigType.SELECT,
-          title: 'Cursor Surrounding Lines Style',
-          description:
-            'Controls when Cursor Surrounding Lines should be enforced.',
-          default: DefaultTextEditorSettings.cursorSurroundingLinesStyle as string,
-          options: [
-            { key: 'default', value: 'default' },
-            { key: 'all', value: 'all' },
-          ],
-          key: 'cursorSurroundingLinesStyle',
-        },
-        {
-          type: ConfigType.INPUT,
-          title: 'Cursor Width',
-          description:
-            'Control the width of the cursor when cursorStyle is set to line.',
-          default: DefaultTextEditorSettings.cursorWidth as number,
-          key: 'cursorWidth',
         },
       ],
     },

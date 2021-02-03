@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class RunQueryDto {
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   resource: number
 
@@ -11,7 +11,7 @@ export class RunQueryDto {
 }
 
 export class SaveQueryDto {
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   resource: number
 
@@ -24,7 +24,7 @@ export class SaveQueryDto {
 
 export class UpdateQueryDto {
   @IsOptional()
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   resource?: number
 
@@ -38,7 +38,7 @@ export class UpdateQueryDto {
 }
 
 export class SampleTableDto {
-  @Transform(parseInt)
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   resource: number
 

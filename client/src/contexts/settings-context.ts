@@ -1,9 +1,8 @@
 import { createContext } from 'react'
-import { BaseSettings } from 'types/settings'
 import { DefaultTextEditorSettings } from 'components/settings/data/default-settings'
 
 export type SettingsContextType = {
-  textEditorSettings: BaseSettings
+  textEditorSettings: typeof DefaultTextEditorSettings
   onChangeTextEditorSettings: (
     key: string,
     value: string | number | boolean,
