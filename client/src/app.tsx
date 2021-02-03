@@ -15,6 +15,8 @@ import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
+import { HotKeys } from 'react-hotkeys'
+import { keyMap } from 'utils/keyboard'
 
 const SHOW_DEV_TOOLS = false
 
@@ -27,75 +29,80 @@ const SettingsPanel = lazy(() => import('pages/settings-panel'))
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <>
-        <Auth>
-          <Settings>
-            <Suspense
-              fallback={
-                <div className="flex items-center justify-center w-screen h-screen">
-                  <Spin tip="Loading..." />
-                </div>
-              }
-            >
-              <Routes>
-                <Route element={<Login />} path="/login" />
-                <Route protectedRoute element={<AppShell />} path="/">
-                  <Route protectedRoute element={<Home />} path="/" />
-                  <Route
-                    protectedRoute
-                    element={<Resources />}
-                    path="resources"
-                  >
+    <HotKeys keyMap={keyMap}>
+      <QueryClientProvider client={queryClient}>
+        <>
+          <Auth>
+            <Settings>
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center w-screen h-screen">
+                    <Spin tip="Loading..." />
+                  </div>
+                }
+              >
+                <Routes>
+                  <Route element={<Login />} path="/login" />
+                  <Route protectedRoute element={<AppShell />} path="/">
+                    <Route protectedRoute element={<Home />} path="/" />
                     <Route
                       protectedRoute
-                      path="/"
-                      element={<ResourcesList />}
+                      element={<Resources />}
+                      path="resources"
+                    >
+                      <Route
+                        protectedRoute
+                        path="/"
+                        element={<ResourcesList />}
+                      />
+                      <Route
+                        path="new/:resourceType"
+                        element={<CreateResource />}
+                      />
+                      <Route path=":resourceId" element={<ResourceDetail />} />
+                    </Route>
+                    <Route path="queries">
+                      <Route path="" element={<Queries />} />
+                      <Route path=":tabType" element={<Queries />} />
+                      <Route path=":tabType/:id" element={<Queries />} />
+                    </Route>
+                    <Route
+                      protectedRoute
+                      element={<Dashboards />}
+                      path="dashboards"
                     />
                     <Route
-                      path="new/:resourceType"
-                      element={<CreateResource />}
-                    />
-                    <Route path=":resourceId" element={<ResourceDetail />} />
-                  </Route>
-                  <Route path="queries">
-                    <Route path="" element={<Queries />} />
-                    <Route path=":tabType" element={<Queries />} />
-                    <Route path=":tabType/:id" element={<Queries />} />
+                      protectedRoute
+                      element={<SettingsPanel />}
+                      path="settings"
+                    >
+                      <Route
+                        path="/"
+                        element={<Navigate to="text-editor" replace={true} />}
+                      />
+                      <Route
+                        path="text-editor"
+                        element={<TextEditorSettings />}
+                      />
+                    </Route>
                   </Route>
                   <Route
-                    protectedRoute
-                    element={<Dashboards />}
-                    path="dashboards"
+                    path="*"
+                    element={<Navigate to="/" replace={true} />}
                   />
-                  <Route
-                    protectedRoute
-                    element={<SettingsPanel />}
-                    path="settings"
-                  >
-                    <Route
-                      path="/"
-                      element={<Navigate to="text-editor" replace={true} />}
-                    />
-                    <Route
-                      path="text-editor"
-                      element={<TextEditorSettings />}
-                    />
-                  </Route>
-                </Route>
-                <Route path="*" element={<Navigate to="/" replace={true} />} />
-              </Routes>
-            </Suspense>
-            {process.env.NODE_ENV === 'production' && <Logrocket />}
-          </Settings>
-        </Auth>
-        {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
-          <>
-            <ReactQueryDevtools />
-            <HealthCheck />
-          </>
-        ) : null}
-      </>
-    </QueryClientProvider>
+                </Routes>
+              </Suspense>
+              {process.env.NODE_ENV === 'production' && <Logrocket />}
+            </Settings>
+          </Auth>
+          {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
+            <>
+              <ReactQueryDevtools />
+              <HealthCheck />
+            </>
+          ) : null}
+        </>
+      </QueryClientProvider>
+    </HotKeys>
   )
 }
