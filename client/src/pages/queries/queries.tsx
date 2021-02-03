@@ -4,6 +4,7 @@ import * as uuid from 'uuid'
 import HorizontalPane from 'components/horizontal-pane'
 import { Tabs } from 'antd'
 import usePersistedSetState from 'hooks/use-persisted-state'
+import { HotKeys, KeyMap } from 'react-hotkeys'
 import { TabData, TabType } from './types'
 import { useTabs } from './hooks/use-tabs'
 import TabsList from './components/tabs-list'
@@ -13,6 +14,11 @@ import SchemaTab from './components/schema-tab'
 import TabsContext from './contexts/tabs-context'
 import TabsDataContext from './contexts/tabs-data-context'
 import QueryEditor from './components/query-editor'
+import { hotkeysHandler } from './utils/keyboard'
+
+const keyMap: KeyMap = {
+  SAVE_TAB: ['command+s'],
+}
 
 export default function Queries() {
   const { tabType, id } = useParams()
@@ -49,46 +55,48 @@ export default function Queries() {
       }}
     >
       <TabsDataContext.Provider value={{ tabsData, setTabsData }}>
-        <div className="flex flex-1 h-full">
-          <HorizontalPane
-            paneName="tab-horizontal-pane"
-            initialWidth={320}
-            maxConstraint={400}
-            minConstraint={280}
-            buffer={80}
-            render={({ paneWidth, dragHandle }) => (
-              <div
-                className="relative z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
-                style={{ width: paneWidth }}
-              >
-                {/* Side tabs bar */}
-                <Tabs
-                  className="flex-1 queries-tab mt-0.5"
-                  size="small"
-                  centered
+        <HotKeys keyMap={keyMap} handlers={hotkeysHandler} className="h-full">
+          <div className="flex flex-1 h-full">
+            <HorizontalPane
+              paneName="tab-horizontal-pane"
+              initialWidth={320}
+              maxConstraint={400}
+              minConstraint={280}
+              buffer={80}
+              render={({ paneWidth, dragHandle }) => (
+                <div
+                  className="relative z-10 flex flex-col flex-shrink-0 h-full bg-white border-r"
+                  style={{ width: paneWidth }}
                 >
-                  <Tabs.TabPane tab="Schema" key="schema">
-                    <SchemaTab />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="History" key="history">
-                    <HistoriesTab />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane key="saved" tab="Saved">
-                    <SavedQueriesTab />
-                  </Tabs.TabPane>
-                </Tabs>
-                {dragHandle}
+                  {/* Side tabs bar */}
+                  <Tabs
+                    className="flex-1 queries-tab mt-0.5"
+                    size="small"
+                    centered
+                  >
+                    <Tabs.TabPane tab="Schema" key="schema">
+                      <SchemaTab />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="History" key="history">
+                      <HistoriesTab />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane key="saved" tab="Saved">
+                      <SavedQueriesTab />
+                    </Tabs.TabPane>
+                  </Tabs>
+                  {dragHandle}
+                </div>
+              )}
+            />
+            {/* Tab content */}
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <TabsList />
+              <div className="flex-1">
+                <QueryEditor />
               </div>
-            )}
-          />
-          {/* Tab content */}
-          <div className="flex flex-col flex-1 overflow-hidden">
-            <TabsList />
-            <div className="flex-1">
-              <QueryEditor />
             </div>
           </div>
-        </div>
+        </HotKeys>
       </TabsDataContext.Provider>
     </TabsContext.Provider>
   )

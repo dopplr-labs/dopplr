@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Button, Tabs } from 'antd'
+import { Button, Tabs, Tooltip } from 'antd'
 import { CaretRightFilled, CodeOutlined } from '@ant-design/icons'
 import { useMutation, useQueryClient } from 'react-query'
 import { useParams, useSearchParams } from 'react-router-dom'
@@ -13,6 +13,7 @@ import usePersistedSetState from 'hooks/use-persisted-state'
 import { formatDuration } from 'utils/time'
 import sqlFormatter from 'sql-formatter'
 import SettingsContext from 'contexts/settings-context'
+import { KeyboardActions, keyMap } from 'utils/keyboard'
 import { useTabData } from '../hooks/use-tab-data'
 import { runQuery } from '../queries-and-mutations'
 import CreateResourceMessage from './create-resource-message'
@@ -26,6 +27,8 @@ import SaveQueryButton from './save-query-button'
 import UpdateQueryButton from './update-query-button'
 import QueryName from './query-name'
 import ChartTab from './chart-tab'
+import { aceCommands } from '../utils/keyboard'
+import KeyboardIcons from './keyboard-icons'
 
 const runResultCache = new Cache()
 
@@ -108,39 +111,68 @@ export default function QueryEditor() {
             to run
           </div>
         ) : null}
-        <Button
-          type="primary"
-          icon={<CaretRightFilled />}
-          loading={isRunningQuery}
-          disabled={isRunningQuery || !query}
-          onClick={() => {
-            runQueryMutation({ resource: resourceId, query })
-          }}
+        <Tooltip
+          title={<KeyboardIcons keyMap={keyMap[KeyboardActions.RUN_QUERY]} />}
+          placement="bottom"
+          destroyTooltipOnHide
         >
-          Run Query
-        </Button>
-        <Button
-          icon={<CodeOutlined />}
-          onClick={() => {
-            updateQuery(
-              sqlFormatter.format(query.replace(/\r\n/g, '\n'), {
-                indent: Array.from({ length: textEditorSettings.tabSize })
-                  .fill(' ')
-                  .join(''),
-              }),
-            )
-          }}
+          <Button
+            type="primary"
+            icon={<CaretRightFilled />}
+            loading={isRunningQuery}
+            disabled={isRunningQuery || !query}
+            onClick={() => {
+              runQueryMutation({ resource: resourceId, query })
+            }}
+            id="run-query-button"
+          >
+            Run Query
+          </Button>
+        </Tooltip>
+        <Tooltip
+          title={
+            <KeyboardIcons keyMap={keyMap[KeyboardActions.FORMAT_QUERY]} />
+          }
+          placement="bottom"
+          destroyTooltipOnHide
         >
-          Beautify
-        </Button>
-        {tabType !== TabType.SAVED ? (
-          <SaveQueryButton query={query} resourceId={resourceId} />
-        ) : (
-          <>
-            {/* Move the logic of converting id to number into a common utility */}
-            <UpdateQueryButton savedQueryId={Number.parseInt(id, 10)} />
-          </>
-        )}
+          <Button
+            icon={<CodeOutlined />}
+            onClick={() => {
+              updateQuery(
+                sqlFormatter.format(query.replace(/\r\n/g, '\n'), {
+                  indent: Array.from({ length: textEditorSettings.tabSize })
+                    .fill(' ')
+                    .join(''),
+                }),
+              )
+            }}
+            disabled={!query}
+            id="format-query-button"
+          >
+            Beautify
+          </Button>
+        </Tooltip>
+        <Tooltip
+          title={<KeyboardIcons keyMap={keyMap[KeyboardActions.SAVE_QUERY]} />}
+          placement="bottomRight"
+          destroyTooltipOnHide
+        >
+          <span>
+            {tabType !== TabType.SAVED ? (
+              <SaveQueryButton
+                query={query}
+                resourceId={resourceId}
+                disabled={!query}
+              />
+            ) : (
+              <>
+                {/* Move the logic of converting id to number into a common utility */}
+                <UpdateQueryButton savedQueryId={Number.parseInt(id, 10)} />
+              </>
+            )}
+          </span>
+        </Tooltip>
       </div>
       <div
         className={clsx(
@@ -165,6 +197,7 @@ export default function QueryEditor() {
               resourceId={resourceId}
               value={query}
               setValue={updateQuery}
+              commands={aceCommands}
             />
           }
           tabContent={(headerIcons) => (
