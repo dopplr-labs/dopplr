@@ -102,6 +102,8 @@ const BaseEditor = forwardRef(
             showLineNumbers: textEditorSettings.lineNumbers,
             tabSize: textEditorSettings.tabSize,
             useSoftTabs: true,
+            showPrintMargin: false,
+            highlightActiveLine: true,
           }}
           style={{
             lineHeight: `${textEditorSettings.lineHeight}px`,
