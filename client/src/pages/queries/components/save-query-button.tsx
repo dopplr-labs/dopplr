@@ -9,11 +9,13 @@ import TabsContext from '../contexts/tabs-context'
 type SaveQueryButtonProps = {
   query: string
   resourceId: number
+  disabled?: boolean
 }
 
 export default function SaveQueryButton({
   query,
   resourceId,
+  disabled = false,
 }: SaveQueryButtonProps) {
   const { tabType, id } = useParams()
 
@@ -32,6 +34,8 @@ export default function SaveQueryButton({
         onClick={() => {
           setSaveModalVisible(true)
         }}
+        id="save-query-button"
+        disabled={disabled}
       >
         Save
       </Button>
