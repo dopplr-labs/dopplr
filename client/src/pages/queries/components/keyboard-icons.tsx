@@ -3,17 +3,17 @@ import React from 'react'
 import { capitalize } from 'lodash-es'
 
 type KeyboardIconsProps = {
-  keyMap: string
+  command: string
   className?: string
   style?: React.CSSProperties
 }
 
 export default function KeyboardIcons({
-  keyMap,
+  command,
   className,
   style,
 }: KeyboardIconsProps) {
-  const keys = keyMap.split('+')
+  const keys = command.split('+')
   return (
     <div
       className={clsx('flex space-x-2 items-center', className)}

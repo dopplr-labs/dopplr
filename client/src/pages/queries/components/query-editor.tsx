@@ -111,7 +111,7 @@ export default function QueryEditor() {
           </div>
         ) : null}
         <Tooltip
-          title={<KeyboardIcons keyMap={keyMap[KeyboardActions.RUN_QUERY]} />}
+          title={<KeyboardIcons command={keyMap[KeyboardActions.RUN_QUERY]} />}
           placement="bottom"
           destroyTooltipOnHide
         >
@@ -130,7 +130,7 @@ export default function QueryEditor() {
         </Tooltip>
         <Tooltip
           title={
-            <KeyboardIcons keyMap={keyMap[KeyboardActions.FORMAT_QUERY]} />
+            <KeyboardIcons command={keyMap[KeyboardActions.FORMAT_QUERY]} />
           }
           placement="bottom"
           destroyTooltipOnHide
@@ -153,7 +153,7 @@ export default function QueryEditor() {
           </Button>
         </Tooltip>
         <Tooltip
-          title={<KeyboardIcons keyMap={keyMap[KeyboardActions.SAVE_QUERY]} />}
+          title={<KeyboardIcons command={keyMap[KeyboardActions.SAVE_QUERY]} />}
           placement="bottomRight"
           destroyTooltipOnHide
         >

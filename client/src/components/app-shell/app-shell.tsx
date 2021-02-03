@@ -1,18 +1,19 @@
 import React from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { HotKeys } from 'react-hotkeys'
 import SideBar from 'components/side-bar'
 import NavBar from 'components/nav-bar'
-import { HotKeys } from 'react-hotkeys'
 import { hotkeysHandler, keyMap } from 'utils/keyboard'
 
 export default function AppShell() {
   const { pathname } = useLocation()
+  const isQueriesPage = pathname.startsWith('/queries')
 
   return (
     <HotKeys
       className="h-screen"
-      keyMap={keyMap}
-      handlers={pathname.startsWith('/queries') ? hotkeysHandler : undefined}
+      keyMap={isQueriesPage ? keyMap : undefined}
+      handlers={isQueriesPage ? hotkeysHandler : undefined}
     >
       <div className="flex flex-col w-full h-full overflow-hidden">
         <NavBar />
