@@ -1,7 +1,7 @@
 import React, { forwardRef, useContext } from 'react'
 import clsx from 'clsx'
 import useMeasure from 'react-use-measure'
-import AceEditor from 'react-ace'
+import AceEditor, { ICommand } from 'react-ace'
 // syntax
 import 'ace-builds/src-noconflict/mode-sql'
 import 'ace-builds/src-noconflict/mode-pgsql'
@@ -57,13 +57,21 @@ type BaseEditorProps = {
   value: string
   setValue: (updatedValue: string) => void
   syntax?: string
+  commands?: ICommand[]
   className?: string
   style?: React.CSSProperties
 }
 
 const BaseEditor = forwardRef(
   (
-    { value, setValue, syntax = 'pgsql', className, style }: BaseEditorProps,
+    {
+      value,
+      setValue,
+      syntax = 'pgsql',
+      commands = [],
+      className,
+      style,
+    }: BaseEditorProps,
     ref: React.Ref<AceEditor>,
   ) => {
     const [measure, containerBounds] = useMeasure()
@@ -109,6 +117,7 @@ const BaseEditor = forwardRef(
             lineHeight: `${textEditorSettings.lineHeight}px`,
             fontWeight: textEditorSettings.fontWeight,
           }}
+          commands={commands}
         />
       </div>
     )
