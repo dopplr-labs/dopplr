@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import AceEditor from 'react-ace'
 import BaseEditor from 'components/base-editor'
 import { useQuery } from 'react-query'
-import { fetchSchema } from 'pages/queries/queries-and-mutations'
+import { fetchSchema } from 'queries/resource'
 import { updateCompletion } from './utils'
 
 type EditorProps = {

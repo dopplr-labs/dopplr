@@ -1,6 +1,5 @@
 import { QueryResult, SavedQuery, SavedQueryPage } from 'types/query'
 import { History, HistoryPage } from 'types/history'
-import { SchemaResult } from 'types/schema'
 import client from 'utils/client'
 import { truncate } from 'lodash-es'
 import { fetchResources } from 'pages/resources/queries'
@@ -21,14 +20,6 @@ export async function runQuery({
       query,
     },
   )
-  return data.data
-}
-
-export async function fetchSchema(id: number) {
-  const { data } = await client.get<{
-    success: boolean
-    data: SchemaResult[]
-  }>(`/resources/schema/${id}`)
   return data.data
 }
 
