@@ -9,18 +9,22 @@ import { Dropdown, Menu } from 'antd'
 import { ColumnsField, SchemaResult } from 'types/schema'
 import TableSample from './table-sample'
 
+type SchemaTableProps = {
+  table: SchemaResult
+  resourceId: number
+  defaultExpanded?: boolean
+}
+
 export default function SchemaTable({
   table,
   resourceId,
-}: {
-  table: SchemaResult
-  resourceId: number
-}) {
-  const [schema, setSchema] = useState({ ...table, isOpen: false })
-  const [show, setShow] = useState(false)
+  defaultExpanded,
+}: SchemaTableProps) {
+  const [expanded, setExpanded] = useState(false)
+  const [tableSampleVisible, setTableSampleVisible] = useState(false)
 
   function handleModalClose() {
-    setShow(false)
+    setTableSampleVisible(false)
   }
 
   const tableMenu = useMemo(() => {
@@ -31,7 +35,7 @@ export default function SchemaTable({
           className="flex items-center space-x-2 text-xs"
           onClick={(event) => {
             event.domEvent.stopPropagation()
-            setShow(true)
+            setTableSampleVisible(true)
           }}
         >
           <TableOutlined />
@@ -41,24 +45,23 @@ export default function SchemaTable({
     )
   }, [])
 
+  const showChildren = expanded || defaultExpanded
+
   return (
     <>
       <div>
         <div
           className="flex items-center px-3 py-1 space-x-1 font-mono text-xs font-bold truncate cursor-pointer text-brand-primary group hover:bg-brand-light hover:text-brand-primary"
           onClick={() => {
-            setSchema((prevState) => ({
-              ...prevState,
-              isOpen: !prevState.isOpen,
-            }))
+            setExpanded((prevState) => !prevState)
           }}
         >
-          {schema.isOpen ? (
+          {showChildren ? (
             <DownOutlined className="text-xs" />
           ) : (
             <RightOutlined className="text-xs" />
           )}
-          <span className="flex-1 truncate">{schema.name}</span>
+          <span className="flex-1 truncate">{table.name}</span>
           <Dropdown overlay={tableMenu} trigger={['click']}>
             <button
               className="invisible px-1 group-hover:visible focus:outline-none"
@@ -70,9 +73,9 @@ export default function SchemaTable({
             </button>
           </Dropdown>
         </div>
-        {schema.isOpen ? (
+        {showChildren ? (
           <ul className="px-3 ml-4">
-            {schema.columns.map((column: ColumnsField) => (
+            {table.columns.map((column: ColumnsField) => (
               <li
                 key={column.name}
                 className="grid grid-cols-3 mb-2 font-mono text-xs"
@@ -89,10 +92,10 @@ export default function SchemaTable({
         ) : null}
       </div>
       <TableSample
-        visible={show}
+        visible={tableSampleVisible}
         handleModalClose={handleModalClose}
         resourceId={resourceId}
-        tableName={schema.name}
+        tableName={table.name}
       />
     </>
   )
