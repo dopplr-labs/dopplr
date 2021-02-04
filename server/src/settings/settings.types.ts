@@ -24,7 +24,7 @@ export type TextEditorSettings = {
   tabSize: number
   // font settings
   fontFamily: string
-  fontWeight: string
+  fontWeight: number
   fontSize: number
   lineHeight: number
   // keybinding settings

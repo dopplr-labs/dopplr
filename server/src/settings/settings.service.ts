@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { SettingsRepository } from './settings-repository'
-import { TextEditorSettingsUpdateDto } from './dtos/settings.dto'
+import { SettingsDto, TextEditorSettingsUpdateDto } from './dtos/settings.dto'
 import { TextEditorSettings } from './settings.types'
+import { Settings } from './entities/settings.entity'
 
 @Injectable()
 export class SettingsService {
@@ -13,19 +14,39 @@ export class SettingsService {
   ) {}
 
   /**
-   * Returns text editor settings of the user
+   * Returns settings of the user
    *
    * @param user - user object
    */
-  async getTextEditorSettings(user: User): Promise<TextEditorSettings> {
-    const where: { uid: string } = {
+  async getSettings(user: User): Promise<Settings> {
+    const where = {
       uid: user.uid,
     }
     const settings = await this.settingsRepository.findOne({
       where,
     })
+    if (!settings) {
+      throw new NotFoundException('Settings not found!')
+    }
+    return settings
+  }
 
-    return settings.textEditorSettings
+  /**
+   * Create user settings
+   *
+   * @param settingsDto - Data for creating settings
+   * @param user - user object
+   */
+  async createSettings(
+    settingsDto: SettingsDto,
+    user: User,
+  ): Promise<Settings> {
+    const settings = this.settingsRepository.create({
+      uid: user.uid,
+      ...settingsDto,
+    })
+
+    return await this.settingsRepository.save(settings)
   }
 
   /**
@@ -38,15 +59,15 @@ export class SettingsService {
     textEditorSettingsUpdateDto: TextEditorSettingsUpdateDto,
     user: User,
   ): Promise<TextEditorSettings> {
-    const where: { uid: string } = {
+    const where = {
       uid: user.uid,
     }
     const settings = await this.settingsRepository.findOne({
       where,
     })
+
     const updatedSettings = await this.settingsRepository.preload({
       id: settings.id,
-      uid: settings.uid,
       textEditorSettings: {
         ...settings.textEditorSettings,
         ...textEditorSettingsUpdateDto,

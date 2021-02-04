@@ -1,4 +1,4 @@
-import { IsEnum, IsJSON, IsNumber, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { PartialType } from '@nestjs/mapped-types'
 import { KeyBinding, LineNumber, WordWrap } from '../settings.types'
@@ -18,8 +18,9 @@ export class TextEditorSettingsDto {
   @IsString()
   fontFamily: string
 
-  @IsString()
-  fontWeight: string
+  @Transform(({ value }) => Number.parseInt(value, 10))
+  @IsNumber()
+  fontWeight: number
 
   @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
@@ -41,6 +42,6 @@ export class TextEditorSettingsUpdateDto extends PartialType(
 ) {}
 
 export class SettingsDto {
-  @IsJSON()
+  @ValidateNested()
   textEditorSettings: TextEditorSettingsDto
 }
