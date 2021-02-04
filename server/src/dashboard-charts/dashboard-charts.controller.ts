@@ -6,12 +6,16 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { DashboardChart } from './dashboard-chart.entity'
 import { DashboardChartsService } from './dashboard-charts.service'
-import { CreateDashboardChartDto } from './dashboard-charts.dto'
+import {
+  CreateDashboardChartDto,
+  FilterDashboardChartDto,
+} from './dashboard-charts.dto'
 
 @Controller('dashboard-charts')
 @UseGuards(AuthGuard)
@@ -20,9 +24,11 @@ export class DashboardChartsController {
 
   @Get()
   async getAllDashboardCharts(
+    @Query() filterDashboardChartDto: FilterDashboardChartDto,
     @GetUser() user,
   ): Promise<{ success: boolean; data: DashboardChart[] }> {
     const dashboardCharts = await this.dashboardChartsService.getAllDashboardCharts(
+      filterDashboardChartDto,
       user,
     )
     return { success: true, data: dashboardCharts }

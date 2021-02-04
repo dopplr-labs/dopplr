@@ -22,13 +22,12 @@ export class ChartsService {
    * @param query - query id to get all charts for a particular query
    */
   async getAllCharts(
-    user: User,
     filterChartDto: FilterChartDto,
+    user: User,
   ): Promise<Chart[]> {
     const { query } = filterChartDto
-    const where: { uid: string; query?: { id: number } } = {
-      uid: user.uid,
-    }
+    const where: { uid: string; query?: { id: number } } = { uid: user.uid }
+
     if (query) {
       where.query = { id: query }
     }

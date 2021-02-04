@@ -25,7 +25,7 @@ export class ChartsController {
     @Query() filterChartDto: FilterChartDto,
     @GetUser() user,
   ): Promise<{ success: boolean; data: Chart[] }> {
-    const charts = await this.chartsService.getAllCharts(user, filterChartDto)
+    const charts = await this.chartsService.getAllCharts(filterChartDto, user)
     return { success: true, data: charts }
   }
 

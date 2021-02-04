@@ -43,5 +43,5 @@ export class FilterChartDto {
   @IsOptional()
   @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
-  query?: number
+  query: number
 }
