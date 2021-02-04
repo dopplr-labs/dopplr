@@ -18,8 +18,8 @@ export class ChartsService {
   /**
    * Returns all the charts
    *
+   * @param filterChartDto - query id to get all charts for a particular query
    * @param user
-   * @param query - query id to get all charts for a particular query
    */
   async getAllCharts(
     filterChartDto: FilterChartDto,
@@ -41,7 +41,7 @@ export class ChartsService {
   /**
    * Returns the chart data
    *
-   * @param id - id of the chart user wants to fetchs
+   * @param id - id of the chart user wants to fetch
    * @param user
    */
   async getChart(id: number, user: User): Promise<Chart> {

@@ -12,6 +12,11 @@ export class DashboardsService {
     private dashboardRepository: DashboardRepository,
   ) {}
 
+  /**
+   * Returns all the dashboards for a user
+   *
+   * @param user
+   */
   async getAllDashboards(user: User): Promise<Dashboard[]> {
     const dashboards = await this.dashboardRepository.find({
       order: { createdAt: 'DESC' },
@@ -20,6 +25,12 @@ export class DashboardsService {
     return dashboards
   }
 
+  /**
+   * Returns the dashboard data
+   *
+   * @param id - id of the dashboard user wants to fetch
+   * @param user
+   */
   async getDashboard(id: number, user: User): Promise<Dashboard> {
     const dashboard = await this.dashboardRepository.findOne({
       id,
@@ -28,6 +39,12 @@ export class DashboardsService {
     return dashboard
   }
 
+  /**
+   * Create a dashboard
+   *
+   * @param createDashboardDto - Data for creating a dashboard
+   * @param user
+   */
   async createDashboard(
     createDashboardDto: CreateDashboardDto,
     user: User,
@@ -39,6 +56,13 @@ export class DashboardsService {
     return dashboard
   }
 
+  /**
+   * Updates a particular dashboard
+   *
+   * @param id - id of the dashboard user wants to update
+   * @param updateDashboardDto - Data for updating the dashboard
+   * @param user
+   */
   updateDashboard(
     id: number,
     updateDashboardDto: UpdateDashboardDto,
@@ -49,6 +73,12 @@ export class DashboardsService {
       .then(() => this.getDashboard(id, user))
   }
 
+  /**
+   * Delete a particular dashboard
+   *
+   * @param id - id of the dashboard user wants to delete
+   * @param user
+   */
   async deleteDashboard(id: number, user: User): Promise<Dashboard> {
     const dashboard = await this.getDashboard(id, user)
     await this.dashboardRepository.remove([dashboard])

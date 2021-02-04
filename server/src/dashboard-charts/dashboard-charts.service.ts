@@ -21,6 +21,12 @@ export class DashboardChartsService {
     private dashboardsService: DashboardsService,
   ) {}
 
+  /**
+   * Returns all the dashboardCharts
+   *
+   * @param filterDashboardChartDto - dashboard id to get all dashboardCharts for a particular dashboard
+   * @param user
+   */
   async getAllDashboardCharts(
     filterDashboardChartDto: FilterDashboardChartDto,
     user: User,
@@ -38,6 +44,12 @@ export class DashboardChartsService {
     return dashboardCharts
   }
 
+  /**
+   * Returns the dashboardChart data
+   *
+   * @param id - id of the dashboardChart user wants to fetch
+   * @param user
+   */
   async getDashboardChart(id: number, user: User): Promise<DashboardChart> {
     const dashboardChart = await this.dashboardChartsRepository.findOne({
       id,
@@ -46,6 +58,12 @@ export class DashboardChartsService {
     return dashboardChart
   }
 
+  /**
+   * Create a dashboardChart
+   *
+   * @param createDashboardChartDto - Data for creating a new dashboardChart
+   * @param user
+   */
   async createDashboardChart(
     createDashboardChartDto: CreateDashboardChartDto,
     user: User,
@@ -64,6 +82,12 @@ export class DashboardChartsService {
     })
   }
 
+  /**
+   * Delete a particular dashboardChart
+   *
+   * @param id - id of the dashboardChart user wants to delete
+   * @param user
+   */
   async deleteDashboardChart(id: number, user: User): Promise<DashboardChart> {
     const dashboardChart = await this.getDashboardChart(id, user)
     await this.dashboardChartsRepository.remove([dashboardChart])
