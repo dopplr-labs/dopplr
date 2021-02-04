@@ -1,15 +1,14 @@
-import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator'
+import { IsBoolean, IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { PartialType } from '@nestjs/mapped-types'
-import { KeyBinding, LineNumber, WordWrap } from '../settings.types'
+import { KeyBinding } from '../settings.types'
 
 export class TextEditorSettingsDto {
-  @IsEnum(LineNumber)
-  lineNumbers: LineNumber
+  @IsBoolean()
+  lineNumbers: boolean
 
-  @IsEnum(WordWrap)
-  @IsString()
-  wordWrap: WordWrap
+  @IsBoolean()
+  wordWrap: boolean
 
   @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()

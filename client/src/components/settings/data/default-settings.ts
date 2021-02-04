@@ -10,7 +10,6 @@ export const DefaultTextEditorSettings = Object.freeze({
   fontWeight: 300,
   fontSize: 12,
   lineHeight: 20,
-  cursorWidth: 2,
   // keybinding settings
   keyBinding: KeyBinding.NONE,
   // theme settings

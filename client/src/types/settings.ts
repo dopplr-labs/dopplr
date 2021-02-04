@@ -9,20 +9,21 @@ export enum KeyBinding {
   VSCODE = 'vscode',
 }
 
-export type LineNumber = 'on' | 'off' | 'relative' | 'interval'
-export type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid'
-export type CursorStyle =
-  | 'line'
-  | 'block'
-  | 'underline'
-  | 'line-thin'
-  | 'block-outline'
-  | 'underline-thin'
-export type CursorSurroundingLinesStyle = 'default' | 'all'
+export type TextEditorSettings = {
+  lineNumbers: boolean
+  wordWrap: boolean
+  tabSize: number
+  // font settings
+  fontFamily: string
+  fontWeight: number
+  fontSize: number
+  lineHeight: number
+  // keybinding settings
+  keyBinding: KeyBinding
+  // theme settings
+  theme: string
+}
 
-export type WordWrap = 'off' | 'on' | 'wordWrapColumn' | 'bounded'
-
-export type MinimapScale = 1 | 2 | 3
-export type MiniMapShowSlider = 'always' | 'mouseover'
-export type MiniMapSide = 'right' | 'left'
-export type MiniMapSize = 'proportional' | 'fill' | 'fit'
+export type Settings = {
+  textEditorSettings: TextEditorSettings
+}
