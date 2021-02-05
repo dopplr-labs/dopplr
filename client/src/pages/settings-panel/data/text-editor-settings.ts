@@ -1,6 +1,5 @@
-import { DefaultTextEditorSettings } from 'components/settings/data/default-settings'
 import { KeyBinding } from 'types/settings'
-import { Group, ConfigType } from '../types'
+import { Group, ConfigType, InputType } from '../types'
 
 export const textEditorSettings: Group = {
   title: 'Text Editor',
@@ -13,21 +12,19 @@ export const textEditorSettings: Group = {
           type: ConfigType.CHECKBOX,
           title: 'Line Numbers',
           description: 'Control the rendering of line numbers.',
-          default: true,
           key: 'lineNumbers',
         },
         {
           type: ConfigType.CHECKBOX,
           title: 'Word Wrap',
           description: 'Control the wrapping of the editor.',
-          default: false,
           key: 'wordWrap',
         },
         {
           type: ConfigType.INPUT,
           title: 'Tab Size',
           description: 'The number of spaces a tab is equal to.',
-          default: DefaultTextEditorSettings.tabSize as number,
+          inputType: InputType.NUMBER,
           key: 'tabSize',
         },
       ],
@@ -40,28 +37,28 @@ export const textEditorSettings: Group = {
           type: ConfigType.INPUT,
           title: 'Font Family',
           description: 'Controls the font family.',
-          default: DefaultTextEditorSettings.fontFamily as string,
+          inputType: InputType.STRING,
           key: 'fontFamily',
         },
         {
           type: ConfigType.INPUT,
           title: 'Font Size',
           description: 'Controls the font size.',
-          default: DefaultTextEditorSettings.fontSize as number,
+          inputType: InputType.NUMBER,
           key: 'fontSize',
         },
         {
           type: ConfigType.INPUT,
           title: 'Line Height',
           description: 'Controls the line height.',
-          default: DefaultTextEditorSettings.lineHeight,
+          inputType: InputType.NUMBER,
           key: 'lineHeight',
         },
         {
           type: ConfigType.INPUT,
           title: 'Font Weight',
           description: 'Controls the font size.',
-          default: DefaultTextEditorSettings.fontWeight,
+          inputType: InputType.STRING,
           key: 'fontWeight',
         },
       ],
@@ -74,7 +71,6 @@ export const textEditorSettings: Group = {
           type: ConfigType.SELECT,
           title: 'Custom Bindings',
           description: 'Controls the binding used by the editor',
-          default: DefaultTextEditorSettings.keyBinding as string,
           options: [
             { key: 'None', value: KeyBinding.NONE },
             { key: 'Vim', value: KeyBinding.VIM },
@@ -93,7 +89,6 @@ export const textEditorSettings: Group = {
           type: ConfigType.SELECT,
           title: 'Theme',
           description: 'Controls the theme used by the editor',
-          default: DefaultTextEditorSettings.theme as string,
           options: [
             {
               groupName: 'Light Theme',

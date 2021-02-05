@@ -8,6 +8,7 @@ import {
   ConfigType,
   SelectOption,
   SelectGroup,
+  InputType,
 } from '../types'
 
 type SettingItemProps = {
@@ -24,12 +25,11 @@ export default function SettingsItem({
   const content = useMemo(() => {
     switch (config.type) {
       case ConfigType.INPUT: {
-        if (typeof config.default === 'string') {
+        if (config.inputType === InputType.STRING) {
           return (
             <div className="space-y-1">
               <Input
                 placeholder={config.title}
-                defaultValue={config.default}
                 value={settings[config.key] as string}
                 onChange={(event) => {
                   onChangeSettings(config.key, event.target.value)
@@ -46,7 +46,6 @@ export default function SettingsItem({
           <div className="space-y-1">
             <InputNumber
               placeholder={config.title}
-              defaultValue={config.default}
               value={settings[config.key] as number}
               onChange={(value) => {
                 onChangeSettings(config.key, value as number)
@@ -65,7 +64,6 @@ export default function SettingsItem({
           <div className="space-y-1">
             <Select
               className="w-full"
-              defaultValue={config.default}
               value={settings[config.key] as string | number}
               onSelect={(value) => onChangeSettings(config.key, value)}
             >
@@ -113,7 +111,6 @@ export default function SettingsItem({
         return (
           <div className="flex items-center">
             <Checkbox
-              defaultChecked={config.default}
               checked={settings[config.key] as boolean}
               onChange={(e) => onChangeSettings(config.key, e.target.checked)}
             />
