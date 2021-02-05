@@ -9,7 +9,6 @@ import {
   fetchSettings,
   updateTextEditorSettings,
 } from './queries'
-import { DefaultTextEditorSettings } from './data/default-settings'
 
 type SettingsProps = {
   children: React.ReactNode
@@ -24,9 +23,7 @@ export default function Settings({ children }: SettingsProps) {
     {
       onError: (error: any) => {
         if (error) {
-          createSettings({
-            textEditorSettings: DefaultTextEditorSettings,
-          }).then((data) => {
+          createSettings().then((data) => {
             queryClient.setQueryData('settings', data)
           })
         }

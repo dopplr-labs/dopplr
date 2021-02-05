@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
-import { SettingsDto, TextEditorSettingsUpdateDto } from './dtos/settings.dto'
+import { TextEditorSettingsUpdateDto } from './dtos/settings.dto'
 import { Settings } from './entities/settings.entity'
 import { SettingsService } from './settings.service'
 import { TextEditorSettings } from './settings.types'
@@ -21,10 +21,9 @@ export class SettingsController {
 
   @Post()
   async createSettings(
-    @Body() settingsDto: SettingsDto,
     @GetUser() user,
   ): Promise<{ success: boolean; data: Settings }> {
-    const settings = await this.settingService.createSettings(settingsDto, user)
+    const settings = await this.settingService.createSettings(user)
     return { success: true, data: settings }
   }
 

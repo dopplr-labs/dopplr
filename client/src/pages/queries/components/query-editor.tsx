@@ -140,7 +140,7 @@ export default function QueryEditor() {
             onClick={() => {
               updateQuery(
                 sqlFormatter.format(query.replace(/\r\n/g, '\n'), {
-                  indent: Array.from({ length: textEditorSettings.tabSize })
+                  indent: Array.from({ length: textEditorSettings.tabSize as number })
                     .fill(' ')
                     .join(''),
                 }),

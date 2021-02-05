@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { SettingsRepository } from './settings-repository'
-import { SettingsDto, TextEditorSettingsUpdateDto } from './dtos/settings.dto'
+import { TextEditorSettingsUpdateDto } from './dtos/settings.dto'
 import { TextEditorSettings } from './settings.types'
 import { Settings } from './entities/settings.entity'
 
@@ -34,16 +34,13 @@ export class SettingsService {
   /**
    * Create user settings
    *
-   * @param settingsDto - Data for creating settings
    * @param user - user object
    */
   async createSettings(
-    settingsDto: SettingsDto,
     user: User,
   ): Promise<Settings> {
     const settings = this.settingsRepository.create({
       uid: user.uid,
-      ...settingsDto,
     })
 
     return await this.settingsRepository.save(settings)

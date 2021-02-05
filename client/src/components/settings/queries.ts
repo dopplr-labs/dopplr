@@ -8,12 +8,9 @@ export async function fetchSettings(): Promise<Settings> {
   return data.data
 }
 
-export async function createSettings(
-  defaultSettings: Settings,
-): Promise<Settings> {
+export async function createSettings(): Promise<Settings> {
   const { data } = await client.post<{ success: boolean; data: Settings }>(
     '/settings',
-    defaultSettings,
   )
   return data.data
 }

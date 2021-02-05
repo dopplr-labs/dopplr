@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator'
+import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator'
 import { Transform } from 'class-transformer'
 import { PartialType } from '@nestjs/mapped-types'
 import { KeyBinding } from '../settings.types'
@@ -39,8 +39,3 @@ export class TextEditorSettingsDto {
 export class TextEditorSettingsUpdateDto extends PartialType(
   TextEditorSettingsDto,
 ) {}
-
-export class SettingsDto {
-  @ValidateNested()
-  textEditorSettings: TextEditorSettingsDto
-}
