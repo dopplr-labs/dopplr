@@ -4,6 +4,8 @@
 
 **dopplr** is an analytical tool for creating beautiful dashboards using sql queries. It is built using `react` and `nestjs`.
 
+<img src="./assets/dopplr-snapshot.png" width="100%" />
+
 ## Development Information
 
 ### Requirements
