@@ -17,21 +17,17 @@ type SettingsProps = {
 export default function Settings({ children }: SettingsProps) {
   const queryClient = useQueryClient()
 
-  const { isLoading, data } = useQuery<SettingsType>(
-    'settings',
-    fetchSettings,
-    {
-      onError: (error: any) => {
-        if (error) {
-          createSettings().then((data) => {
-            queryClient.setQueryData('settings', data)
-          })
-        }
-      },
-      refetchOnWindowFocus: false,
-      retry: false,
+  const { data } = useQuery<SettingsType>('settings', fetchSettings, {
+    onError: (error: any) => {
+      if (error) {
+        createSettings().then((data) => {
+          queryClient.setQueryData('settings', data)
+        })
+      }
     },
-  )
+    refetchOnWindowFocus: false,
+    retry: false,
+  })
 
   const { mutate: changeTextEditorSettings } = useMutation(
     updateTextEditorSettings,
@@ -66,14 +62,6 @@ export default function Settings({ children }: SettingsProps) {
     })
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center w-screen h-screen">
-        <Spin tip="Loading..." />
-      </div>
-    )
-  }
-
   if (data?.textEditorSettings) {
     return (
       <SettingsContext.Provider
@@ -87,5 +75,9 @@ export default function Settings({ children }: SettingsProps) {
     )
   }
 
-  return null
+  return (
+    <div className="flex items-center justify-center w-screen h-screen">
+      <Spin tip="Loading Settings..." />
+    </div>
+  )
 }

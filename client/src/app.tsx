@@ -34,7 +34,7 @@ export function App() {
             <Suspense
               fallback={
                 <div className="flex items-center justify-center w-screen h-screen">
-                  <Spin tip="Loading..." />
+                  <Spin tip="Loading Page..." />
                 </div>
               }
             >
