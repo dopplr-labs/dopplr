@@ -21,9 +21,9 @@ export async function createSettings(
 export async function updateTextEditorSettings(
   textEditorSettings: Partial<TextEditorSettings>,
 ): Promise<TextEditorSettings> {
-  const { data } = await client.patch<{ success: boolean; data: TextEditorSettings }>(
-    '/settings/texteditorsettings',
-    textEditorSettings,
-  )
+  const { data } = await client.patch<{
+    success: boolean
+    data: TextEditorSettings
+  }>('/settings/text-editor', textEditorSettings)
   return data.data
 }
