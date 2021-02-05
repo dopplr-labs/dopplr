@@ -19,11 +19,10 @@ export class SettingsService {
    * @param user - user object
    */
   async getSettings(user: User): Promise<Settings> {
-    const where = {
-      uid: user.uid,
-    }
     const settings = await this.settingsRepository.findOne({
-      where,
+      where: {
+        uid: user.uid,
+      },
     })
     if (!settings) {
       throw new NotFoundException('Settings not found!')
@@ -36,9 +35,7 @@ export class SettingsService {
    *
    * @param user - user object
    */
-  async createSettings(
-    user: User,
-  ): Promise<Settings> {
+  async createSettings(user: User): Promise<Settings> {
     const settings = this.settingsRepository.create({
       uid: user.uid,
     })
@@ -56,11 +53,10 @@ export class SettingsService {
     textEditorSettingsUpdateDto: TextEditorSettingsUpdateDto,
     user: User,
   ): Promise<TextEditorSettings> {
-    const where = {
-      uid: user.uid,
-    }
     const settings = await this.settingsRepository.findOne({
-      where,
+      where: {
+        uid: user.uid,
+      },
     })
 
     const updatedSettings = await this.settingsRepository.preload({
