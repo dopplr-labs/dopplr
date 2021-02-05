@@ -24,11 +24,12 @@ export default function Settings({ children }: SettingsProps) {
   const { mutate: changeTextEditorSettings } = useMutation(
     updateTextEditorSettings,
     {
-      onMutate: (args) => {
+      onMutate: (
+        updatedSettings: Record<string, string | number | boolean>,
+      ) => {
         setTextEditorSettings({
           ...textEditorSettings,
-          // [key]: value,
-          ...args,
+          ...updatedSettings,
         })
       },
     },
