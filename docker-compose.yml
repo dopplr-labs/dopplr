@@ -12,6 +12,23 @@ services:
     ports:
       - '5432:5432'
 
+  # sample mysql db used for testing resources
+  # it is not used as a db for dopplr, so only use if you want
+  # to test mysql resource while development
+  mysql_sample_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./mysql-db-data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8080:8080'
+
   # backend
   server:
     stdin_open: true
