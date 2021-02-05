@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import {
   IsString,
   IsNumber,
@@ -16,6 +17,7 @@ export class CreateResourceDto {
   @IsString()
   host: string
 
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   port: number
 
@@ -58,6 +60,7 @@ export class UpdateResourceDto {
   host: string
 
   @IsOptional()
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   port: number
 
@@ -97,6 +100,7 @@ export class TestResourceDto {
   @IsString()
   host: string
 
+  @Transform(({ value }) => Number.parseInt(value, 10))
   @IsNumber()
   port: number
 

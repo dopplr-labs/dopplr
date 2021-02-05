@@ -87,7 +87,7 @@ const BaseEditor = forwardRef(
         <AceEditor
           ref={ref}
           mode={syntax}
-          theme={textEditorSettings.theme}
+          theme={textEditorSettings.theme as string}
           value={value}
           onChange={setValue}
           width={`${containerBounds?.width ?? 0}px`}
@@ -98,24 +98,24 @@ const BaseEditor = forwardRef(
           keyboardHandler={
             textEditorSettings.keyBinding === KeyBinding.NONE
               ? undefined
-              : textEditorSettings.keyBinding
+              : (textEditorSettings.keyBinding as string)
           }
-          fontSize={textEditorSettings.fontSize}
+          fontSize={textEditorSettings.fontSize as number}
           setOptions={{
-            fontSize: textEditorSettings.fontSize,
-            fontFamily: textEditorSettings.fontFamily,
+            fontSize: textEditorSettings.fontSize as number,
+            fontFamily: textEditorSettings.fontFamily as string,
             scrollPastEnd: true,
-            wrap: textEditorSettings.wordWrap,
+            wrap: textEditorSettings.wordWrap as boolean,
             autoScrollEditorIntoView: true,
-            showLineNumbers: textEditorSettings.lineNumbers,
-            tabSize: textEditorSettings.tabSize,
+            showLineNumbers: textEditorSettings.lineNumbers as boolean,
+            tabSize: textEditorSettings.tabSize as number,
             useSoftTabs: true,
             showPrintMargin: false,
             highlightActiveLine: true,
           }}
           style={{
             lineHeight: `${textEditorSettings.lineHeight}px`,
-            fontWeight: textEditorSettings.fontWeight,
+            fontWeight: textEditorSettings.fontWeight as number,
           }}
           commands={commands}
         />
