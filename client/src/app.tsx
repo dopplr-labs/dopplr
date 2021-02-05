@@ -5,7 +5,6 @@ import { Spin } from 'antd'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Route from 'components/route'
 import Auth from 'components/auth'
-import Settings from 'components/settings'
 import AppShell from 'components/app-shell'
 import Home from 'pages/home'
 import ResourcesList from 'pages/resources/components/resources-list'
@@ -28,74 +27,61 @@ const SettingsPanel = lazy(() => import('pages/settings-panel'))
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <>
-        <Auth>
-          <Settings>
-            <Suspense
-              fallback={
-                <div className="flex items-center justify-center w-screen h-screen">
-                  <Spin tip="Loading Page..." />
-                </div>
-              }
-            >
-              <Routes>
-                <Route element={<Login />} path="/login" />
-                <Route protectedRoute element={<AppShell />} path="/">
-                  <Route protectedRoute element={<Home />} path="/" />
+      <Auth>
+        <>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center w-screen h-screen">
+                <Spin tip="Loading Page..." />
+              </div>
+            }
+          >
+            <Routes>
+              <Route element={<Login />} path="/login" />
+              <Route protectedRoute element={<AppShell />} path="/">
+                <Route protectedRoute element={<Home />} path="/" />
+                <Route protectedRoute element={<Resources />} path="resources">
+                  <Route protectedRoute path="/" element={<ResourcesList />} />
                   <Route
-                    protectedRoute
-                    element={<Resources />}
-                    path="resources"
-                  >
-                    <Route
-                      protectedRoute
-                      path="/"
-                      element={<ResourcesList />}
-                    />
-                    <Route
-                      path="new/:resourceType"
-                      element={<CreateResource />}
-                    />
-                    <Route path=":resourceId" element={<ResourceDetail />} />
-                  </Route>
-                  <Route path="queries">
-                    <Route path="" element={<Queries />} />
-                    <Route path=":tabType" element={<Queries />} />
-                    <Route path=":tabType/:id" element={<Queries />} />
-                  </Route>
-                  <Route
-                    protectedRoute
-                    element={<Dashboards />}
-                    path="dashboards"
+                    path="new/:resourceType"
+                    element={<CreateResource />}
                   />
-                  <Route
-                    protectedRoute
-                    element={<SettingsPanel />}
-                    path="settings"
-                  >
-                    <Route
-                      path="/"
-                      element={<Navigate to="text-editor" replace={true} />}
-                    />
-                    <Route
-                      path="text-editor"
-                      element={<TextEditorSettings />}
-                    />
-                  </Route>
+                  <Route path=":resourceId" element={<ResourceDetail />} />
                 </Route>
-                <Route path="*" element={<Navigate to="/" replace={true} />} />
-              </Routes>
-            </Suspense>
-            {process.env.NODE_ENV === 'production' && <Logrocket />}
-          </Settings>
-        </Auth>
-        {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
-          <>
-            <ReactQueryDevtools />
-            <HealthCheck />
-          </>
-        ) : null}
-      </>
+                <Route path="queries">
+                  <Route path="" element={<Queries />} />
+                  <Route path=":tabType" element={<Queries />} />
+                  <Route path=":tabType/:id" element={<Queries />} />
+                </Route>
+                <Route
+                  protectedRoute
+                  element={<Dashboards />}
+                  path="dashboards"
+                />
+                <Route
+                  protectedRoute
+                  element={<SettingsPanel />}
+                  path="settings"
+                >
+                  <Route
+                    path="/"
+                    element={<Navigate to="text-editor" replace={true} />}
+                  />
+                  <Route path="text-editor" element={<TextEditorSettings />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace={true} />} />
+            </Routes>
+          </Suspense>
+          {process.env.NODE_ENV === 'production' && <Logrocket />}
+          {process.env.NODE_ENV === 'development' && SHOW_DEV_TOOLS ? (
+            <>
+              <ReactQueryDevtools />
+              <HealthCheck />
+            </>
+          ) : null}
+        </>
+      </Auth>
     </QueryClientProvider>
   )
 }
