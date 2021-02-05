@@ -11,7 +11,7 @@ import { TextEditorSettings } from './settings.types'
 export class SettingsController {
   constructor(private readonly settingService: SettingsService) {}
 
-  @Get('')
+  @Get()
   async getSettings(
     @GetUser() user,
   ): Promise<{ success: boolean; data: Settings }> {
@@ -19,7 +19,7 @@ export class SettingsController {
     return { success: true, data: settings }
   }
 
-  @Post('')
+  @Post()
   async createSettings(
     @Body() settingsDto: SettingsDto,
     @GetUser() user,
@@ -28,7 +28,7 @@ export class SettingsController {
     return { success: true, data: settings }
   }
 
-  @Patch('texteditorsettings')
+  @Patch('text-editor')
   async updateTextEditorSettings(
     @Body() textEditorSettingsUpdateDto: TextEditorSettingsUpdateDto,
     @GetUser() user,
