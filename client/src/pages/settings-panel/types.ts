@@ -4,11 +4,16 @@ export enum ConfigType {
   CHECKBOX = 'CHECKBOX',
 }
 
+export enum InputType {
+  NUMBER = 'NUMBER',
+  STRING = 'STRING',
+}
+
 export type InputConfig = {
   type: ConfigType.INPUT
   title: string
   description: string
-  default: string | number
+  inputType: InputType
   key: string
 }
 
@@ -26,7 +31,6 @@ export type SelectConfig = {
   type: ConfigType.SELECT
   title: string
   description: string
-  default: string | number
   options: (SelectOption | SelectGroup)[]
   key: string
 }
@@ -35,7 +39,6 @@ export type CheckboxConfig = {
   type: ConfigType.CHECKBOX
   title: string
   description: string
-  default: boolean
   key: string
 }
 

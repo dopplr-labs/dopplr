@@ -1,12 +1,8 @@
-export type BaseSettings = {
-  [key: string]: number | boolean | string
-}
-
 export enum KeyBinding {
   NONE = 'none',
   VIM = 'vim',
   EMACS = 'emacs',
-  VSCODE = 'vscode',
+  VSCODE = 'vscode'
 }
 
 export type TextEditorSettings = {
@@ -22,8 +18,4 @@ export type TextEditorSettings = {
   keyBinding: KeyBinding
   // theme settings
   theme: string
-}
-
-export type Settings = {
-  textEditorSettings: TextEditorSettings
 }
