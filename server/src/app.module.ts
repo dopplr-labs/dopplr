@@ -7,7 +7,7 @@ import { QueriesModule } from './queries/queries.module'
 import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
 import { ChartsModule } from './charts/charts.module'
-import { SettingsModule } from './settings/settings.module';
+import { SettingsModule } from './settings/settings.module'
 
 @Module({
   imports: [
