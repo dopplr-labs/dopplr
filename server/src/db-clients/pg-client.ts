@@ -4,26 +4,6 @@ import { Client } from 'pg'
 import * as _ from 'lodash'
 import { ClientInterface, ClientResource, QueryRow } from './client.interface'
 
-const POSTGRES_COLUMN_TYPES = {
-  bigint: 'number',
-  bigserial: 'serial',
-  'bit varying': 'bit',
-  bytea: 'binary',
-  character: 'text',
-  'character varying': 'text',
-  'double precision': 'number',
-  integer: 'number',
-  numeric: 'number',
-  real: 'number',
-  smallint: 'number',
-  smallserial: 'serial',
-  timetz: 'timezone',
-  'time without time zone': 'timestamp',
-  'time with time zone': 'timestamp',
-  'timestamp without time zone': 'timestamp',
-  'timestamp with time zone': 'timestamp',
-}
-
 export class PgClient implements ClientInterface {
   constructor(private readonly resource: ClientResource) {}
 
@@ -113,7 +93,7 @@ export class PgClient implements ClientInterface {
         name: tableName,
         columns: tablesGroup[tableName].map(item => ({
           name: item.column_name,
-          type: POSTGRES_COLUMN_TYPES[item.data_type],
+          type: item.data_type,
         })),
       })),
       table => table.name,
