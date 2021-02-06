@@ -1,9 +1,16 @@
+type Config = {
+  port: number
+  database: string
+}
+
 type ResourceItem = {
   id: string
   title: string
   description: string
   image: string
   comingSoon: boolean
+  editorSyntax?: string
+  defaultConfig?: Config
 }
 
 export const resourcesList: ResourceItem[] = [
@@ -14,6 +21,11 @@ export const resourcesList: ResourceItem[] = [
       'Connect with PostgreSQL database to run SQL queries in Dopplr',
     image: require('images/resources/postgres-logo.png').default,
     comingSoon: false,
+    editorSyntax: 'pgsql',
+    defaultConfig: {
+      port: 5432,
+      database: 'postgres',
+    },
   },
   {
     id: 'mysql',
@@ -21,12 +33,18 @@ export const resourcesList: ResourceItem[] = [
     description: 'Connect with MySQL database to run SQL queries in Dopplr',
     image: require('images/resources/mysql-logo.svg').default,
     comingSoon: false,
+    editorSyntax: 'mysql',
+    defaultConfig: {
+      port: 3306,
+      database: 'mysql',
+    },
   },
   {
     id: 'vertica',
     title: 'Vertica',
     description: 'Connect with Vertica database to run SQL queries in Dopplr',
     image: require('images/resources/vertica-logo.png').default,
+    editorSyntax: 'sql',
     comingSoon: true,
   },
   {
@@ -34,6 +52,7 @@ export const resourcesList: ResourceItem[] = [
     title: 'Hive',
     description: 'Connect with Hive database to run SQL queries in Dopplr',
     image: require('images/resources/hive-logo.png').default,
+    editorSyntax: 'sql',
     comingSoon: true,
   },
   {
@@ -41,6 +60,7 @@ export const resourcesList: ResourceItem[] = [
     title: 'Redshift',
     description: 'Connect with Redshift database to run SQL queries in Dopplr',
     image: require('images/resources/redshift-logo.png').default,
+    editorSyntax: 'sql',
     comingSoon: true,
   },
   {

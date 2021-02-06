@@ -106,7 +106,7 @@ export default function CreateResource() {
         layout="horizontal"
         form={form}
         name="create-resource"
-        initialValues={{ port: 5432 }} // need to change this in future
+        initialValues={{ port: resource?.defaultConfig?.port }}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 20 }}
         labelAlign="left"
@@ -179,7 +179,7 @@ export default function CreateResource() {
               },
             ]}
           >
-            <Input placeholder={resourceType} />
+            <Input placeholder={resource?.defaultConfig?.database} />
           </Form.Item>
           <Form.Item
             name="password"
