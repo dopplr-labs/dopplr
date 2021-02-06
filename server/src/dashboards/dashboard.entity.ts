@@ -38,7 +38,6 @@ export class Dashboard {
   @ManyToOne(
     () => Category,
     category => category.dashboards,
-    { eager: true },
   )
   category: Category
 

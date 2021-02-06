@@ -23,6 +23,7 @@ export class Category {
   @OneToMany(
     () => Dashboard,
     dashboard => dashboard.category,
+    { nullable: true, eager: true },
   )
   dashboards: Dashboard[]
 
