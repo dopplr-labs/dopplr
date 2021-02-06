@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
+import { CategoriesService } from './categories.service'
 import { Dashboard } from './dashboard.entity'
 import { DashboardRepository } from './dashboard.repository'
 import { CreateDashboardDto, UpdateDashboardDto } from './dashboards.dto'
@@ -10,6 +11,8 @@ export class DashboardsService {
   constructor(
     @InjectRepository(DashboardRepository)
     private dashboardRepository: DashboardRepository,
+    @Inject(forwardRef(() => CategoriesService))
+    private categoriesService: CategoriesService,
   ) {}
 
   /**
@@ -49,8 +52,11 @@ export class DashboardsService {
     createDashboardDto: CreateDashboardDto,
     user: User,
   ): Promise<Dashboard> {
+    const { category: categoryId } = createDashboardDto
+    const category = await this.categoriesService.getCategory(categoryId, user)
     const dashboard = await this.dashboardRepository.save({
       ...createDashboardDto,
+      category,
       uid: user.uid,
     })
     return dashboard

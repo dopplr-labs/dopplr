@@ -13,11 +13,17 @@ import { GetUser } from 'src/auth/get-user.decorator'
 import { Dashboard } from './dashboard.entity'
 import { DashboardsService } from './dashboards.service'
 import { CreateDashboardDto, UpdateDashboardDto } from './dashboards.dto'
+import { Category } from './category.entity'
+import { CategoriesService } from './categories.service'
+import { CreateCategoryDto } from './categories.dto'
 
 @Controller('dashboards')
 @UseGuards(AuthGuard)
 export class DashboardsController {
-  constructor(private dashboardsService: DashboardsService) {}
+  constructor(
+    private dashboardsService: DashboardsService,
+    private categoriesService: CategoriesService,
+  ) {}
 
   @Get()
   async getAllDashboards(
@@ -36,6 +42,14 @@ export class DashboardsController {
     return { success: true, data: dashboard }
   }
 
+  @Get('categories')
+  async getAllCategories(
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category[] }> {
+    const categories = await this.categoriesService.getAllCategories(user)
+    return { success: true, data: categories }
+  }
+
   @Post()
   async createDashboard(
     @Body() createDashboardDto: CreateDashboardDto,
@@ -46,6 +60,18 @@ export class DashboardsController {
       user,
     )
     return { success: true, data: dashboard }
+  }
+
+  @Post('categories')
+  async createCategory(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category }> {
+    const category = await this.categoriesService.createCategory(
+      createCategoryDto,
+      user,
+    )
+    return { success: true, data: category }
   }
 
   @Patch(':id')
@@ -69,5 +95,14 @@ export class DashboardsController {
   ): Promise<{ success: boolean; data: Dashboard }> {
     const dashboard = await this.dashboardsService.deleteDashboard(id, user)
     return { success: true, data: dashboard }
+  }
+
+  @Delete('categories/:id')
+  async deleteCategory(
+    @Param('id') id: number,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category }> {
+    const category = await this.categoriesService.deleteCategory(id, user)
+    return { success: true, data: category }
   }
 }

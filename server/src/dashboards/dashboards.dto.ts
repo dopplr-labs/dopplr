@@ -1,4 +1,5 @@
-import { IsArray, IsOptional, IsString } from 'class-validator'
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator'
+import { Transform } from 'class-transformer'
 import { Layout } from './dashboard.entity'
 
 export class CreateDashboardDto {
@@ -8,6 +9,10 @@ export class CreateDashboardDto {
   @IsOptional()
   @IsString()
   description: string
+
+  @Transform(({ value }) => Number.parseInt(value, 10))
+  @IsNumber()
+  category: number
 }
 
 export class UpdateDashboardDto {

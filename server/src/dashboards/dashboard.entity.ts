@@ -3,10 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+import { Category } from './category.entity'
 
 export type Layout = {
   x: number
@@ -32,6 +34,13 @@ export class Dashboard {
     dashboardChart => dashboardChart.dashboard,
   )
   dashboardCharts: DashboardChart[]
+
+  @ManyToOne(
+    () => Category,
+    category => category.dashboards,
+    { eager: true },
+  )
+  category: Category
 
   @Column({ length: 500 })
   name: string
