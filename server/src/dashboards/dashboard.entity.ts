@@ -38,6 +38,7 @@ export class Dashboard {
   @ManyToOne(
     () => Category,
     category => category.dashboards,
+    { onDelete: 'CASCADE' },
   )
   category: Category
 

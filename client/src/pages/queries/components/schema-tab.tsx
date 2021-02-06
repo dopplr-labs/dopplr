@@ -81,6 +81,8 @@ function ResourceSchema({ resourceId }: ResourceSchemaProps) {
               key={table.name}
               table={table}
               resourceId={resourceId}
+              // if this is rendered and there is an input value, that means it contains one of the columns, so it should be expanded by default
+              defaultExpanded={!!input}
             />
           ))}
         </Scrollbars>

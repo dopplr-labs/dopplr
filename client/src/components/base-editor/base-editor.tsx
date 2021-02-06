@@ -1,7 +1,7 @@
 import React, { forwardRef, useContext } from 'react'
 import clsx from 'clsx'
 import useMeasure from 'react-use-measure'
-import AceEditor from 'react-ace'
+import AceEditor, { ICommand } from 'react-ace'
 // syntax
 import 'ace-builds/src-noconflict/mode-sql'
 import 'ace-builds/src-noconflict/mode-pgsql'
@@ -57,13 +57,21 @@ type BaseEditorProps = {
   value: string
   setValue: (updatedValue: string) => void
   syntax?: string
+  commands?: ICommand[]
   className?: string
   style?: React.CSSProperties
 }
 
 const BaseEditor = forwardRef(
   (
-    { value, setValue, syntax = 'pgsql', className, style }: BaseEditorProps,
+    {
+      value,
+      setValue,
+      syntax = 'pgsql',
+      commands = [],
+      className,
+      style,
+    }: BaseEditorProps,
     ref: React.Ref<AceEditor>,
   ) => {
     const [measure, containerBounds] = useMeasure()
@@ -79,7 +87,7 @@ const BaseEditor = forwardRef(
         <AceEditor
           ref={ref}
           mode={syntax}
-          theme={textEditorSettings.theme}
+          theme={textEditorSettings.theme as string}
           value={value}
           onChange={setValue}
           width={`${containerBounds?.width ?? 0}px`}
@@ -90,25 +98,26 @@ const BaseEditor = forwardRef(
           keyboardHandler={
             textEditorSettings.keyBinding === KeyBinding.NONE
               ? undefined
-              : textEditorSettings.keyBinding
+              : (textEditorSettings.keyBinding as string)
           }
-          fontSize={textEditorSettings.fontSize}
+          fontSize={textEditorSettings.fontSize as number}
           setOptions={{
-            fontSize: textEditorSettings.fontSize,
-            fontFamily: textEditorSettings.fontFamily,
+            fontSize: textEditorSettings.fontSize as number,
+            fontFamily: textEditorSettings.fontFamily as string,
             scrollPastEnd: true,
-            wrap: textEditorSettings.wordWrap,
+            wrap: textEditorSettings.wordWrap as boolean,
             autoScrollEditorIntoView: true,
-            showLineNumbers: textEditorSettings.lineNumbers,
-            tabSize: textEditorSettings.tabSize,
+            showLineNumbers: textEditorSettings.lineNumbers as boolean,
+            tabSize: textEditorSettings.tabSize as number,
             useSoftTabs: true,
             showPrintMargin: false,
             highlightActiveLine: true,
           }}
           style={{
             lineHeight: `${textEditorSettings.lineHeight}px`,
-            fontWeight: textEditorSettings.fontWeight,
+            fontWeight: textEditorSettings.fontWeight as number,
           }}
+          commands={commands}
         />
       </div>
     )

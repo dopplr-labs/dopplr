@@ -41,6 +41,7 @@ export default function UpdateQueryButton({
           resource: resourceId,
         })
       }}
+      id="save-query-button"
     >
       Save
     </Button>

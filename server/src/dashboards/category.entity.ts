@@ -23,14 +23,14 @@ export class Category {
   @OneToMany(
     () => Dashboard,
     dashboard => dashboard.category,
-    { nullable: true, eager: true },
+    { eager: true, nullable: true },
   )
   dashboards: Dashboard[]
 
   @ManyToOne(
     () => Category,
     category => category.children,
-    { nullable: true },
+    { nullable: true, onDelete: 'CASCADE' },
   )
   parent: Category
 

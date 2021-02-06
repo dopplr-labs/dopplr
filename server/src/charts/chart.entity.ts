@@ -43,7 +43,7 @@ export class Chart {
   @ManyToOne(
     () => Query,
     query => query.charts,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   query: Query
 

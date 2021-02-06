@@ -1,14 +1,8 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { ClientFactory } from 'src/db-clients/client-factory'
 import { SampleTableDto } from 'src/queries/queries.dto'
-import { QueriesService } from 'src/queries/queries.service'
 import { Resource } from './resource.entity'
 import { ResourceRepository } from './resource.repository'
 import {
@@ -24,8 +18,6 @@ export class ResourcesService {
   constructor(
     @InjectRepository(ResourceRepository)
     private resourcesRepository: ResourceRepository,
-    @Inject(forwardRef(() => QueriesService))
-    private queriesService: QueriesService,
   ) {}
 
   encryptResource(resource: Resource): Resource {
@@ -110,7 +102,6 @@ export class ResourcesService {
    */
   async deleteResource(id: number, user: User): Promise<Resource> {
     const resource = await this.getResource(id, user)
-    await this.queriesService.deleteQueriesForResource(resource, user)
     await this.resourcesRepository.remove([resource])
     return this.encryptResource(resource)
   }
