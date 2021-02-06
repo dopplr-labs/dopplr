@@ -7,6 +7,7 @@ import { range } from 'lodash-es'
 import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
 import PageSideBarLink from 'components/page-side-bar-link'
+import { getResource } from 'utils/resource'
 import { fetchResources } from './queries'
 
 export default function Resources() {
@@ -45,15 +46,26 @@ export default function Resources() {
     }
 
     if (resources) {
-      return resources.map((resource) => (
-        <PageSideBarLink
-          to={`/resources/${resource.id}`}
-          key={resource.id}
-          badge={resource.type}
-        >
-          {resource.name}
-        </PageSideBarLink>
-      ))
+      return resources.map((resource) => {
+        const resourceImage = getResource(resource.type)?.image
+        return (
+          <PageSideBarLink
+            to={`/resources/${resource.id}`}
+            key={resource.id}
+            badge={
+              resourceImage ? (
+                <img
+                  className="object-contain w-4 h-4"
+                  src={resourceImage}
+                  alt={resource.type}
+                />
+              ) : null
+            }
+          >
+            {resource.name}
+          </PageSideBarLink>
+        )
+      })
     }
 
     return null

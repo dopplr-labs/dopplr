@@ -2,16 +2,17 @@ import { Transform } from 'class-transformer'
 import {
   IsString,
   IsNumber,
-  IsIn,
   IsOptional,
   IsBoolean,
+  IsEnum,
 } from 'class-validator'
+import { ClientType } from 'src/db-clients/client.interface'
 
 export class CreateResourceDto {
   @IsString()
   name: string
 
-  @IsIn(['postgres'])
+  @IsEnum(ClientType)
   type: string
 
   @IsString()
@@ -52,7 +53,7 @@ export class UpdateResourceDto {
   name: string
 
   @IsOptional()
-  @IsIn(['postgres'])
+  @IsEnum(ClientType)
   type: string
 
   @IsOptional()
@@ -94,7 +95,7 @@ export class UpdateResourceDto {
 }
 
 export class TestResourceDto {
-  @IsIn(['postgres'])
+  @IsEnum(ClientType)
   type: string
 
   @IsString()

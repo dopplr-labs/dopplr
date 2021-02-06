@@ -67,7 +67,7 @@ const BaseEditor = forwardRef(
     {
       value,
       setValue,
-      syntax = 'pgsql',
+      syntax = 'sql',
       commands = [],
       className,
       style,
