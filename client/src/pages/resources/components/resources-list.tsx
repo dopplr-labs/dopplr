@@ -12,11 +12,11 @@ export const resourcesList = [
     commingSoon: false,
   },
   {
-    id: 'my-sql',
+    id: 'mysql',
     title: 'MySQL',
     description: 'Connect with MySQL database to run SQL queries in Dopplr',
     image: require('images/resources/mysql-logo.svg').default,
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     id: 'vertica',

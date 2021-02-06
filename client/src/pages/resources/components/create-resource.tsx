@@ -47,7 +47,7 @@ export default function CreateResource() {
 
   function onFinish(values: any) {
     addResource({
-      type: 'postgres', // need to change this in future
+      type: resourceType,
       sslRequired,
       ...values,
     })
@@ -68,12 +68,16 @@ export default function CreateResource() {
       ])
       const formValues = form.getFieldsValue()
       const response = await testResourceConnection({
-        type: 'postgres', // need to change this in future
+        type: resourceType,
         sslRequired,
         selfCertificate,
         ...formValues,
       })
-      message.success(response.message)
+      if (response.success) {
+        message.success(response.message)
+      } else {
+        message.error(response.message)
+      }
     } catch (error) {
       message.error(
         error.response?.data?.message ??
@@ -178,7 +182,7 @@ export default function CreateResource() {
               },
             ]}
           >
-            <Input placeholder="postgres" />
+            <Input placeholder={resourceType} />
           </Form.Item>
           <Form.Item
             name="password"

@@ -14,12 +14,8 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { Resource } from 'types/resource'
-import {
-  deleteResource,
-  fetchResource,
-  testSavedResource,
-  updateResource,
-} from '../queries'
+import { fetchResource } from 'queries/resource'
+import { deleteResource, testSavedResource, updateResource } from '../queries'
 
 export default function ResourceDetail() {
   const { resourceId } = useParams() as { resourceId: string }
@@ -116,7 +112,11 @@ export default function ResourceDetail() {
     setTestingConnection(true)
     try {
       const response = await testSavedResource(Number.parseInt(resourceId, 10))
-      message.success(response.message)
+      if (response.success) {
+        message.success(response.message)
+      } else {
+        message.error(response.message)
+      }
     } catch (error) {
       message.error(error.message)
     } finally {
