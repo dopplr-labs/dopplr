@@ -22,6 +22,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./mysql-db-data:/var/lib/mysql
+    ports:
+      - '3306:3306'
 
   adminer:
     image: adminer
