@@ -33,6 +33,14 @@ export class DashboardsController {
     return { success: true, data: dashboards }
   }
 
+  @Get('categories')
+  async getAllCategories(
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category[] }> {
+    const categories = await this.categoriesService.getAllCategories(user)
+    return { success: true, data: categories }
+  }
+
   @Get(':id')
   async getDashboard(
     @Param('id') id: number,
@@ -40,14 +48,6 @@ export class DashboardsController {
   ): Promise<{ success: boolean; data: Dashboard }> {
     const dashboard = await this.dashboardsService.getDashboard(id, user)
     return { success: true, data: dashboard }
-  }
-
-  @Get('categories')
-  async getAllCategories(
-    @GetUser() user,
-  ): Promise<{ success: boolean; data: Category[] }> {
-    const categories = await this.categoriesService.getAllCategories(user)
-    return { success: true, data: categories }
   }
 
   @Post()
