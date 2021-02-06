@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { fetchResources } from 'pages/resources/queries'
 import React from 'react'
 import { useQuery } from 'react-query'
+import { getResource } from 'utils/resource'
 
 type ResourceSelectorProps = {
   resource?: number
@@ -39,11 +40,19 @@ export default function ResourceSelector({
       className={clsx('w-48', className)}
       style={style}
     >
-      {resources?.map((resource) => (
-        <Select.Option key={resource.id} value={resource.id}>
-          {resource.name}
-        </Select.Option>
-      ))}
+      {resources?.map((resource) => {
+        const resourceImage = getResource(resource.type)?.image
+        return (
+          <Select.Option key={resource.id} value={resource.id}>
+            <div className="flex items-center space-x-3">
+              {resourceImage ? (
+                <img src={resourceImage} className="object-contain w-4 h-4" />
+              ) : null}
+              <span>{resource.name}</span>
+            </div>
+          </Select.Option>
+        )
+      })}
     </Select>
   )
 }

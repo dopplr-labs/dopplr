@@ -11,7 +11,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { resourcesList } from './resources-list'
+import { getResource } from 'utils/resource'
 import {
   createResource,
   fetchResources,
@@ -23,10 +23,7 @@ export default function CreateResource() {
   const [sslRequired, setSslRequired] = useState(false)
   const [selfCertificate, setSelfCertificate] = useState(false)
 
-  const resource =
-    resourcesList[
-      resourcesList.findIndex((resource) => resource.id === resourceType)
-    ]
+  const resource = getResource(resourceType)
 
   const navigate = useNavigate()
 

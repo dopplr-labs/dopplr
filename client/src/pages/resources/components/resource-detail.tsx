@@ -15,6 +15,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { Resource } from 'types/resource'
 import { fetchResource } from 'queries/resource'
+import { getResource } from 'utils/resource'
 import { deleteResource, testSavedResource, updateResource } from '../queries'
 
 export default function ResourceDetail() {
@@ -134,15 +135,9 @@ export default function ResourceDetail() {
                 Connect to Postgres
               </div>
               <div className="text-sm">
-                Connect your Postgres database to run queries and create
-                dashboard
+                Connect your database to run queries and create dashboard
               </div>
             </div>
-            <img
-              src={require('images/resources/postgres-logo.png').default}
-              className="w-6 h-6"
-              alt="Postgres"
-            />
           </div>
 
           <div className="flex p-6 space-x-32 border-b">
@@ -180,6 +175,8 @@ export default function ResourceDetail() {
     }
 
     if (resource) {
+      const resourceImage = getResource(resource.type)?.image
+
       return (
         <Form
           layout="horizontal"
@@ -199,15 +196,13 @@ export default function ResourceDetail() {
                 {resource.name}
               </div>
               <div className="text-sm">
-                Connect your Postgres database to run queries and create
+                Connect your {resource.type} database to run queries and create
                 dashboard
               </div>
             </div>
-            <img
-              src={require('images/resources/postgres-logo.png').default}
-              className="w-6 h-6"
-              alt="Postgres"
-            />
+            {resourceImage ? (
+              <img src={resourceImage} className="w-6 h-6" alt="Postgres" />
+            ) : null}
           </div>
 
           <div className="p-6 border-b">
