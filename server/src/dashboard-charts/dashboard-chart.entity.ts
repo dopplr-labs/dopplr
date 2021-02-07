@@ -30,7 +30,7 @@ export class DashboardChart {
   @ManyToOne(
     () => Dashboard,
     dashboard => dashboard.charts,
-    { eager: true, onDelete: 'CASCADE' },
+    { onDelete: 'CASCADE' },
   )
   dashboard: Dashboard
 

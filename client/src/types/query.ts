@@ -1,4 +1,5 @@
 import { History } from './history'
+import { Resource } from './resource'
 
 export type QueryField = {
   name: string
@@ -23,4 +24,12 @@ export type SavedQueryPage = {
     currentPage: number
     nextPage: number
   }
+}
+
+export type Query = {
+  id: number
+  isSaved: boolean
+  name: string
+  query: string
+  resource: Resource
 }

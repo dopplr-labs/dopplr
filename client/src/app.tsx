@@ -11,6 +11,7 @@ import ResourcesList from 'pages/resources/components/resources-list'
 import CreateResource from 'pages/resources/components/create-resource'
 import ResourceDetail from 'pages/resources/components/resource-detail'
 import Dashboards from 'pages/dashboards'
+import Dashboard from 'pages/dashboards/components/dashboard'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
@@ -58,7 +59,13 @@ export function App() {
                   protectedRoute
                   element={<Dashboards />}
                   path="dashboards"
-                />
+                >
+                  <Route
+                    protectedRoute
+                    path=":dashboardId"
+                    element={<Dashboard />}
+                  />
+                </Route>
                 <Route
                   protectedRoute
                   element={<SettingsPanel />}
