@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
-import { CreateCategoryDto } from './categories.dto'
+import { CreateCategoryDto, UpdateCategoryDto } from './categories.dto'
 import { Category } from './category.entity'
 import { CategoryRepository } from './category.repository'
 
@@ -36,6 +36,9 @@ export class CategoriesService {
       id,
       uid: user.uid,
     })
+    if (!category) {
+      throw new NotFoundException('category not found')
+    }
     return category
   }
 
@@ -50,13 +53,36 @@ export class CategoriesService {
     user: User,
   ): Promise<Category> {
     const { parent: parentId } = createCategoryDto
-    const parent = await this.getCategory(parentId, user)
-    const category = await this.categoryRepository.save({
-      ...createCategoryDto,
-      parent,
-      uid: user.uid,
-    })
+    const createCategoryData: any = { ...createCategoryDto, uid: user.uid }
+    if (parentId) {
+      const parent = await this.getCategory(parentId, user)
+      createCategoryData.parent = parent
+    }
+    const category = await this.categoryRepository.save(createCategoryData)
     return category
+  }
+
+  /**
+   * Updates a particular dashboard category
+   *
+   * @param id - id of the category user wants to update
+   * @param updateCategoryDto - Data for updating the category
+   * @param user
+   */
+  async updateCategory(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+    user: User,
+  ): Promise<Category> {
+    const { parent: parentId } = updateCategoryDto
+    const updateCategoryData: any = updateCategoryDto
+    if (parentId) {
+      const parent = await this.getCategory(parentId, user)
+      updateCategoryData.parent = parent
+    }
+    return this.categoryRepository
+      .update({ id, uid: user.uid }, updateCategoryData)
+      .then(() => this.getCategory(id, user))
   }
 
   /**
