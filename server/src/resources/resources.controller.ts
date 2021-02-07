@@ -96,7 +96,12 @@ export class ResourcesController {
     @Body() testResourceDto: TestResourceDto,
   ): Promise<{ success: boolean; message: string }> {
     const success = await this.resourcesService.testResource(testResourceDto)
-    return { success, message: 'database connected successfully' }
+    return {
+      success,
+      message: success
+        ? 'database connected successfully'
+        : 'database connection error',
+    }
   }
 
   @Post('test-saved')
@@ -109,7 +114,12 @@ export class ResourcesController {
       resourceId,
       user,
     )
-    return { success, message: 'database connected successfully' }
+    return {
+      success,
+      message: success
+        ? 'database connected successfully'
+        : 'database connection error',
+    }
   }
 
   @Get('schema/:id')

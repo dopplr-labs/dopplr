@@ -11,7 +11,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { resourcesList } from './resources-list'
+import { getResource } from 'utils/resource'
 import {
   createResource,
   fetchResources,
@@ -23,10 +23,7 @@ export default function CreateResource() {
   const [sslRequired, setSslRequired] = useState(false)
   const [selfCertificate, setSelfCertificate] = useState(false)
 
-  const resource =
-    resourcesList[
-      resourcesList.findIndex((resource) => resource.id === resourceType)
-    ]
+  const resource = getResource(resourceType)
 
   const navigate = useNavigate()
 
@@ -47,7 +44,7 @@ export default function CreateResource() {
 
   function onFinish(values: any) {
     addResource({
-      type: 'postgres', // need to change this in future
+      type: resourceType,
       sslRequired,
       ...values,
     })
@@ -68,12 +65,16 @@ export default function CreateResource() {
       ])
       const formValues = form.getFieldsValue()
       const response = await testResourceConnection({
-        type: 'postgres', // need to change this in future
+        type: resourceType,
         sslRequired,
         selfCertificate,
         ...formValues,
       })
-      message.success(response.message)
+      if (response.success) {
+        message.success(response.message)
+      } else {
+        message.error(response.message)
+      }
     } catch (error) {
       message.error(
         error.response?.data?.message ??
@@ -105,7 +106,7 @@ export default function CreateResource() {
         layout="horizontal"
         form={form}
         name="create-resource"
-        initialValues={{ port: 5432 }} // need to change this in future
+        initialValues={{ port: resource?.defaultConfig?.port }}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 20 }}
         labelAlign="left"
@@ -178,7 +179,7 @@ export default function CreateResource() {
               },
             ]}
           >
-            <Input placeholder="postgres" />
+            <Input placeholder={resource?.defaultConfig?.database} />
           </Form.Item>
           <Form.Item
             name="password"
