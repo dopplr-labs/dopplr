@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { QueriesService } from 'src/queries/queries.service'
@@ -49,6 +54,9 @@ export class ChartsService {
       id,
       uid: user.uid,
     })
+    if (!chart) {
+      throw new NotFoundException('chart not found')
+    }
     return chart
   }
 
