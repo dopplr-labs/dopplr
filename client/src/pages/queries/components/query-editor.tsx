@@ -151,7 +151,7 @@ export default function QueryEditor() {
             disabled={!query}
             id="format-query-button"
           >
-            Beautify
+            Format
           </Button>
         </Tooltip>
         <Tooltip

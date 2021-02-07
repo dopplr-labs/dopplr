@@ -32,9 +32,10 @@ export class PgClient implements ClientInterface {
   }
 
   async testConnection() {
+    this.client.connect()
     try {
-      this.client.connect()
-      this.client.query('SELECT NOW()')
+      await this.client.query('SELECT NOW();')
+      return true
     } catch (error) {
       return false
     } finally {
