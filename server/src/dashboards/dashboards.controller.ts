@@ -41,6 +41,15 @@ export class DashboardsController {
     return { success: true, data: categories }
   }
 
+  @Get('categories/:id')
+  async getCategory(
+    @Param('id') id: number,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category }> {
+    const category = await this.categoriesService.getCategory(id, user)
+    return { success: true, data: category }
+  }
+
   @Get(':id')
   async getDashboard(
     @Param('id') id: number,
