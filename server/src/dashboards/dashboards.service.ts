@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { CategoriesService } from './categories.service'
@@ -39,6 +44,9 @@ export class DashboardsService {
       id,
       uid: user.uid,
     })
+    if (!dashboard) {
+      throw new NotFoundException('dashboard not found')
+    }
     return dashboard
   }
 
@@ -69,13 +77,22 @@ export class DashboardsService {
    * @param updateDashboardDto - Data for updating the dashboard
    * @param user
    */
-  updateDashboard(
+  async updateDashboard(
     id: number,
     updateDashboardDto: UpdateDashboardDto,
     user: User,
   ): Promise<Dashboard> {
+    const { category: categoryId } = updateDashboardDto
+    const updateDashboardData: any = updateDashboardDto
+    if (categoryId) {
+      const category = await this.categoriesService.getCategory(
+        categoryId,
+        user,
+      )
+      updateDashboardData.category = category
+    }
     return this.dashboardRepository
-      .update({ id, uid: user.uid }, updateDashboardDto)
+      .update({ id, uid: user.uid }, updateDashboardData)
       .then(() => this.getDashboard(id, user))
   }
 
