@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons'
 import { History, HistoryPage } from 'types/history'
 import { Link } from 'react-router-dom'
+import Spinner from 'components/spinner'
 import {
   clearHistoryQuery,
   deleteQuery,
@@ -98,7 +99,7 @@ export default function HistoriesTab() {
             hasMore={hasNextPage}
             loader={
               <div className="flex items-center justify-center py-2" key={0}>
-                <Spin tip="Loading..." size="small" />
+                <Spin tip="Loading..." size="small" indicator={<Spinner />} />
               </div>
             }
             useWindow={false}

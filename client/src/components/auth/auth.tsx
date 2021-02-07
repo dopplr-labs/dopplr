@@ -3,6 +3,7 @@ import firebase from 'firebase/app'
 import { auth, googleAuthProvider, githubAuthProvider } from 'utils/firebase'
 import AuthContext from 'contexts/auth-context'
 import { message, Spin } from 'antd'
+import Spinner from 'components/spinner'
 
 type AuthProps = {
   children: React.ReactElement
@@ -50,7 +51,7 @@ export default function Auth({ children }: AuthProps) {
   if (!authVerified) {
     return (
       <div className="flex items-center justify-center w-screen h-screen">
-        <Spin tip="Verifying User..." />
+        <Spin indicator={<Spinner />} tip="Verifying User..." />
       </div>
     )
   }

@@ -4,6 +4,7 @@ import SettingsContext from 'contexts/settings-context'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Settings as SettingsType, TextEditorSettings } from 'types/settings'
 import { merge } from 'lodash-es'
+import Spinner from 'components/spinner'
 import {
   createSettings,
   fetchSettings,
@@ -77,7 +78,7 @@ export default function Settings({ children }: SettingsProps) {
 
   return (
     <div className="flex items-center justify-center w-screen h-screen">
-      <Spin tip="Loading Settings..." />
+      <Spin tip="Loading Settings..." indicator={<Spinner />} />
     </div>
   )
 }

@@ -14,6 +14,7 @@ import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
+import Spinner from 'components/spinner'
 
 const SHOW_DEV_TOOLS = false
 
@@ -32,7 +33,7 @@ export function App() {
           <Suspense
             fallback={
               <div className="flex items-center justify-center w-screen h-screen">
-                <Spin tip="Loading Page..." />
+                <Spin tip="Loading Page..." indicator={<Spinner />} />
               </div>
             }
           >

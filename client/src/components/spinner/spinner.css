@@ -1,0 +1,75 @@
+.loader-container {
+  --box-size: 22px;
+}
+
+.box-container {
+  perspective: 800px;
+  perspective-origin: 50% 100px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(
+    calc(-0.5 * var(--box-size)),
+    calc(-0.5 * var(--box-size))
+  );
+}
+
+.box {
+  position: relative;
+  width: var(--box-size);
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  width: var(--box-size);
+  height: var(--box-size);
+  opacity: 0.98;
+}
+
+.face--is-front {
+  transform: translateZ(calc(0.5 * var(--box-size)));
+  background-color: #15a4f5;
+}
+
+.face--is-back {
+  transform: translateZ(calc(-0.5 * var(--box-size))) rotateY(180deg);
+  background-color: #15a4f5;
+}
+
+.face--is-top {
+  transform: rotateX(-90deg) translateY(calc(-0.5 * var(--box-size)));
+  transform-origin: top center;
+  background-color: #167391;
+}
+
+.face--is-bottom {
+  transform: rotateX(90deg) translateY(calc(0.5 * var(--box-size)));
+  transform-origin: bottom center;
+  background-color: #167391;
+}
+
+.face--is-left {
+  transform: rotateY(270deg) translateX(calc(-0.5 * var(--box-size)));
+  transform-origin: center left;
+  background-color: #2dccef;
+}
+
+.face--is-right {
+  transform: rotateY(-270deg) translateX(calc(0.5 * var(--box-size)));
+  transform-origin: top right;
+  background-color: #2dccef;
+}
+
+.box {
+  animation: spin 2s infinite ease-in-out;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateX(-30deg) rotateY(45deg);
+  }
+  100% {
+    transform: rotateX(-30deg) rotateY(405deg);
+  }
+}

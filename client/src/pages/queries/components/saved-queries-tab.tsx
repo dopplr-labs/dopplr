@@ -10,6 +10,7 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import Spinner from 'components/spinner'
 import { deleteQuery, fetchSavedQueries } from '../queries-and-mutations'
 import ListSkeletonLoader from './list-skeleton-loader'
 import RenameQueryModal from './rename-query-modal'
@@ -60,7 +61,7 @@ export default function SavedQueriesTab() {
           hasMore={hasNextPage}
           loader={
             <div className="flex items-center justify-center py-2" key={0}>
-              <Spin tip="Loading..." size="small" />
+              <Spin tip="Loading..." size="small" indicator={<Spinner />} />
             </div>
           }
           useWindow={false}
