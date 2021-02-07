@@ -25,6 +25,11 @@ export type TableDetail = {
   columns: ColumnDetail[]
 }
 
+export enum ClientType {
+  POSTGRES = 'postgres',
+  MYSQL = 'mysql',
+}
+
 export type ClientResource = Partial<Resource>
 export interface ClientInterface {
   testConnection: () => Promise<boolean>
