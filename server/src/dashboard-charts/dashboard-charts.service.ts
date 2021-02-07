@@ -61,7 +61,7 @@ export class DashboardChartsService {
       uid: user.uid,
     })
     if (!dashboardChart) {
-      throw new NotFoundException('dashboardChart not found')
+      throw new NotFoundException('dashboard-chart not found')
     }
     return dashboardChart
   }

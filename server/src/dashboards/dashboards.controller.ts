@@ -15,7 +15,7 @@ import { DashboardsService } from './dashboards.service'
 import { CreateDashboardDto, UpdateDashboardDto } from './dashboards.dto'
 import { Category } from './category.entity'
 import { CategoriesService } from './categories.service'
-import { CreateCategoryDto } from './categories.dto'
+import { CreateCategoryDto, UpdateCategoryDto } from './categories.dto'
 
 @Controller('dashboards')
 @UseGuards(AuthGuard)
@@ -78,6 +78,20 @@ export class DashboardsController {
   ): Promise<{ success: boolean; data: Category }> {
     const category = await this.categoriesService.createCategory(
       createCategoryDto,
+      user,
+    )
+    return { success: true, data: category }
+  }
+
+  @Patch('categories/:id')
+  async updateCategory(
+    @Param('id') id: number,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+    @GetUser() user,
+  ): Promise<{ success: boolean; data: Category }> {
+    const category = await this.categoriesService.updateCategory(
+      id,
+      updateCategoryDto,
       user,
     )
     return { success: true, data: category }
