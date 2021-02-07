@@ -32,6 +32,7 @@ export class Dashboard {
   @OneToMany(
     () => DashboardChart,
     dashboardChart => dashboardChart.dashboard,
+    { eager: true },
   )
   charts: DashboardChart[]
 

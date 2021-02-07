@@ -14,6 +14,7 @@ import Dashboards from 'pages/dashboards'
 import TextEditorSettings from 'pages/settings-panel/components/text-editor-settings'
 import Logrocket from 'components/logrocket'
 import HealthCheck from 'components/health-check'
+import Dashboard from 'pages/dashboards/components/dashboard'
 
 const SHOW_DEV_TOOLS = false
 
@@ -57,7 +58,13 @@ export function App() {
                   protectedRoute
                   element={<Dashboards />}
                   path="dashboards"
-                />
+                >
+                  <Route
+                    protectedRoute
+                    path=":dashboardId"
+                    element={<Dashboard />}
+                  />
+                </Route>
                 <Route
                   protectedRoute
                   element={<SettingsPanel />}
