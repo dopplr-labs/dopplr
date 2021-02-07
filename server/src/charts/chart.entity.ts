@@ -1,12 +1,14 @@
-import { Query } from 'src/queries/query.entity'
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+import { DashboardChart } from 'src/dashboard-charts/dashboard-chart.entity'
+import { Query } from 'src/queries/query.entity'
 
 export enum ChartType {
   LINE = 'line',
@@ -41,9 +43,15 @@ export class Chart {
   @ManyToOne(
     () => Query,
     query => query.charts,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   query: Query
+
+  @OneToMany(
+    () => DashboardChart,
+    dashboardChart => dashboardChart.chart,
+  )
+  dashboardCharts: DashboardChart[]
 
   @Column({ length: 500, nullable: true })
   name?: string

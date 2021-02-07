@@ -7,6 +7,8 @@ import { QueriesModule } from './queries/queries.module'
 import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
 import { ChartsModule } from './charts/charts.module'
+import { DashboardChartsModule } from './dashboard-charts/dashboard-charts.module'
+import { DashboardsModule } from './dashboards/dashboards.module'
 import { SettingsModule } from './settings/settings.module'
 
 @Module({
@@ -31,6 +33,8 @@ import { SettingsModule } from './settings/settings.module'
     QueriesModule,
     AuthModule,
     ChartsModule,
+    DashboardChartsModule,
+    DashboardsModule,
     SettingsModule,
   ],
 })

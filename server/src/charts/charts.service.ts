@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/auth/user.types'
 import { QueriesService } from 'src/queries/queries.service'
@@ -18,17 +23,16 @@ export class ChartsService {
   /**
    * Returns all the charts
    *
+   * @param filterChartDto - query id to get all charts for a particular query
    * @param user
-   * @param query - query id to get all charts for a particular query
    */
   async getAllCharts(
-    user: User,
     filterChartDto: FilterChartDto,
+    user: User,
   ): Promise<Chart[]> {
     const { query } = filterChartDto
-    const where: { uid: string; query?: { id: number } } = {
-      uid: user.uid,
-    }
+    const where: { uid: string; query?: { id: number } } = { uid: user.uid }
+
     if (query) {
       where.query = { id: query }
     }
@@ -50,6 +54,9 @@ export class ChartsService {
       id,
       uid: user.uid,
     })
+    if (!chart) {
+      throw new NotFoundException('chart not found')
+    }
     return chart
   }
 
