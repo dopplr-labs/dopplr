@@ -24,7 +24,7 @@ export class Query {
   @ManyToOne(
     () => Resource,
     resource => resource.queries,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   resource: Resource
 
