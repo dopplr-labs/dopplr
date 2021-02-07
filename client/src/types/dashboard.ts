@@ -1,3 +1,4 @@
+import { Category } from './category'
 import { Chart } from './chart'
 
 export type Layout = {
@@ -17,12 +18,7 @@ export type Dashboard = {
   id: number
   name: string
   description?: string
-  charts: DashboardChart[]
+  charts?: DashboardChart[]
   layout?: Layout[]
-}
-
-export type Category = {
-  id: number
-  name: string
-  dashboards?: Dashboard[]
+  category: Category
 }

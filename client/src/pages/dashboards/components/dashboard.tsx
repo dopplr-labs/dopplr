@@ -59,7 +59,7 @@ export default function Dashboard() {
               cols={12}
               width={containerBounds.width}
             >
-              {dashboard.charts.map((chart) => (
+              {dashboard.charts?.map((chart) => (
                 <div key={chart.id}>
                   <Chart dashboardChartId={chart.id} />
                 </div>
