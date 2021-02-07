@@ -1,5 +1,6 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 import { Transform } from 'class-transformer'
+import { PartialType } from '@nestjs/mapped-types'
 
 export class CreateCategoryDto {
   @IsString()
@@ -10,3 +11,5 @@ export class CreateCategoryDto {
   @IsNumber()
   parent: number
 }
+
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
