@@ -33,7 +33,7 @@ export class Dashboard {
     () => DashboardChart,
     dashboardChart => dashboardChart.dashboard,
   )
-  dashboardCharts: DashboardChart[]
+  charts: DashboardChart[]
 
   @ManyToOne(
     () => Category,
