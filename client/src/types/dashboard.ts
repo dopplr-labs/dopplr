@@ -1,24 +1,12 @@
+import GridLayout from 'react-grid-layout'
 import { Category } from './category'
-import { Chart } from './chart'
-
-export type Layout = {
-  x: number
-  y: number
-  w: number
-  h: number
-  i: string
-}
-
-export type DashboardChart = {
-  id: number
-  chart: Chart
-}
+import { DashboardChart } from './dashboard-chart'
 
 export type Dashboard = {
   id: number
   name: string
   description?: string
   charts?: DashboardChart[]
-  layout?: Layout[]
+  layout?: GridLayout.Layout[]
   category: Category
 }
