@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Result } from 'antd'
 import { SettingOutlined, ShareAltOutlined } from '@ant-design/icons'
 import GridLayout from 'react-grid-layout'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import useMeasure from 'react-use-measure'
-import { fetchDashboard } from '../queries'
+import { fetchDashboard, updateDashboard } from '../queries'
 import Chart from './chart'
 
 export default function Dashboard() {
@@ -15,6 +15,15 @@ export default function Dashboard() {
   const { data: dashboard, isLoading } = useQuery(
     ['dashboard', dashboardId],
     () => fetchDashboard(parseInt(dashboardId)),
+  )
+
+  const { mutate: editDashboard } = useMutation(updateDashboard)
+
+  const handleUpdateDashboard = useCallback(
+    (layout) => {
+      editDashboard({ id: parseInt(dashboardId), layout })
+    },
+    [dashboardId, editDashboard],
   )
 
   const dashboardContent = useMemo(() => {
@@ -52,24 +61,30 @@ export default function Dashboard() {
               <ShareAltOutlined />
             </button>
           </div>
-          {dashboard.layout && (
-            <GridLayout
-              layout={dashboard?.layout}
-              rowHeight={80}
-              cols={12}
-              width={containerBounds.width}
-            >
-              {dashboard.charts?.map((chart) => (
-                <div key={chart.id}>
-                  <Chart dashboardChartId={chart.id} />
-                </div>
-              ))}
-            </GridLayout>
-          )}
+          <GridLayout
+            layout={dashboard?.layout}
+            rowHeight={80}
+            cols={12}
+            width={containerBounds.width}
+            onResizeStop={handleUpdateDashboard}
+            onDragStop={handleUpdateDashboard}
+          >
+            {dashboard.charts?.map((chart) => (
+              <div key={chart.id}>
+                <Chart dashboardChartId={chart.id} />
+              </div>
+            ))}
+          </GridLayout>
         </div>
       )
     }
-  }, [dashboard, isLoading, measureContainer, containerBounds.width])
+  }, [
+    dashboard,
+    isLoading,
+    measureContainer,
+    containerBounds.width,
+    handleUpdateDashboard,
+  ])
 
   return <>{dashboardContent}</>
 }
