@@ -1,6 +1,7 @@
-import { Dashboard, DashboardChart } from 'types/dashboard'
-import { Category } from 'types/category'
 import client from 'utils/client'
+import { Dashboard } from 'types/dashboard'
+import { Category } from 'types/category'
+import { DashboardChart } from 'types/dashboard-chart'
 
 export async function fetchCategories(): Promise<Category[]> {
   const { data } = await client.get<{ success: boolean; data: Category[] }>(
@@ -47,11 +48,32 @@ export async function createDashboard({
 }: Partial<Dashboard>): Promise<Dashboard> {
   const { data } = await client.post<{ success: boolean; data: Dashboard }>(
     '/dashboards',
-    {
-      name,
-      description,
-      category,
-    },
+    { name, description, category },
+  )
+  return data.data
+}
+
+export async function createDashboardChart({
+  chart,
+  dashboard,
+}: {
+  chart: number
+  dashboard: number
+}): Promise<DashboardChart> {
+  const { data } = await client.post<{ success: true; data: DashboardChart }>(
+    '/dashboard-charts',
+    { chart, dashboard },
+  )
+  return data.data
+}
+
+export async function updateDashboard({
+  id,
+  layout,
+}: Partial<Dashboard>): Promise<Dashboard> {
+  const { data } = await client.patch<{ success: boolean; data: Dashboard }>(
+    `/dashboards/${id}`,
+    { layout },
   )
   return data.data
 }
