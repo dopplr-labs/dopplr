@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router-dom'
 import EditorContext from 'contexts/editor-context'
 import { Chart, ChartType } from 'types/chart'
 import { FormFieldData } from 'types/form-fields'
+import { createDashboardChart, fetchDashboards } from 'pages/dashboards/queries'
 import {
   deleteChart,
   fetchChart,
@@ -69,6 +70,8 @@ export default function ChartDetail() {
     fetchChartsForQuery(parseInt(queryId)),
   )
 
+  const { data: dashboards } = useQuery(['dashboards'], fetchDashboards)
+
   const queryClient = useQueryClient()
 
   const { mutate: editChart, isLoading: isUpdatingChart } = useMutation(
@@ -109,6 +112,8 @@ export default function ChartDetail() {
       },
     },
   )
+
+  const { mutate: addDashboardChart } = useMutation(createDashboardChart)
 
   const onChange = useCallback((newFields) => {
     setFields(newFields)
@@ -184,7 +189,25 @@ export default function ChartDetail() {
             className="flex flex-col px-4 pb-8 space-y-4"
             style={{ width: 'calc(100% - 16rem)' }}
           >
-            <div className="font-semibold">{name}</div>
+            <div className="flex items-start justify-between">
+              <div className="font-semibold">{name}</div>
+              <Select
+                placeholder="Publish to dashboard"
+                className="w-48"
+                onChange={(dashboard: number) => {
+                  addDashboardChart({
+                    dashboard,
+                    chart: parseInt(activeChartId ?? ''),
+                  })
+                }}
+              >
+                {dashboards?.map((dashboard) => (
+                  <Select.Option key={dashboard.id} value={dashboard.id}>
+                    {dashboard.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
             {cloneElement(chartList[type as ChartType].chart, {
               data: chartData,
             })}
@@ -278,6 +301,9 @@ export default function ChartDetail() {
     confirmDelete,
     isRemovingChart,
     isUpdatingChart,
+    dashboards,
+    activeChartId,
+    addDashboardChart,
   ])
 
   return <>{chartContent}</>
