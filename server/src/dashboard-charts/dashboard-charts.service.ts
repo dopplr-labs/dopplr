@@ -76,18 +76,40 @@ export class DashboardChartsService {
     createDashboardChartDto: CreateDashboardChartDto,
     user: User,
   ): Promise<DashboardChart> {
+    const COLS_NUMBER = 12
+    const MAX_Y = 9999
     const { chart: chartId, dashboard: dashboardId } = createDashboardChartDto
     const dashboard = await this.dashboardsService.getDashboard(
       dashboardId,
       user,
     )
     const chart = await this.chartsService.getChart(chartId, user)
-    return this.dashboardChartsRepository.save({
+    const dashboardChart = await this.dashboardChartsRepository.save({
       ...createDashboardChartDto,
       dashboard,
       chart,
       uid: user.uid,
     })
+    const prevLayout = dashboard.layout
+    const newLayout = {
+      i: dashboardChart.id.toString(),
+      x: prevLayout ? (prevLayout.length * 6) % COLS_NUMBER : 0,
+      y: MAX_Y,
+      w: 6,
+      h: 4,
+    }
+    const newDashboardLayout = prevLayout
+      ? [...prevLayout, newLayout]
+      : [newLayout]
+
+    await this.dashboardsService.updateDashboard(
+      dashboardId,
+      {
+        layout: newDashboardLayout,
+      },
+      user,
+    )
+    return dashboardChart
   }
 
   /**
