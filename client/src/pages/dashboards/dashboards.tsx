@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { Button, Menu, Modal, Form, Input, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { range } from 'lodash-es'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import PageLayout from 'components/page-layout'
 import PageSideBar from 'components/page-side-bar'
@@ -20,7 +21,10 @@ export default function Dashboards() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data: categories } = useQuery(['categories'], fetchCategories)
+  const { data: categories, isLoading } = useQuery(
+    ['categories'],
+    fetchCategories,
+  )
 
   const queryClient = useQueryClient()
 
@@ -88,27 +92,45 @@ export default function Dashboards() {
     setShow(false)
   }
 
-  const sidebarContent = useMemo(
-    () => (
-      <Menu mode="inline">
-        {categories?.map((category) => (
-          <Menu.SubMenu key={`sub-${category.id}`} title={category.name}>
-            {category.dashboards?.map((dashboard) => (
-              <Menu.Item
-                key={dashboard.id}
-                onClick={() => {
-                  navigate(`/dashboards/${dashboard.id}`)
-                }}
-              >
-                {dashboard.name}
-              </Menu.Item>
-            ))}
-          </Menu.SubMenu>
-        ))}
-      </Menu>
-    ),
-    [categories, navigate],
-  )
+  const sidebarContent = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="space-y-4">
+          {range(3).map((val) => (
+            <div key={val} className="px-3 space-y-4">
+              <div className="w-full h-8 bg-background-secondary animate-pulse" />
+              <div className="pl-6 space-y-4">
+                <div className="w-full h-6 bg-background-secondary animate-pulse" />
+                <div className="w-full h-6 bg-background-secondary animate-pulse" />
+                <div className="w-full h-6 bg-background-secondary animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    if (categories) {
+      return (
+        <Menu mode="inline">
+          {categories.map((category) => (
+            <Menu.SubMenu key={`sub-${category.id}`} title={category.name}>
+              {category.dashboards?.map((dashboard) => (
+                <Menu.Item
+                  key={dashboard.id}
+                  onClick={() => {
+                    navigate(`/dashboards/${dashboard.id}`)
+                  }}
+                >
+                  {dashboard.name}
+                </Menu.Item>
+              ))}
+            </Menu.SubMenu>
+          ))}
+        </Menu>
+      )
+    }
+  }, [categories, isLoading, navigate])
 
   return (
     <>
