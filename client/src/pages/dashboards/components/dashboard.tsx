@@ -71,7 +71,7 @@ export default function Dashboard() {
           >
             {dashboard.charts?.map((chart) => (
               <div key={chart.id}>
-                <Chart dashboardChartId={chart.id} />
+                <Chart dashboardChartId={chart.id} dashboardId={dashboardId} />
               </div>
             ))}
           </GridLayout>
@@ -84,6 +84,7 @@ export default function Dashboard() {
     measureContainer,
     containerBounds.width,
     handleUpdateDashboard,
+    dashboardId,
   ])
 
   return <>{dashboardContent}</>

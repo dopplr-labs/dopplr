@@ -1,16 +1,18 @@
-import React, { cloneElement, useMemo, useState } from 'react'
-import { useQuery } from 'react-query'
+import React, { cloneElement, useCallback, useMemo, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { EllipsisOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Modal } from 'antd'
 import { chartList } from 'pages/queries/data/chart-list'
 import { runQuery } from 'pages/queries/queries-and-mutations'
-import { fetchDashboardChart } from '../queries'
+import { Dashboard } from 'types/dashboard'
+import { deleteDashboardChart, fetchDashboardChart } from '../queries'
 
 type ChartProps = {
   dashboardChartId: number
+  dashboardId: string
 }
 
-export default function Chart({ dashboardChartId }: ChartProps) {
+export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
   const [isFullScreen, setIsFullScreen] = useState(false)
 
   const { data: dashboardChart, isLoading } = useQuery(
@@ -28,6 +30,29 @@ export default function Chart({ dashboardChartId }: ChartProps) {
     { enabled: !isLoading },
   )
 
+  const queryClient = useQueryClient()
+  const dashboard: Dashboard | undefined = queryClient.getQueryData([
+    'dashboard',
+    dashboardId,
+  ])
+
+  const { mutate: removeChart } = useMutation(deleteDashboardChart, {
+    onSuccess: (deletedChart) => {
+      queryClient.setQueryData(
+        ['dashboard', dashboardId],
+        dashboard
+          ? {
+              ...dashboard,
+              charts: dashboard.charts?.filter(
+                (chart) => chart.id !== deletedChart.id,
+              ),
+            }
+          : {},
+      )
+      queryClient.removeQueries(['dashboard-chart', deletedChart.id])
+    },
+  })
+
   function handleEnterFullScreen() {
     setIsFullScreen(true)
   }
@@ -36,15 +61,19 @@ export default function Chart({ dashboardChartId }: ChartProps) {
     setIsFullScreen(false)
   }
 
+  const handleRemoveChart = useCallback(() => {
+    removeChart(dashboardChartId)
+  }, [removeChart, dashboardChartId])
+
   const chartMenu = useMemo(
     () => (
       <Menu>
-        <Menu.Item key="0" className="text-xs">
+        <Menu.Item key="0" className="text-sm" onClick={handleRemoveChart}>
           Remove from Dashboard
         </Menu.Item>
       </Menu>
     ),
-    [],
+    [handleRemoveChart],
   )
 
   const chartContent = useMemo(() => {

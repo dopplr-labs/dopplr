@@ -112,7 +112,10 @@ export default function Dashboards() {
 
     if (categories) {
       return (
-        <Menu mode="inline">
+        <Menu
+          mode="inline"
+          defaultOpenKeys={categories.map((category) => `sub-${category.id}`)}
+        >
           {categories.map((category) => (
             <Menu.SubMenu key={`sub-${category.id}`} title={category.name}>
               {category.dashboards?.map((dashboard) => (
