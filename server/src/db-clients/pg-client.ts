@@ -2,7 +2,14 @@ import { ConnectionOptions } from 'tls'
 import { InternalServerErrorException } from '@nestjs/common'
 import { Client } from 'pg'
 import * as _ from 'lodash'
-import { ClientInterface, ClientResource, QueryRow } from './client.interface'
+import { limit } from 'sql-limiter'
+import {
+  ClientInterface,
+  ClientResource,
+  QueryResult,
+  QueryRow,
+} from './client.interface'
+import { MAX_ROWS } from './constants'
 
 export class PgClient implements ClientInterface {
   constructor(private readonly resource: ClientResource) {}
@@ -43,17 +50,22 @@ export class PgClient implements ClientInterface {
     }
   }
 
-  async runQuery<T = QueryRow>(query: string) {
+  async runQuery<T = QueryRow>(
+    query: string,
+    maxRows: number = MAX_ROWS,
+  ): Promise<QueryResult<T>> {
     try {
       this.client.connect()
+      const limitedQuery = limit(query, ['limit', 'fetch'], maxRows)
       const start = Date.now()
-      const result = await this.client.query<T>(query)
+      const result = await this.client.query<T>(limitedQuery)
       const timeToRunQuery = Date.now() - start
       return {
         rows: result.rows ?? [],
         fields: result.fields?.map(field => ({ name: field.name })) ?? [],
         timeToRunQuery,
         numRows: result.rowCount,
+        maxLimitEnforced: result.rowCount === maxRows,
       }
     } catch (error) {
       throw new InternalServerErrorException(error)

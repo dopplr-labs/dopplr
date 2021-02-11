@@ -13,6 +13,7 @@ export type QueryResult<T = QueryRow> = {
   fields: QueryField[]
   timeToRunQuery: number
   numRows: number
+  maxLimitEnforced?: boolean
 }
 
 export type ColumnDetail = {
