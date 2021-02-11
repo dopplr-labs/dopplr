@@ -4545,6 +4545,11 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
+moo@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/moo/-/moo-0.5.1.tgz#7aae7f384b9b09f620b6abf6f74ebbcd1b65dbc4"
+  integrity sha512-I1mnb5xn4fO80BH9BLcF0yLypy2UKl+Cb01Fu0hJRkJjlCRtxZMWkTdAtDd5ZqCOxtCkhmRwyI57vWT+1iZ67w==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -5781,6 +5786,13 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+sql-limiter@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/sql-limiter/-/sql-limiter-2.4.0.tgz#d00b0de81f5448b118ceb8dc24be0ca439e16beb"
+  integrity sha512-DEHp4hYCXtv/CgT6DTJVQjtBWw6xEvqRIZgcNMY9c+tQwHnVzd2zxdM1JpszbFAHB+td88QZEMEk5qL0iN7wfw==
+  dependencies:
+    moo "^0.5.1"
 
 sqlstring@2.3.1:
   version "2.3.1"

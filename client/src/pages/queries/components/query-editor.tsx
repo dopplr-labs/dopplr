@@ -1,6 +1,10 @@
 import React, { useContext } from 'react'
 import { Button, Tabs, Tooltip } from 'antd'
-import { CaretRightFilled, CodeOutlined } from '@ant-design/icons'
+import {
+  CaretRightFilled,
+  CodeOutlined,
+  WarningFilled,
+} from '@ant-design/icons'
 import { useMutation, useQueryClient } from 'react-query'
 import { useParams, useSearchParams } from 'react-router-dom'
 import useMeasure from 'react-use-measure'
@@ -101,6 +105,12 @@ export default function QueryEditor() {
         ) : (
           <div className="flex-1" />
         )}
+        {queryResult?.maxLimitEnforced ? (
+          <div className="flex items-center px-2 space-x-2 text-xs border-r text-content-tertiary">
+            <WarningFilled className="text-lg text-yellow-300" />
+            <span>Query limited to max {queryResult.numRows} rows</span>
+          </div>
+        ) : null}
         {queryResult?.timeToRunQuery ? (
           <div className="text-xs text-content-tertiary">
             Took{' '}

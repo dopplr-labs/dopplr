@@ -8,7 +8,8 @@ export type QueryResult = {
   rows: any[]
   timeToRunQuery: number
   fields: QueryField[]
-  rowCount: number
+  numRows: number
+  maxLimitEnforced?: boolean
 }
 
 export type SavedQuery = History & {

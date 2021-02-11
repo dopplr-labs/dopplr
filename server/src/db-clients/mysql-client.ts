@@ -5,6 +5,7 @@ import {
   NotImplementedException,
 } from '@nestjs/common'
 import * as _ from 'lodash'
+import { limit } from 'sql-limiter'
 import {
   ClientInterface,
   ClientResource,
@@ -12,6 +13,7 @@ import {
   QueryRow,
   TableDetail,
 } from './client.interface'
+import { MAX_ROWS } from './constants'
 
 export class MysqlClient implements ClientInterface {
   constructor(private readonly resource: ClientResource) {}
@@ -53,17 +55,22 @@ export class MysqlClient implements ClientInterface {
     }
   }
 
-  async runQuery<T = QueryRow>(query: string): Promise<QueryResult<T>> {
+  async runQuery<T = QueryRow>(
+    query: string,
+    maxRows: number = MAX_ROWS,
+  ): Promise<QueryResult<T>> {
     this.connection.connect()
     try {
+      const limitedQuery = limit(query, ['limit', 'fetch'], maxRows)
       const start = Date.now()
-      const { results, fieldInfo } = await this._queryPromisified(query)
+      const { results, fieldInfo } = await this._queryPromisified(limitedQuery)
       const timeToRunQuery = Date.now() - start
       return {
         rows: results,
         fields: fieldInfo.map(field => ({ name: field.name.toLowerCase() })),
         timeToRunQuery,
         numRows: results.length,
+        maxLimitEnforced: results.length === maxRows,
       }
     } catch (error) {
       throw new InternalServerErrorException(error)
