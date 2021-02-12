@@ -12,7 +12,7 @@ export default function Dashboard() {
   const { dashboardId } = useParams()
   const [measureContainer, containerBounds] = useMeasure()
 
-  const { data: dashboard, isLoading } = useQuery(
+  const { data: dashboard, isLoading, error } = useQuery(
     ['dashboard', dashboardId],
     () => fetchDashboard(parseInt(dashboardId)),
   )
@@ -31,14 +31,8 @@ export default function Dashboard() {
       return <div />
     }
 
-    if (!dashboard) {
-      return (
-        <Result
-          status="404"
-          title="Not Available"
-          subTitle="The dashboard you are looking for is not available"
-        />
-      )
+    if (error) {
+      return <Result status="warning" subTitle={(error as any).message} />
     }
 
     if (dashboard) {
@@ -80,6 +74,7 @@ export default function Dashboard() {
     }
   }, [
     dashboard,
+    error,
     isLoading,
     measureContainer,
     containerBounds.width,

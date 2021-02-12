@@ -14,7 +14,7 @@ enum CreateOptions {
 }
 
 export default function Dashboards() {
-  const [show, setShow] = useState<boolean>(false)
+  const [createDashboardModal, setCreateDashboardModal] = useState(false)
   const [createOption, setCreateOption] = useState<CreateOptions>(
     CreateOptions.DASHBOARD,
   )
@@ -38,7 +38,7 @@ export default function Dashboards() {
         )
         message.success('Category created successfully')
         form.resetFields()
-        setShow(false)
+        setCreateDashboardModal(false)
       },
     },
   )
@@ -64,7 +64,7 @@ export default function Dashboards() {
         )
         message.success('Dashboard created successfully')
         form.resetFields()
-        setShow(false)
+        setCreateDashboardModal(false)
       },
     },
   )
@@ -81,7 +81,7 @@ export default function Dashboards() {
   }
 
   function handleShowModal() {
-    setShow(true)
+    setCreateDashboardModal(true)
   }
 
   function handleOk() {
@@ -89,7 +89,7 @@ export default function Dashboards() {
   }
 
   function handleCancel() {
-    setShow(false)
+    setCreateDashboardModal(false)
   }
 
   const sidebarContent = useMemo(() => {
@@ -160,7 +160,7 @@ export default function Dashboards() {
       <Modal
         title="Create New Dashboard"
         width={640}
-        visible={show}
+        visible={createDashboardModal}
         onCancel={handleCancel}
         onOk={handleOk}
         okButtonProps={{ loading: isCreatingCategory || isCreatingDashboard }}

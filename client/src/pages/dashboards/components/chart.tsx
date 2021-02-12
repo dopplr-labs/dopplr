@@ -1,7 +1,7 @@
 import React, { cloneElement, useCallback, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { EllipsisOutlined, FullscreenOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Menu, Modal } from 'antd'
+import { Button, Dropdown, Menu, Modal, Result } from 'antd'
 import { chartList } from 'pages/queries/data/chart-list'
 import { runQuery } from 'pages/queries/queries-and-mutations'
 import { Dashboard } from 'types/dashboard'
@@ -15,7 +15,7 @@ type ChartProps = {
 export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
   const [isFullScreen, setIsFullScreen] = useState(false)
 
-  const { data: dashboardChart, isLoading } = useQuery(
+  const { data: dashboardChart, isLoading, error } = useQuery(
     ['dashboard-chart', dashboardChartId],
     () => fetchDashboardChart(dashboardChartId),
   )
@@ -27,27 +27,22 @@ export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
         resource: dashboardChart?.chart.query.resource.id ?? 0,
         query: dashboardChart?.chart.query.query ?? '',
       }),
-    { enabled: !isLoading },
+    { enabled: dashboardChart !== undefined },
   )
 
   const queryClient = useQueryClient()
-  const dashboard: Dashboard | undefined = queryClient.getQueryData([
-    'dashboard',
-    dashboardId,
-  ])
 
   const { mutate: removeChart } = useMutation(deleteDashboardChart, {
     onSuccess: (deletedChart) => {
       queryClient.setQueryData(
         ['dashboard', dashboardId],
-        dashboard
-          ? {
-              ...dashboard,
-              charts: dashboard.charts?.filter(
-                (chart) => chart.id !== deletedChart.id,
-              ),
-            }
-          : {},
+        (dashboard: Dashboard | undefined) =>
+          ({
+            ...dashboard,
+            charts: dashboard?.charts?.filter(
+              (chart) => chart.id !== deletedChart.id,
+            ),
+          } as Dashboard),
       )
       queryClient.removeQueries(['dashboard-chart', deletedChart.id])
     },
@@ -76,14 +71,45 @@ export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
     [handleRemoveChart],
   )
 
+  const chartTitle = useMemo(() => {
+    if (isLoading || isRunningQuery) {
+      return <div className="w-1/2 h-6 bg-background-secondary animate-pulse" />
+    }
+
+    if (dashboardChart) {
+      return (
+        <div className="flex items-center w-full">
+          <div className="text-sm font-medium text-gray-600">
+            {dashboardChart.chart.name}
+          </div>
+          <div className="flex-1" />
+          <button
+            className="invisible px-2 py-1 focus:outline-none group-hover:visible"
+            onClick={handleEnterFullScreen}
+          >
+            <FullscreenOutlined />
+          </button>
+          <Dropdown overlay={chartMenu} trigger={['click']}>
+            <button className="invisible px-2 py-1 focus:outline-none group-hover:visible">
+              <EllipsisOutlined />
+            </button>
+          </Dropdown>
+        </div>
+      )
+    }
+  }, [isLoading, isRunningQuery, dashboardChart, chartMenu])
+
   const chartContent = useMemo(() => {
     if (isLoading || isRunningQuery) {
       return (
-        <>
-          <div className="w-full h-full bg-background-secondary animate-pulse" />
-        </>
+        <div className="w-full h-full bg-background-secondary animate-pulse" />
       )
     }
+
+    if (error) {
+      return <Result status="warning" subTitle={(error as any).message} />
+    }
+
     if (dashboardChart && queryResult) {
       const chartData = dashboardChart.chart.values
         .map((value) =>
@@ -104,32 +130,13 @@ export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
         </div>
       )
     }
-  }, [isLoading, isRunningQuery, dashboardChart, queryResult])
+  }, [isLoading, isRunningQuery, dashboardChart, queryResult, error])
 
   return (
     <>
       <div className="relative flex flex-col items-start h-full p-4 space-y-4 bg-white shadow-md group">
-        {isLoading || isRunningQuery ? (
-          <div className="w-1/2 h-6 bg-background-secondary animate-pulse" />
-        ) : (
-          dashboardChart && (
-            <div className="text-sm font-medium text-gray-600">
-              {dashboardChart.chart.name}
-            </div>
-          )
-        )}
+        {chartTitle}
         {chartContent}
-        <Dropdown overlay={chartMenu} trigger={['click']}>
-          <button className="absolute top-0 right-0 invisible px-2 py-1 mr-2 focus:outline-none group-hover:visible">
-            <EllipsisOutlined />
-          </button>
-        </Dropdown>
-        <button
-          className="absolute top-0 right-0 invisible px-2 py-1 mr-8 focus:outline-none group-hover:visible"
-          onClick={handleEnterFullScreen}
-        >
-          <FullscreenOutlined />
-        </button>
       </div>
 
       <Modal
@@ -137,8 +144,9 @@ export default function Chart({ dashboardChartId, dashboardId }: ChartProps) {
         title={dashboardChart?.chart.name}
         onCancel={handleExitFullScreen}
         cancelText="Close"
-        width={1960}
+        width={window.innerWidth}
         footer={<Button onClick={handleExitFullScreen}>Close</Button>}
+        destroyOnClose
       >
         <div className="relative flex flex-col items-start p-4 space-y-4 bg-white h-120">
           {chartContent}

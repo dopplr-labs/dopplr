@@ -29,7 +29,7 @@ export default function ChartDetail() {
   const [form] = Form.useForm()
   const [dashboardForm] = Form.useForm()
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [publishModalVisible, setPublishModalVisible] = useState(false)
   const [fields, setFields] = useState<FormFieldData[]>([
     { name: ['type'] },
     { name: ['name'] },
@@ -122,7 +122,7 @@ export default function ChartDetail() {
     onSuccess: () => {
       message.success('Chart added to dashboard')
       dashboardForm.resetFields()
-      setIsModalOpen(false)
+      setPublishModalVisible(false)
     },
   })
 
@@ -138,7 +138,7 @@ export default function ChartDetail() {
   )
 
   const handleOpenModal = useCallback(() => {
-    setIsModalOpen(true)
+    setPublishModalVisible(true)
   }, [])
 
   const handleOkModal = useCallback(() => {
@@ -146,7 +146,7 @@ export default function ChartDetail() {
   }, [dashboardForm])
 
   const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false)
+    setPublishModalVisible(false)
   }, [])
 
   const handleAddDashboard = () => {
@@ -323,7 +323,7 @@ export default function ChartDetail() {
     <>
       {chartContent}
       <Modal
-        visible={isModalOpen}
+        visible={publishModalVisible}
         title="Add chart to dashboard"
         onOk={handleOkModal}
         okButtonProps={{ loading: isAddingDashboard }}
