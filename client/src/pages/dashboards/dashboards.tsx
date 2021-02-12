@@ -125,7 +125,9 @@ export default function Dashboards() {
         <Menu
           mode="inline"
           defaultOpenKeys={categories.map((category) => `sub-${category.id}`)}
-          defaultSelectedKeys={[`${categories[0].dashboards?.[0].id}`]}
+          defaultSelectedKeys={[
+            dashboardId ?? `${categories[0].dashboards?.[0].id}`,
+          ]}
         >
           {categories.map((category) => (
             <Menu.SubMenu key={`sub-${category.id}`} title={category.name}>
@@ -144,7 +146,7 @@ export default function Dashboards() {
         </Menu>
       )
     }
-  }, [categories, isLoading, navigate])
+  }, [categories, isLoading, navigate, dashboardId])
 
   return (
     <>

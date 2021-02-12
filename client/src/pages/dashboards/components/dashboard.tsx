@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react'
-import { Result } from 'antd'
+import { Button, Dropdown, Menu, Result, Spin } from 'antd'
 import { SettingOutlined, ShareAltOutlined } from '@ant-design/icons'
 import GridLayout from 'react-grid-layout'
 import { useMutation, useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import useMeasure from 'react-use-measure'
+import Spinner from 'components/spinner'
 import { fetchDashboard, updateDashboard } from '../queries'
 import Chart from './chart'
 
@@ -26,9 +27,24 @@ export default function Dashboard() {
     [dashboardId, editDashboard],
   )
 
+  const settingsMenu = useMemo(
+    () => (
+      <Menu>
+        <Menu.Item key="0" className="text-sm">
+          Delete Dashboard
+        </Menu.Item>
+      </Menu>
+    ),
+    [],
+  )
+
   const dashboardContent = useMemo(() => {
     if (isLoading) {
-      return <div />
+      return (
+        <div className="flex items-center justify-center w-full h-full">
+          <Spin tip="Loading Dashboard..." indicator={<Spinner />} />
+        </div>
+      )
     }
 
     if (error) {
@@ -48,12 +64,10 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="flex-1" />
-            <button className="flex items-center justify-center p-2 text-lg text-gray-500 rounded-full hover:bg-gray-100 focus:outline-none">
-              <SettingOutlined />
-            </button>
-            <button className="flex items-center justify-center p-2 text-lg text-gray-500 rounded-full hover:bg-gray-100 focus:outline-none">
-              <ShareAltOutlined />
-            </button>
+            <Button icon={<ShareAltOutlined />} />
+            <Dropdown overlay={settingsMenu} trigger={['click']}>
+              <Button icon={<SettingOutlined />} />
+            </Dropdown>
           </div>
           {dashboard.layout ? (
             <GridLayout
@@ -83,6 +97,7 @@ export default function Dashboard() {
     isLoading,
     measureContainer,
     containerBounds.width,
+    settingsMenu,
     handleUpdateDashboard,
     dashboardId,
   ])
