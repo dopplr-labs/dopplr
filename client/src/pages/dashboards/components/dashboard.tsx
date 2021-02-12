@@ -55,20 +55,25 @@ export default function Dashboard() {
               <ShareAltOutlined />
             </button>
           </div>
-          <GridLayout
-            layout={dashboard?.layout}
-            rowHeight={80}
-            cols={12}
-            width={containerBounds.width}
-            onResizeStop={handleUpdateDashboard}
-            onDragStop={handleUpdateDashboard}
-          >
-            {dashboard.charts?.map((chart) => (
-              <div key={chart.id}>
-                <Chart dashboardChartId={chart.id} dashboardId={dashboardId} />
-              </div>
-            ))}
-          </GridLayout>
+          {dashboard.layout ? (
+            <GridLayout
+              layout={dashboard.layout}
+              rowHeight={80}
+              cols={12}
+              width={containerBounds.width}
+              onResizeStop={handleUpdateDashboard}
+              onDragStop={handleUpdateDashboard}
+            >
+              {dashboard.charts?.map((chart) => (
+                <div key={chart.id}>
+                  <Chart
+                    dashboardChartId={chart.id}
+                    dashboardId={dashboardId}
+                  />
+                </div>
+              ))}
+            </GridLayout>
+          ) : null}
         </div>
       )
     }

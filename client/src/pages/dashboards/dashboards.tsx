@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { Button, Menu, Modal, Form, Input, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { range } from 'lodash-es'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import PageLayout from 'components/page-layout'
@@ -19,11 +19,21 @@ export default function Dashboards() {
     CreateOptions.DASHBOARD,
   )
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const dashboardId = pathname.split('/')[2]
+
   const [form] = Form.useForm()
 
   const { data: categories, isLoading } = useQuery(
     ['categories'],
     fetchCategories,
+    {
+      onSettled: (categories) => {
+        if (!dashboardId && categories) {
+          navigate(`/dashboards/${categories[0].dashboards?.[0].id}`)
+        }
+      },
+    },
   )
 
   const queryClient = useQueryClient()
@@ -115,6 +125,7 @@ export default function Dashboards() {
         <Menu
           mode="inline"
           defaultOpenKeys={categories.map((category) => `sub-${category.id}`)}
+          defaultSelectedKeys={[`${categories[0].dashboards?.[0].id}`]}
         >
           {categories.map((category) => (
             <Menu.SubMenu key={`sub-${category.id}`} title={category.name}>
