@@ -11,7 +11,7 @@ export default function PageLayout({ sidebar, content }: PageLayoutProps) {
     <div className="flex h-full space-x-8 bg-white">
       <div className="h-full border-r w-80">{sidebar}</div>
       <Scrollbars className="flex-1 h-full" autoHide>
-        <div className="py-8 pr-8">{content}</div>
+        <div className="h-full py-8 pr-8">{content}</div>
       </Scrollbars>
     </div>
   )

@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router-dom'
 import EditorContext from 'contexts/editor-context'
 import { Chart, ChartType } from 'types/chart'
 import { FormFieldData } from 'types/form-fields'
+import { createDashboardChart, fetchDashboards } from 'pages/dashboards/queries'
 import {
   deleteChart,
   fetchChart,
@@ -26,7 +27,9 @@ export default function ChartDetail() {
   const activeChartId = searchParams.get('chart')
 
   const [form] = Form.useForm()
+  const [dashboardForm] = Form.useForm()
 
+  const [publishModalVisible, setPublishModalVisible] = useState(false)
   const [fields, setFields] = useState<FormFieldData[]>([
     { name: ['type'] },
     { name: ['name'] },
@@ -69,6 +72,8 @@ export default function ChartDetail() {
     fetchChartsForQuery(parseInt(queryId)),
   )
 
+  const { data: dashboards } = useQuery(['dashboards'], fetchDashboards)
+
   const queryClient = useQueryClient()
 
   const { mutate: editChart, isLoading: isUpdatingChart } = useMutation(
@@ -110,6 +115,17 @@ export default function ChartDetail() {
     },
   )
 
+  const {
+    mutate: addDashboardChart,
+    isLoading: isAddingDashboard,
+  } = useMutation(createDashboardChart, {
+    onSuccess: () => {
+      message.success('Chart added to dashboard')
+      dashboardForm.resetFields()
+      setPublishModalVisible(false)
+    },
+  })
+
   const onChange = useCallback((newFields) => {
     setFields(newFields)
   }, [])
@@ -120,6 +136,23 @@ export default function ChartDetail() {
     },
     [activeChartId, editChart],
   )
+
+  const handleOpenModal = useCallback(() => {
+    setPublishModalVisible(true)
+  }, [])
+
+  const handleOkModal = useCallback(() => {
+    dashboardForm.submit()
+  }, [dashboardForm])
+
+  const handleCloseModal = useCallback(() => {
+    setPublishModalVisible(false)
+  }, [])
+
+  const handleAddDashboard = () => {
+    const { dashboard } = dashboardForm.getFieldsValue()
+    addDashboardChart({ dashboard, chart: parseInt(activeChartId ?? '') })
+  }
 
   const confirmDelete = useCallback(() => {
     Modal.confirm({
@@ -184,7 +217,12 @@ export default function ChartDetail() {
             className="flex flex-col px-4 pb-8 space-y-4"
             style={{ width: 'calc(100% - 16rem)' }}
           >
-            <div className="font-semibold">{name}</div>
+            <div className="flex items-start justify-between">
+              <div className="font-semibold">{name}</div>
+              <Button type="primary" onClick={handleOpenModal}>
+                Add to Dashboard
+              </Button>
+            </div>
             {cloneElement(chartList[type as ChartType].chart, {
               data: chartData,
             })}
@@ -278,7 +316,35 @@ export default function ChartDetail() {
     confirmDelete,
     isRemovingChart,
     isUpdatingChart,
+    handleOpenModal,
   ])
 
-  return <>{chartContent}</>
+  return (
+    <>
+      {chartContent}
+      <Modal
+        visible={publishModalVisible}
+        title="Add chart to dashboard"
+        onOk={handleOkModal}
+        okButtonProps={{ loading: isAddingDashboard }}
+        onCancel={handleCloseModal}
+      >
+        <Form
+          layout="vertical"
+          form={dashboardForm}
+          onFinish={handleAddDashboard}
+        >
+          <Form.Item label="Select Dashboard" name="dashboard" required>
+            <Select placeholder="Publish to dashboard" className="w-full">
+              {dashboards?.map((dashboard) => (
+                <Select.Option key={dashboard.id} value={dashboard.id}>
+                  {dashboard.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  )
 }

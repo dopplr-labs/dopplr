@@ -1,3 +1,5 @@
+import { Query } from './query'
+
 export enum ChartType {
   LINE = 'line',
   SMOOTH_LINE = 'smoothLine',
@@ -21,5 +23,5 @@ export type Chart = {
   label: string
   values: string[]
   type: ChartType
-  query: number
+  query: Query
 }
