@@ -78,6 +78,13 @@ export async function updateDashboard({
   return data.data
 }
 
+export async function deleteDashboard(id: number): Promise<Dashboard> {
+  const { data } = await client.delete<{ success: boolean; data: Dashboard }>(
+    `/dashboards/${id}`,
+  )
+  return data.data
+}
+
 export async function deleteDashboardChart(
   id: number,
 ): Promise<DashboardChart> {
