@@ -29,8 +29,13 @@ export default function Dashboards() {
     fetchCategories,
     {
       onSettled: (categories) => {
-        if (!dashboardId && categories) {
-          navigate(`/dashboards/${categories[0].dashboards?.[0].id}`)
+        if (
+          !dashboardId &&
+          categories &&
+          categories.length > 0 &&
+          categories[0].dashboards?.length
+        ) {
+          navigate(`/dashboards/${categories[0].dashboards?.[0]?.id}`)
         }
       },
     },
@@ -126,7 +131,7 @@ export default function Dashboards() {
           mode="inline"
           defaultOpenKeys={categories.map((category) => `sub-${category.id}`)}
           defaultSelectedKeys={[
-            dashboardId ?? `${categories[0].dashboards?.[0].id}`,
+            dashboardId ?? `${categories[0]?.dashboards?.[0]?.id}`,
           ]}
         >
           {categories.map((category) => (
