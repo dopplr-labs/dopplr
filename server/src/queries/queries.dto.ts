@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer'
-import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import { QueryResultFileType } from './query.types'
 
 export class RunQueryDto {
   @Transform(({ value }) => Number.parseInt(value, 10))
@@ -44,4 +45,16 @@ export class SampleTableDto {
 
   @IsString()
   tableName: string
+}
+
+export class DownloadQueryResultDto {
+  @Transform(({ value }) => Number.parseInt(value, 10))
+  @IsNumber()
+  resource: number
+
+  @IsString()
+  query: string
+
+  @IsEnum(QueryResultFileType)
+  fileType: QueryResultFileType
 }

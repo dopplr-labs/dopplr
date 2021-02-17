@@ -52,6 +52,7 @@ export default function QueryEditor() {
     updateResourceId,
     query,
     updateQuery,
+    name,
   } = useTabData(tabRoute)
 
   const [measureContainer, containerBounds] = useMeasure()
@@ -225,6 +226,9 @@ export default function QueryEditor() {
               <Tabs.TabPane tab="Table" key="result">
                 <div className="w-full h-full">
                   <ResultsTable
+                    fileName={name}
+                    query={query}
+                    resourceId={resourceId as number}
                     data={queryResult}
                     isLoading={isRunningQuery}
                     error={queryResultError}

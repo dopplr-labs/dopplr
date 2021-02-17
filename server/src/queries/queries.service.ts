@@ -1,3 +1,4 @@
+import { readFile, unlink } from 'fs'
 import {
   ForbiddenException,
   forwardRef,
@@ -5,8 +6,13 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Parser } from 'json2csv'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { v4 } from 'uuid'
 import { PaginationData } from 'src/types/pagination'
 import { ResourcesService } from 'src/resources/resources.service'
 import { PaginationDto } from 'src/dtos/pagination.dto'
@@ -14,9 +20,39 @@ import { User } from 'src/auth/user.types'
 import { Resource } from 'src/resources/resource.entity'
 import { ClientFactory } from 'src/db-clients/client-factory'
 import { QueryResult } from 'src/db-clients/client.interface'
-import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
+import {
+  DownloadQueryResultDto,
+  RunQueryDto,
+  SaveQueryDto,
+  UpdateQueryDto,
+} from './queries.dto'
 import { Query } from './query.entity'
 import { QueryRepository } from './query.repository'
+import { QueryResultFileType } from './query.types'
+
+function readFilePromisified(fileName) {
+  return new Promise((resolve, reject) => {
+    readFile(fileName, (error, data) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
+function removeFilePromisified(fileName) {
+  return new Promise((resolve, reject) => {
+    unlink(fileName, error => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(true)
+      }
+    })
+  })
+}
 
 @Injectable()
 export class QueriesService {
@@ -242,5 +278,51 @@ export class QueriesService {
    */
   deleteQueriesForResource(resource: Resource, user: User) {
     this.queryRepository.delete({ resource, uid: user.uid })
+  }
+
+  async downloadQueryResult(
+    downloadQueryResultDto: DownloadQueryResultDto,
+    user: User,
+  ): Promise<{ file: any; contentType: string }> {
+    const { query, resource, fileType } = downloadQueryResultDto
+
+    if (fileType === QueryResultFileType.CSV) {
+      const results = await this.runQuery({ query, resource }, user)
+      const parser = new Parser({
+        fields: results.fields.map(field => field.name),
+      })
+      const csv = parser.parse(results.rows)
+      return {
+        file: csv,
+        contentType: 'text/csv',
+      }
+    }
+
+    if (fileType === QueryResultFileType.PDF) {
+      const results = await this.runQuery({ query, resource }, user)
+      // eslint-disable-next-line new-cap
+      const doc = new jsPDF({ orientation: 'landscape' })
+      autoTable(doc, {
+        head: [results.fields.map(field => field.name)],
+        body: results.rows.map(row => {
+          return results.fields.map(field => row[field.name])
+        }),
+        theme: 'grid',
+        headStyles: {
+          fillColor: '#3b82f6',
+          textColor: '#ffffff',
+        },
+      })
+      const outputFileName = `${v4()}.pdf`
+      doc.save(outputFileName)
+      const fileContent = await readFilePromisified(outputFileName)
+      await removeFilePromisified(outputFileName)
+      return {
+        file: fileContent,
+        contentType: 'application/pdf',
+      }
+    }
+
+    throw new NotImplementedException('only csv file types is supported')
   }
 }

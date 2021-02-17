@@ -1,19 +1,26 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   CaretRightFilled,
+  DownloadOutlined,
   FilePdfOutlined,
   FileTextOutlined,
 } from '@ant-design/icons'
-import { Dropdown, Menu, Result, Table } from 'antd'
+import { Dropdown, Button, Menu, message, Result, Table } from 'antd'
 import clsx from 'clsx'
 import { range } from 'lodash-es'
 import useMeasure from 'react-use-measure'
+import { saveAs } from 'file-saver'
 import { QueryResult } from 'types/query'
+import client from 'utils/client'
+import dayjs from 'dayjs'
 
 const PAGINATION_CONTAINER_HEIGHT = 64
 
 type ResultsTableProps = {
+  query: string
+  resourceId: number
+  fileName?: string
   data?: QueryResult
   isLoading: boolean
   error?: any
@@ -22,6 +29,9 @@ type ResultsTableProps = {
 }
 
 export default function ResultsTable({
+  query,
+  resourceId,
+  fileName,
   data,
   isLoading,
   error,
@@ -33,18 +43,43 @@ export default function ResultsTable({
     undefined,
   )
 
-  const downloadOptions = useMemo(() => {
-    return (
-      <Menu>
-        <Menu.Item className="flex items-center">
-          <FileTextOutlined /> CSV
-        </Menu.Item>
-        <Menu.Item className="flex items-center space-x-3">
-          <FilePdfOutlined /> PDF
-        </Menu.Item>
-      </Menu>
-    )
-  }, [])
+  const [downloadingData, setDownloadingData] = useState(false)
+
+  const downloadData = useCallback(
+    async (fileType, fileExtension) => {
+      setDownloadingData(true)
+      try {
+        const { data, headers } = await client.post('/queries/download', {
+          query,
+          resource: resourceId,
+          fileType,
+        })
+        const blob = new Blob([data], { type: headers['content-type'] })
+        saveAs(
+          blob,
+          `${fileName ?? query.slice(0, 20)}-${dayjs().format(
+            'YYYY-MM-DD_HH:mm',
+          )}.${fileExtension}`,
+        )
+      } catch (error) {
+        const errorMessage =
+          error?.response?.data?.message ??
+          'Something went wrong. Please try again'
+        message.error(errorMessage)
+      } finally {
+        setDownloadingData(false)
+      }
+    },
+    [query, resourceId, fileName],
+  )
+
+  const downloadDataAsCSV = useCallback(() => {
+    downloadData('CSV', 'csv')
+  }, [downloadData])
+
+  const downloadDataAsPDF = useCallback(async () => {
+    downloadData('PDF', 'pdf')
+  }, [downloadData])
 
   const content = useMemo(() => {
     if (isLoading) {
@@ -120,9 +155,34 @@ export default function ResultsTable({
           {tableFooter
             ? createPortal(
                 <div className="flex justify-end flex-1">
-                  <Dropdown.Button overlay={downloadOptions} type="primary">
-                    Download
-                  </Dropdown.Button>
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item
+                          className="flex items-center"
+                          onClick={downloadDataAsCSV}
+                        >
+                          <FileTextOutlined /> Download as CSV
+                        </Menu.Item>
+                        <Menu.Item
+                          className="flex items-center space-x-3"
+                          onClick={downloadDataAsPDF}
+                        >
+                          <FilePdfOutlined /> Download as PDF
+                        </Menu.Item>
+                      </Menu>
+                    }
+                    placement="topRight"
+                  >
+                    <Button
+                      type="primary"
+                      icon={<DownloadOutlined />}
+                      loading={downloadingData}
+                      disabled={downloadingData}
+                    >
+                      Download Data
+                    </Button>
+                  </Dropdown>
                 </div>,
                 tableFooter,
               )
@@ -147,7 +207,9 @@ export default function ResultsTable({
     error,
     containerBounds,
     tableHeaderSize,
-    downloadOptions,
+    downloadDataAsCSV,
+    downloadDataAsPDF,
+    downloadingData,
   ])
 
   return (
