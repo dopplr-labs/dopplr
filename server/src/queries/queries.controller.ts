@@ -7,14 +7,21 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common'
+import { Response } from 'express'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { QueryResult } from 'src/db-clients/client.interface'
 import { PaginationDto } from 'src/dtos/pagination.dto'
 import { PaginationData } from 'src/types/pagination'
-import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
+import {
+  DownloadQueryResultDto,
+  RunQueryDto,
+  SaveQueryDto,
+  UpdateQueryDto,
+} from './queries.dto'
 import { QueriesService } from './queries.service'
 import { Query as QueryType } from './query.entity'
 
@@ -60,6 +67,21 @@ export class QueriesController {
   ): Promise<{ success: boolean; data: QueryResult }> {
     const data = await this.queriesService.runQuery(runQueryDto, user)
     return { success: true, data }
+  }
+
+  @Post('download')
+  async downloadQueryData(
+    @Body() downloadQueryData: DownloadQueryResultDto,
+    @GetUser() user,
+    @Res() res: Response,
+  ) {
+    const { file, contentType } = await this.queriesService.downloadQueryResult(
+      downloadQueryData,
+      user,
+    )
+    res.attachment(`${downloadQueryData.query.slice(0, 20)}-${Date.now()}`)
+    res.setHeader('Content-Type', contentType)
+    return res.send(file)
   }
 
   @Post('save')

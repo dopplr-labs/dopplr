@@ -5,8 +5,10 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Parser } from 'json2csv'
 import { PaginationData } from 'src/types/pagination'
 import { ResourcesService } from 'src/resources/resources.service'
 import { PaginationDto } from 'src/dtos/pagination.dto'
@@ -14,9 +16,15 @@ import { User } from 'src/auth/user.types'
 import { Resource } from 'src/resources/resource.entity'
 import { ClientFactory } from 'src/db-clients/client-factory'
 import { QueryResult } from 'src/db-clients/client.interface'
-import { RunQueryDto, SaveQueryDto, UpdateQueryDto } from './queries.dto'
+import {
+  DownloadQueryResultDto,
+  RunQueryDto,
+  SaveQueryDto,
+  UpdateQueryDto,
+} from './queries.dto'
 import { Query } from './query.entity'
 import { QueryRepository } from './query.repository'
+import { QueryResultFileType } from './query.types'
 
 @Injectable()
 export class QueriesService {
@@ -242,5 +250,26 @@ export class QueriesService {
    */
   deleteQueriesForResource(resource: Resource, user: User) {
     this.queryRepository.delete({ resource, uid: user.uid })
+  }
+
+  async downloadQueryResult(
+    downloadQueryResultDto: DownloadQueryResultDto,
+    user: User,
+  ): Promise<{ file: any; contentType: string }> {
+    const { query, resource, fileType } = downloadQueryResultDto
+
+    if (fileType === QueryResultFileType.CSV) {
+      const results = await this.runQuery({ query, resource }, user)
+      const parser = new Parser({
+        fields: results.fields.map(field => field.name),
+      })
+      const csv = parser.parse(results.rows)
+      return {
+        file: csv,
+        contentType: 'text/csv',
+      }
+    }
+
+    throw new NotImplementedException('only csv file types is supported')
   }
 }
