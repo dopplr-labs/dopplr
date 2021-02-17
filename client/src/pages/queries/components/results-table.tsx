@@ -6,7 +6,7 @@ import {
   FilePdfOutlined,
   FileTextOutlined,
 } from '@ant-design/icons'
-import { Dropdown, Menu, Result, Table } from 'antd'
+import { Dropdown, Button, Menu, message, Result, Table } from 'antd'
 import clsx from 'clsx'
 import { range } from 'lodash-es'
 import useMeasure from 'react-use-measure'
@@ -43,22 +43,43 @@ export default function ResultsTable({
     undefined,
   )
 
-  const downloadDataAsCSV = useCallback(async () => {
-    const { data, headers } = await client.post('/queries/download', {
-      query,
-      resource: resourceId,
-      fileType: 'CSV',
-    })
-    const blob = new Blob([data], { type: headers['content-type'] })
-    saveAs(
-      blob,
-      `${fileName ?? query.slice(0, 20)}-${dayjs().format(
-        'YYYY-MM-DD_HH:mm',
-      )}.csv`,
-    )
-  }, [query, resourceId, fileName])
+  const [downloadingData, setDownloadingData] = useState(false)
 
-  const downloadDataAsPDF = useCallback(() => {}, [])
+  const downloadData = useCallback(
+    async (fileType, fileExtension) => {
+      setDownloadingData(true)
+      try {
+        const { data, headers } = await client.post('/queries/download', {
+          query,
+          resource: resourceId,
+          fileType,
+        })
+        const blob = new Blob([data], { type: headers['content-type'] })
+        saveAs(
+          blob,
+          `${fileName ?? query.slice(0, 20)}-${dayjs().format(
+            'YYYY-MM-DD_HH:mm',
+          )}.${fileExtension}`,
+        )
+      } catch (error) {
+        const errorMessage =
+          error?.response?.data?.message ??
+          'Something went wrong. Please try again'
+        message.error(errorMessage)
+      } finally {
+        setDownloadingData(false)
+      }
+    },
+    [query, resourceId, fileName],
+  )
+
+  const downloadDataAsCSV = useCallback(() => {
+    downloadData('CSV', 'csv')
+  }, [downloadData])
+
+  const downloadDataAsPDF = useCallback(async () => {
+    downloadData('PDF', 'pdf')
+  }, [downloadData])
 
   const content = useMemo(() => {
     if (isLoading) {
@@ -134,26 +155,34 @@ export default function ResultsTable({
           {tableFooter
             ? createPortal(
                 <div className="flex justify-end flex-1">
-                  <Dropdown.Button
+                  <Dropdown
                     overlay={
                       <Menu>
                         <Menu.Item
                           className="flex items-center"
                           onClick={downloadDataAsCSV}
                         >
-                          <FileTextOutlined /> Export as CSV
+                          <FileTextOutlined /> Download as CSV
                         </Menu.Item>
                         <Menu.Item
                           className="flex items-center space-x-3"
                           onClick={downloadDataAsPDF}
                         >
-                          <FilePdfOutlined /> Export as PDF
+                          <FilePdfOutlined /> Download as PDF
                         </Menu.Item>
                       </Menu>
                     }
-                    type="primary"
-                    icon={<DownloadOutlined />}
-                  />
+                    placement="topRight"
+                  >
+                    <Button
+                      type="primary"
+                      icon={<DownloadOutlined />}
+                      loading={downloadingData}
+                      disabled={downloadingData}
+                    >
+                      Download Data
+                    </Button>
+                  </Dropdown>
                 </div>,
                 tableFooter,
               )
@@ -180,6 +209,7 @@ export default function ResultsTable({
     tableHeaderSize,
     downloadDataAsCSV,
     downloadDataAsPDF,
+    downloadingData,
   ])
 
   return (
