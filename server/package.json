@@ -30,6 +30,8 @@
     "class-validator": "^0.12.2",
     "firebase-admin": "^9.4.2",
     "json2csv": "^5.0.6",
+    "jspdf": "^2.3.0",
+    "jspdf-autotable": "^3.5.14",
     "lodash-es": "^4.17.15",
     "mysql": "^2.18.1",
     "pg": "^8.4.2",
@@ -37,7 +39,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
     "sql-limiter": "^2.4.0",
-    "typeorm": "^0.2.29"
+    "typeorm": "^0.2.29",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",
@@ -50,6 +53,7 @@
     "@types/node": "^13.9.1",
     "@types/pg": "^7.14.6",
     "@types/supertest": "^2.0.8",
+    "@types/uuid": "^8.3.0",
     "jest": "26.4.2",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2",
