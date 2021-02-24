@@ -6,7 +6,6 @@ import {
   SettingOutlined,
 } from '@ant-design/icons'
 import { NavLink } from 'react-router-dom'
-import Onboarding from 'components/onboarding'
 
 const pages = [
   {
@@ -59,8 +58,6 @@ export default function SideBar() {
           </NavLink>
         )
       })}
-      <div className="flex-1" />
-      <Onboarding />
     </div>
   )
 }
