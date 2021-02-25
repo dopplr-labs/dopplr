@@ -8,18 +8,20 @@ const onboardingSteps = [
     description:
       "Let's get started by connecting your first database with Dopplr. You can connect Relational Databases like Postgres, MySQL and many more.",
     cta: 'Go to resource page',
+    redirectRoute: '/resources',
     completed: false,
   },
   {
     id: 2,
     title: 'Run your 1st query',
     description: (
-      <span>
+      <>
         You can start with something simple like{' '}
         <strong>select * from table_name;</strong>
-      </span>
+      </>
     ),
     cta: 'Go to queries page',
+    redirectRoute: '/queries',
     completed: true,
   },
   {
@@ -27,6 +29,7 @@ const onboardingSteps = [
     title: 'Plot and save a chart',
     description: 'Plot a chart using the data of a query result',
     cta: 'Go to queries page',
+    redirectRoute: '/queries',
     completed: false,
   },
   {
@@ -34,6 +37,7 @@ const onboardingSteps = [
     title: 'Create a dashboard',
     description: 'Create your first dashboard and add charts in it',
     cta: 'Go to dashboards page',
+    redirectRoute: '/dashboard',
     completed: false,
   },
 ]
@@ -59,6 +63,7 @@ export default function Onboarding() {
               title={step.title}
               description={step.description}
               cta={step.cta}
+              redirectRoute={step.redirectRoute}
               completed={step.completed}
               isOpen={openStep === step.id}
               openStep={handleOpenStep}

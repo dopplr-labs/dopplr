@@ -6,12 +6,14 @@ import {
   PlayCircleFilled,
   RightOutlined,
 } from '@ant-design/icons'
+import { NavLink } from 'react-router-dom'
 
 type StepProps = {
   id: number
   title: string
   description: string | React.ReactNode
   cta: string
+  redirectRoute: string
   completed: boolean
   isOpen: boolean
   openStep: (id: number) => void
@@ -21,6 +23,7 @@ export default function Step({
   title,
   description,
   cta,
+  redirectRoute,
   completed,
   isOpen,
   openStep,
@@ -48,9 +51,11 @@ export default function Step({
       </div>
       {isOpen ? (
         <div className="flex items-start justify-center w-full px-8 pb-6">
-          <div className="w-1/2 px-2 space-y-4">
-            <p className="pr-4">{description}</p>
-            <Button type="primary">{cta}</Button>
+          <div className="w-1/2 px-2">
+            <p className="pr-4 mb-4">{description}</p>
+            <NavLink to={redirectRoute}>
+              <Button type="primary">{cta}</Button>
+            </NavLink>
           </div>
           <div className="w-1/2">
             <div className="flex items-center justify-center h-48 max-w-sm mx-auto ml-4 bg-blue-100 rounded-md">
