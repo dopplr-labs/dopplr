@@ -15,7 +15,7 @@ export const GettingStartedSteps = [
       'You can start with something simple like select * from table_name;',
     cta: 'Go to queries page',
     redirectRoute: '/queries',
-    completed: true,
+    completed: false,
   },
   {
     id: 3,

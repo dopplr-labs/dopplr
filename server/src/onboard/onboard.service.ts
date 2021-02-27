@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common'
-import { CreateOnboardDto } from './dto/create-onboard.dto'
-import { UpdateOnboardDto } from './dto/update-onboard.dto'
+import { Inject, Injectable } from '@nestjs/common'
+import { User } from 'src/auth/user.types'
+import { ChartsService } from 'src/charts/charts.service'
+import { DashboardsService } from 'src/dashboards/dashboards.service'
+import { QueriesService } from 'src/queries/queries.service'
+import { ResourcesService } from 'src/resources/resources.service'
+import { GettingStartedSteps } from './data/getting-started'
 
 @Injectable()
 export class OnboardService {
-  create(createOnboardDto: CreateOnboardDto) {
-    return `This action adds a new onboard ${createOnboardDto}`
-  }
+  constructor(
+    @Inject(ResourcesService)
+    private resourcesSerivce: ResourcesService,
+    @Inject(QueriesService)
+    private queriesService: QueriesService,
+    @Inject(ChartsService)
+    private chartsService: ChartsService,
+    @Inject(DashboardsService)
+    private dashboardsService: DashboardsService,
+  ) {}
 
-  findAll() {
-    return 'This action returns all onboard'
-  }
+  async getSteps(user: User) {
+    const resources = await this.resourcesSerivce.getAllResources(user)
+    const queries = await this.queriesService.getAllHistory({}, user)
+    const charts = await this.chartsService.getAllCharts({}, user)
+    const dashboards = await this.dashboardsService.getAllDashboards(user)
 
-  findOne(id: number) {
-    return `This action returns a #${id} onboard`
-  }
-
-  update(id: number, updateOnboardDto: UpdateOnboardDto) {
-    return `This action updates a #${id} and ${updateOnboardDto} onboard`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} onboard`
+    return GettingStartedSteps.map(step => {
+      if (step.id === 1) {
+        return { ...step, completed: resources.length > 0 }
+      } else if (step.id === 2) {
+        return { ...step, completed: queries.items.length > 0 }
+      } else if (step.id === 3) {
+        return { ...step, completed: charts.length > 0 }
+      } else if (step.id === 4) {
+        return { ...step, completed: dashboards.length > 0 }
+      } else {
+        return step
+      }
+    })
   }
 }
