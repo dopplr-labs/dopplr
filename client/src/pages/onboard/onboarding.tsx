@@ -27,7 +27,7 @@ export default function Onboarding() {
             <div className="px-8 space-y-4">
               {range(4).map((val) => (
                 <div
-                  className="flex items-center p-6 space-x-4 border rounded-md"
+                  className="flex items-center px-6 py-4 space-x-4 border rounded-md"
                   key={val}
                 >
                   <div className="w-6 h-6 rounded-full bg-background-secondary animate-pulse" />
