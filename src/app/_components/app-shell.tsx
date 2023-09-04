@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
+import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import NavLink from '@/components/nav-link'
 
@@ -33,8 +34,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen flex-col">
       <div className="h-14 border-b px-6">
         <div className="flex h-full items-center">
-          <Logo className="mr-2 h-9 w-9" />
-          <div className="text-xl font-bold tracking-tighter">Dopplr</div>
+          <Link href="/" className="flex items-center space-x-2">
+            <Logo className="h-9 w-9" />
+            <div className="text-xl font-bold tracking-tighter">Dopplr</div>
+          </Link>
           <div className="flex-1" />
           <ThemeToggle />
         </div>
