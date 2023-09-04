@@ -1,26 +1,30 @@
 import dynamic from 'next/dynamic'
-import { DatabaseZap, LayoutDashboard, Settings, Terminal } from 'lucide-react'
+import { DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
-import { cn } from '@/lib/utils'
+import NavLink from '@/components/nav-link'
 
 const ThemeToggle = dynamic(() => import('./theme-toggle'), { ssr: false })
 
 const MENU_ITEMS = [
   {
-    icon: <DatabaseZap />,
+    icon: <DatabaseZapIcon />,
     label: 'Resources',
+    href: '/resources',
   },
   {
-    icon: <Terminal />,
+    icon: <TerminalIcon />,
     label: 'Queries',
+    href: '/queries',
   },
   {
-    icon: <LayoutDashboard />,
+    icon: <LayoutDashboardIcon />,
     label: 'Dashboards',
+    href: '/dashboards',
   },
   {
-    icon: <Settings />,
+    icon: <SettingsIcon />,
     label: 'Settings',
+    href: '/settings',
   },
 ]
 
@@ -37,19 +41,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="flex flex-1">
         <div className="flex flex-col gap-3 border-r p-3">
-          {MENU_ITEMS.map((item, index) => {
-            return (
-              <button
-                className={cn(
-                  'flex w-full flex-col items-center gap-2 rounded-md p-2.5',
-                  index === 0 ? 'bg-muted' : undefined,
-                )}
-                key={item.label}
-              >
-                {item.icon}
-                <span className="text-xs font-medium">{item.label}</span>
-              </button>
-            )
+          {MENU_ITEMS.map((item) => {
+            return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
           })}
         </div>
         {children}
