@@ -102,7 +102,7 @@ export default function CreatePGResource() {
                         />
                       </div>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -119,7 +119,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Host</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -135,7 +135,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Port</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
+                        <Input type="number" {...field} className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,7 +151,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input {...field} name="dbUsername" />
+                        <Input {...field} name="dbUsername" className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -167,7 +167,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input {...field} type="password" name="dbPassword" />
+                        <Input {...field} type="password" name="dbPassword" className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -183,7 +183,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Database</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} className="font-mono" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
