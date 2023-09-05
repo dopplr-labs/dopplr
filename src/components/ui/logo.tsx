@@ -17,12 +17,12 @@ export function Logo({ className, style }: LogoProps) {
       <path
         d="M256 429.501L255.964 429.483V429.501L112.5 346L109.5 348L106 350L34 391L256 512L478 391L404 346L256 429.501Z"
         fill="currentColor"
-        fillOpacity="0.8"
+        className="opacity-60"
       />
       <path
         d="M404.025 175.521V346.317L477.934 390.943V130.894L262.722 0.872192V90.1735L404.025 175.521Z"
         fill="currentColor"
-        fillOpacity="0.9"
+        className="opacity-80"
       />
       <path
         d="M34.1702 390.882L112.591 346.317L112.644 346.244V175.521L262.725 90.2301V90.1735V0.932956V0.872192L34.0634 130.894V390.943L34.1702 390.882Z"

@@ -1,6 +1,7 @@
 import { ZapIcon } from 'lucide-react'
 import { cloneElement } from 'react'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { BaseButton } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
@@ -81,9 +82,12 @@ export default function Page() {
                 <CardDescription>{database.description}</CardDescription>
               </CardHeader>
               <CardFooter>
-                <Button icon={<ZapIcon />} className="w-full" variant="outline">
-                  Connect Resource
-                </Button>
+                <BaseButton className="w-full" variant="outline" asChild>
+                  <Link href={`/resource/new/${database.id}`}>
+                    <ZapIcon className="mr-2 h-4 w-4" />
+                    Connect Resource
+                  </Link>
+                </BaseButton>
               </CardFooter>
             </Card>
           )

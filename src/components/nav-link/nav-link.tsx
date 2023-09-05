@@ -19,7 +19,7 @@ export default function NavLink({ icon, label, href }: NavLinkProps) {
       className={cn('flex w-full flex-col items-center gap-2 rounded-md p-2.5', isActive ? 'bg-muted' : undefined)}
     >
       {icon}
-      <span className="text-xs font-medium">{label}</span>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
     </Link>
   )
 }
