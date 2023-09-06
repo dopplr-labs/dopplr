@@ -24,7 +24,7 @@ export default function SigninPage() {
 
   return (
     <div className="grid h-screen grid-cols-2">
-      <div className="flex flex-col bg-muted p-8">
+      <div className="flex flex-col border-r border-muted-foreground/25 bg-muted p-8">
         <div className="flex items-center gap-2">
           <Logo className="h-12 w-12" />
           <div className="font-mono text-3xl font-bold">Dopplr</div>
