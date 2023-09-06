@@ -7,7 +7,8 @@ export async function testConnection(input: z.infer<typeof testConnectionSchema>
   if (input.type === 'postgres') {
     const client = postgres(input.url)
     try {
-      const result = await client`SELECT 1;`
+      const result = await client`SELECT 1 AS testValue;`
+      return result[0].testvalue === 1
     } catch (error) {
       throw new TRPCError({
         code: 'BAD_REQUEST',

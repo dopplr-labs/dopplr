@@ -1,6 +1,6 @@
 'use client'
 
-import { RouterIcon } from 'lucide-react'
+import { CheckCircle2Icon, ZapIcon } from 'lucide-react'
 import Link from 'next/link'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { trpc } from '@/lib/trpc/client'
+import { useToast } from '@/components/ui/use-toast'
 
 const validationSchema = z.discriminatedUnion('config', [
   z.object({
@@ -50,6 +52,18 @@ export default function CreatePGResource() {
   })
 
   const { config } = useWatch(form)
+
+  const { toast } = useToast()
+  const testConnectionMutation = trpc.resource.testConnection.useMutation({
+    onSuccess: (success) => {
+      if (success) {
+        toast({
+          title: 'Success',
+          description: 'Successfully connected to database',
+        })
+      }
+    },
+  })
 
   return (
     <Card className="max-w-screen-lg">
@@ -195,9 +209,34 @@ export default function CreatePGResource() {
             </div>
           </CardContent>
           <CardFooter className="gap-4">
-            <Button variant="outline" icon={<RouterIcon />}>
+            <Button
+              variant="outline"
+              icon={<ZapIcon />}
+              loading={testConnectionMutation.isLoading}
+              onClick={() => {
+                form.handleSubmit((values) => {
+                  const url =
+                    values.config === 'url'
+                      ? values.url
+                      : values.config === 'fields'
+                      ? `postgresql://${encodeURIComponent(values.dbUsername)}:${encodeURIComponent(
+                          values.dbPassword,
+                        )}@${encodeURIComponent(values.host)}:${encodeURIComponent(values.port)}/${values.database}`
+                      : undefined
+                  if (url) {
+                    testConnectionMutation.mutate({ url, type: 'postgres' })
+                  }
+                })()
+              }}
+            >
               Test Connection
             </Button>
+            {testConnectionMutation.data ? (
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <CheckCircle2Icon className="h-4 w-4" />
+                <div className="text-xs">Database connected successfully</div>
+              </div>
+            ) : null}
             <div className="flex-1" />
             <BaseButton variant="secondary" asChild size="sm">
               <Link href="/resources">Cancel</Link>

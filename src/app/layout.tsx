@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { ThemeProvider } from './(authenticated-app)/_components/theme-provider'
+import { ThemeProvider } from './_components/theme-provider'
 import TrpcProvider from '@/lib/trpc/provider'
-import './globals.css'
 import { getUserAuth } from '@/lib/auth/utils'
 import NextAuthProvider from '@/lib/auth/provider'
+import { Toaster } from '@/components/ui/toaster'
+import './globals.css'
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <NextAuthProvider session={session}>
             <TrpcProvider>{children}</TrpcProvider>
           </NextAuthProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
