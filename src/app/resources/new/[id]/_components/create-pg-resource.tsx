@@ -25,7 +25,9 @@ const validationSchema = z.discriminatedUnion('config', [
   z.object({
     config: z.literal('fields'),
     host: z.string().nonempty(),
-    port: z.number().int().positive(),
+    port: z.coerce.number({ invalid_type_error: 'Port must be a number ' }).positive({
+      message: 'Port must be a positive number',
+    }),
     dbUsername: z.string().nonempty(),
     dbPassword: z.string().nonempty(),
     database: z.string().nonempty(),
@@ -40,7 +42,7 @@ export default function CreatePGResource() {
       config: 'url',
       // @ts-expect-error
       host: '',
-      port: 5432,
+      port: '',
       dbUsername: '',
       dbPassword: '',
       database: '',
@@ -135,7 +137,7 @@ export default function CreatePGResource() {
                     <FormItem>
                       <FormLabel>Port</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} className="font-mono" />
+                        <Input type="number" className="font-mono" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
