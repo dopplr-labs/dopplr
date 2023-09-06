@@ -1,11 +1,10 @@
-import { getServerSession } from 'next-auth'
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { ThemeProvider } from './_components/theme-provider'
-import AppShell from './_components/app-shell'
+import { ThemeProvider } from './(authenticated-app)/_components/theme-provider'
 import TrpcProvider from '@/lib/trpc/provider'
-import NextAuthProvider from '@/lib/auth/provider'
 import './globals.css'
+import { getUserAuth } from '@/lib/auth/utils'
+import NextAuthProvider from '@/lib/auth/provider'
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
@@ -16,17 +15,15 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession()
+  const { session } = await getUserAuth()
 
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
       <body suppressHydrationWarning>
         <ThemeProvider>
-          <AppShell>
-            <TrpcProvider>
-              <NextAuthProvider session={session}>{children}</NextAuthProvider>
-            </TrpcProvider>
-          </AppShell>
+          <NextAuthProvider session={session}>
+            <TrpcProvider>{children}</TrpcProvider>
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>

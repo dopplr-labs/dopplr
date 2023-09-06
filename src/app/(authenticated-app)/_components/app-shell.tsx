@@ -3,6 +3,7 @@ import { DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import NavLink from '@/components/nav-link'
+import AccountMenu from './account-menu'
 
 const ThemeToggle = dynamic(() => import('./theme-toggle'), { ssr: false })
 
@@ -33,12 +34,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen flex-col">
       <div className="h-14 border-b px-6">
-        <div className="flex h-full items-center">
+        <div className="flex h-full items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
             <Logo className="h-9 w-9" />
             <div className="text-xl font-bold tracking-tighter">Dopplr</div>
           </Link>
           <div className="flex-1" />
+          <AccountMenu />
           <ThemeToggle />
         </div>
       </div>
