@@ -13,33 +13,34 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { trpc } from '@/lib/trpc/client'
 import { useToast } from '@/components/ui/use-toast'
+import { PG_URL_REGEX, createUrlFromConfig } from '@/lib/pg/utils'
 
-const validationSchema = z.discriminatedUnion('config', [
-  z.object({
-    config: z.literal('url'),
-    url: z
-      .string()
-      .nonempty()
-      .regex(
-        /^postgresql:\/\/(?:([^:@]+)(?::([^@]*))?@)?([^:\/]+)(?::(\d{1,5}))?(?:\/(\w+))?(?:\?[a-zA-Z0-9%_\-=&]*)?$/,
-      ),
-  }),
-  z.object({
-    config: z.literal('fields'),
-    host: z.string().nonempty(),
-    port: z.coerce.number({ invalid_type_error: 'Port must be a number ' }).positive({
-      message: 'Port must be a positive number',
+const validationSchema = z
+  .discriminatedUnion('config', [
+    z.object({
+      config: z.literal('url'),
+      url: z.string().regex(PG_URL_REGEX, {
+        message: 'Invalid connection url',
+      }),
     }),
-    dbUsername: z.string().nonempty(),
-    dbPassword: z.string().nonempty(),
-    database: z.string().nonempty(),
-  }),
-])
+    z.object({
+      config: z.literal('fields'),
+      host: z.string().nonempty(),
+      port: z.coerce.number({ invalid_type_error: 'Port must be a number ' }).positive({
+        message: 'Port must be a positive number',
+      }),
+      dbUsername: z.string().nonempty(),
+      dbPassword: z.string().nonempty(),
+      database: z.string().nonempty(),
+    }),
+  ])
+  .and(z.object({ name: z.string().nonempty() }))
 
 export default function CreatePGResource() {
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
+      name: '',
       url: '',
       config: 'url',
       // @ts-expect-error
@@ -80,6 +81,21 @@ export default function CreatePGResource() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
+              />
               <FormField
                 control={form.control}
                 disabled={config === 'fields'}
@@ -219,9 +235,7 @@ export default function CreatePGResource() {
                     values.config === 'url'
                       ? values.url
                       : values.config === 'fields'
-                      ? `postgresql://${encodeURIComponent(values.dbUsername)}:${encodeURIComponent(
-                          values.dbPassword,
-                        )}@${encodeURIComponent(values.host)}:${encodeURIComponent(values.port)}/${values.database}`
+                      ? createUrlFromConfig(values)
                       : undefined
                   if (url) {
                     testConnectionMutation.mutate({ url, type: 'postgres' })

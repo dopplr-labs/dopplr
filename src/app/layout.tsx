@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
-import { ThemeProvider } from './_components/theme-provider'
 import TrpcProvider from '@/lib/trpc/provider'
-import { getUserAuth } from '@/lib/auth/utils'
-import NextAuthProvider from '@/lib/auth/provider'
 import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from './_components/theme-provider'
+import NextAuthProvider from './_components/next-auth-provider'
 import './globals.css'
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -16,13 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { session } = await getUserAuth()
-
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
       <body suppressHydrationWarning>
         <ThemeProvider>
-          <NextAuthProvider session={session}>
+          <NextAuthProvider>
             <TrpcProvider>{children}</TrpcProvider>
           </NextAuthProvider>
           <Toaster />

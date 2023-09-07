@@ -1,7 +1,10 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import postgres from 'postgres'
-import { testConnectionSchema } from './resource.schema'
+import { type Session } from 'next-auth'
+import { createResourceSchema, testConnectionSchema } from './resource.schema'
+import { db } from '@/db'
+import { resources } from '@/db/schema/resource'
 
 export async function testConnection(input: z.infer<typeof testConnectionSchema>) {
   if (input.type === 'postgres') {
@@ -15,6 +18,19 @@ export async function testConnection(input: z.infer<typeof testConnectionSchema>
         message: 'Could not connect to database',
       })
     }
+  } else {
+    throw new TRPCError({
+      code: 'NOT_IMPLEMENTED',
+    })
+  }
+}
+
+export async function createResource(input: z.infer<typeof createResourceSchema>, session: Session) {
+  if (input.type === 'postgres') {
+    return db
+      .insert(resources)
+      .values({ name: input.name, type: 'postgres', connectionConfig: { url: input.url }, createdBy: session.user.id })
+      .returning()
   } else {
     throw new TRPCError({
       code: 'NOT_IMPLEMENTED',
