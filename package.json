@@ -9,7 +9,7 @@
     "lint": "next lint",
     "format": "prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx}\" *.{ts,tsx}",
     "db:generate": "drizzle-kit generate:pg",
-    "db:migrate": "tsx src/lib/db/migrate.ts",
+    "db:migrate": "tsx src/db/migrate.ts",
     "db:drop": "drizzle-kit drop",
     "db:pull": "drizzle-kit introspect:pg",
     "db:studio": "drizzle-kit studio",

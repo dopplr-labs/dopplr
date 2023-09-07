@@ -3,7 +3,7 @@ import { DefaultSession, NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth/next'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
-import { db } from '@/lib/db'
+import { db } from '@/db'
 
 declare module 'next-auth' {
   interface Session {
