@@ -33,24 +33,24 @@ const MENU_ITEMS = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen flex-col">
-      <div className="h-14 border-b px-6">
+      <div className="h-14 flex-shrink-0 border-b bg-background px-6">
         <div className="flex h-full items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
             <Logo className="h-9 w-9" />
-            <div className="text-xl font-bold tracking-tighter">Dopplr</div>
+            <div className="font-mono text-xl font-bold">Dopplr</div>
           </Link>
           <div className="flex-1" />
           <AccountMenu />
           <ThemeToggle />
         </div>
       </div>
-      <div className="flex flex-1">
-        <div className="flex flex-col gap-3 border-r p-3">
+      <div className="relative flex flex-1 overflow-hidden">
+        <div className="sticky left-0 top-0 flex flex-col gap-3 overflow-auto border-r p-3">
           {MENU_ITEMS.map((item) => {
             return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
           })}
         </div>
-        {children}
+        <div className="flex-1">{children}</div>
       </div>
     </div>
   )

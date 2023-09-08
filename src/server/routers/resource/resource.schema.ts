@@ -18,3 +18,7 @@ export const createResourceSchema = testConnectionSchema.and(
     name: z.string().nonempty(),
   }),
 )
+
+export const getResourceSchema = z.object({
+  id: z.number().positive(),
+})

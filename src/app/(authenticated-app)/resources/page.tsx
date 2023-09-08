@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { BaseButton } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { DATBASES } from '@/lib/data/databases'
+import { DATABASES } from '@/lib/data/databases'
 
 export default function Page() {
   return (
@@ -14,7 +14,7 @@ export default function Page() {
         Connect to a database and start crafting queries for your dashboard.
       </div>
       <div className="grid grid-cols-2 gap-6 xl:grid-cols-3">
-        {DATBASES.map((database) => {
+        {DATABASES.map((database) => {
           return (
             <Card
               className={cn(

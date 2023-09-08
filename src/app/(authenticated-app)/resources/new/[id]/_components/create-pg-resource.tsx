@@ -34,7 +34,7 @@ const validationSchema = z
       database: z.string().nonempty(),
     }),
   ])
-  .and(z.object({ name: z.string().nonempty() }))
+  .and(z.object({ name: z.string() }))
 
 export default function CreatePGResource() {
   const form = useForm<z.infer<typeof validationSchema>>({
@@ -64,13 +64,46 @@ export default function CreatePGResource() {
         })
       }
     },
+    onError: (error) => {
+      toast({
+        title: 'Connection Failure',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  })
+
+  const getResourcesQuery = trpc.resource.getResources.useQuery()
+  const createResourceMutation = trpc.resource.createResource.useMutation({
+    onSuccess: () => {
+      getResourcesQuery.refetch()
+      form.reset()
+      toast({
+        title: 'Success',
+        description: 'Resource created successfully',
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: error.message ?? 'Something went wrong. Please try again',
+        variant: 'destructive',
+      })
+    },
   })
 
   return (
     <Card className="max-w-screen-lg">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(() => {})}
+          onSubmit={form.handleSubmit((values) => {
+            const url = values.config === 'url' ? values.url : createUrlFromConfig(values)
+            createResourceMutation.mutate({
+              name: values.name,
+              type: 'postgres',
+              url,
+            })
+          })}
           onReset={() => {
             form.reset()
           }}
@@ -227,10 +260,12 @@ export default function CreatePGResource() {
           <CardFooter className="gap-4">
             <Button
               variant="outline"
+              type="button"
               icon={<ZapIcon />}
               loading={testConnectionMutation.isLoading}
-              onClick={() => {
-                form.handleSubmit((values) => {
+              onClick={async () => {
+                if (await form.trigger(['url', 'config', 'host', 'port', 'dbUsername', 'dbPassword', 'database'])) {
+                  const values = form.getValues()
                   const url =
                     values.config === 'url'
                       ? values.url
@@ -240,7 +275,7 @@ export default function CreatePGResource() {
                   if (url) {
                     testConnectionMutation.mutate({ url, type: 'postgres' })
                   }
-                })()
+                }
               }}
             >
               Test Connection
@@ -255,7 +290,7 @@ export default function CreatePGResource() {
             <BaseButton variant="secondary" asChild size="sm">
               <Link href="/resources">Cancel</Link>
             </BaseButton>
-            <Button size="sm" type="submit">
+            <Button size="sm" type="submit" loading={createResourceMutation.isLoading}>
               Create
             </Button>
           </CardFooter>

@@ -1,10 +1,10 @@
 import { cloneElement, useMemo } from 'react'
 import { notFound } from 'next/navigation'
-import { DATBASES } from '@/lib/data/databases'
+import { DATABASES } from '@/lib/data/databases'
 import CreatePGResource from './_components/create-pg-resource'
 
 export default function CreateResourcePage({ params: { id } }: { params: { id: string } }) {
-  const database = useMemo(() => DATBASES.find((db) => db.id === id), [id])
+  const database = useMemo(() => DATABASES.find((db) => db.id === id), [id])
 
   if (!database) {
     return notFound()

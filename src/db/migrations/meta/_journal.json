@@ -1,1 +1,20 @@
-{"version":"5","dialect":"pg","entries":[{"idx":0,"version":"5","when":1693984848306,"tag":"0000_luxuriant_sunset_bain","breakpoints":true}]}
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1693984848306,
+      "tag": "0000_luxuriant_sunset_bain",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1694063132341,
+      "tag": "0001_smart_krista_starr",
+      "breakpoints": true
+    }
+  ]
+}

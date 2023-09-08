@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import postgres from 'postgres'
 import { type Session } from 'next-auth'
-import { createResourceSchema, testConnectionSchema } from './resource.schema'
+import { eq } from 'drizzle-orm'
+import { createResourceSchema, getResourceSchema, testConnectionSchema } from './resource.schema'
 import { db } from '@/db'
 import { resources } from '@/db/schema/resource'
 
@@ -36,4 +37,22 @@ export async function createResource(input: z.infer<typeof createResourceSchema>
       code: 'NOT_IMPLEMENTED',
     })
   }
+}
+
+export async function getResources(session: Session) {
+  return db.select().from(resources).where(eq(resources.createdBy, session.user.id))
+}
+
+export async function getResource(input: z.infer<typeof getResourceSchema>, session: Session) {
+  const result = await db
+    .select()
+    .from(resources)
+    .where(eq(resources.id, input.id))
+    .where(eq(resources.createdBy, session.user.id))
+  if (result.length === 0) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+    })
+  }
+  return result[0]
 }
