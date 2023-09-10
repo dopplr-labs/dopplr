@@ -1,13 +1,16 @@
 'use client'
 
 import { DatabaseZapIcon } from 'lucide-react'
-import { cloneElement, useMemo } from 'react'
+import { useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { trpc } from '@/lib/trpc/client'
 import { range } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { simpleHash } from '@/lib/random/utils'
 import { DATABASES } from '@/lib/data/databases'
+import NavLink from './nav-link'
+import { BaseButton } from '@/components/ui/button'
 
 type ResourceAppShellProps = {
   children: React.ReactNode
@@ -15,6 +18,8 @@ type ResourceAppShellProps = {
 
 export default function ResourceAppShell({ children }: ResourceAppShellProps) {
   const getResourcesQuery = trpc.resource.getResources.useQuery()
+
+  const pathname = usePathname()
 
   const content = useMemo(() => {
     if (getResourcesQuery.isLoading) {
@@ -33,10 +38,10 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
     }
 
     if (getResourcesQuery.data) {
-      if (getResourcesQuery.data?.length === 0) {
+      if (getResourcesQuery.data.length === 0) {
         return (
-          <div className="h-full">
-            <DatabaseZapIcon className="h-10 w-10 flex-shrink-0 text-muted-foreground" />
+          <div className="flex h-full flex-col items-center justify-center">
+            <DatabaseZapIcon className="h-10 w-10 flex-shrink-0" />
             <div className="text-center text-xs text-muted-foreground">
               You have not added any resource. Get started by adding a resource
             </div>
@@ -45,34 +50,28 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
       }
 
       return (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {getResourcesQuery.data.map((resource) => {
-            const resourceIcon = DATABASES.find((database) => database.id === resource.type)?.miniIcon
+            const resourceIcon = DATABASES[resource.type]?.icon
             return (
-              <Link
-                className="flex items-center space-x-2 truncate"
-                key={resource.id}
-                href={`/resources/${resource.id}`}
-              >
-                {resourceIcon ? (
-                  <div className="rounded-md bg-muted p-1">
-                    {cloneElement(resourceIcon, { className: 'w-5 h-5 text-primary' })}
-                  </div>
-                ) : null}
-                <div className="flex-1 truncate text-sm">{resource.name}</div>
-              </Link>
+              <NavLink key={resource.id} href={`/resources/${resource.id}`} icon={resourceIcon} label={resource.name} />
             )
           })}
+          {pathname !== '/resources' ? (
+            <BaseButton variant="outline" size="sm" className="w-full" asChild>
+              <Link href="/resources">Create Resource</Link>
+            </BaseButton>
+          ) : null}
         </div>
       )
     }
 
     return null
-  }, [getResourcesQuery])
+  }, [getResourcesQuery, pathname])
 
   return (
     <div className="flex h-full">
-      <div className="w-[280px] overflow-auto border-r p-4">{content}</div>
+      <div className="w-[280px] overflow-auto border-r p-3">{content}</div>
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
   )

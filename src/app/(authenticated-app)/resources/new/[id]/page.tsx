@@ -1,14 +1,14 @@
-import { cloneElement, useMemo } from 'react'
+import { cloneElement } from 'react'
 import { notFound } from 'next/navigation'
 import { DATABASES } from '@/lib/data/databases'
 import CreatePGResource from './_components/create-pg-resource'
 
 export default function CreateResourcePage({ params: { id } }: { params: { id: string } }) {
-  const database = useMemo(() => DATABASES.find((db) => db.id === id), [id])
-
-  if (!database) {
+  if (!(id in DATABASES)) {
     return notFound()
   }
+
+  const database = DATABASES[id as keyof typeof DATABASES]
 
   return (
     <div className="p-6">
@@ -22,7 +22,7 @@ export default function CreateResourcePage({ params: { id } }: { params: { id: s
         </div>
       </div>
       {(() => {
-        switch (database.id) {
+        switch (id) {
           case 'postgres': {
             return <CreatePGResource />
           }

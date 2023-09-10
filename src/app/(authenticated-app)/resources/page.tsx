@@ -6,6 +6,8 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/comp
 import { cn } from '@/lib/utils'
 import { DATABASES } from '@/lib/data/databases'
 
+const DATABASES_LIST: (keyof typeof DATABASES)[] = ['postgres', 'supabase-postgres', 'mysql', 'planetscale-mysql']
+
 export default function Page() {
   return (
     <div className="p-6">
@@ -14,14 +16,15 @@ export default function Page() {
         Connect to a database and start crafting queries for your dashboard.
       </div>
       <div className="grid grid-cols-2 gap-6 xl:grid-cols-3">
-        {DATABASES.map((database) => {
+        {DATABASES_LIST.map((databaseId) => {
+          const database = DATABASES[databaseId]
           return (
             <Card
               className={cn(
                 'flex flex-col',
                 database.disabled ? 'pointer-events-none cursor-not-allowed opacity-50' : undefined,
               )}
-              key={database.id}
+              key={databaseId}
             >
               <CardHeader className="flex-1">
                 <div className="mb-4 inline-block self-start rounded-md border p-3 text-foreground dark:bg-muted">
@@ -32,7 +35,7 @@ export default function Page() {
               </CardHeader>
               <CardFooter>
                 <BaseButton className="w-full" variant="outline" asChild>
-                  <Link href={`/resources/new/${database.id}`}>
+                  <Link href={`/resources/new/${databaseId}`}>
                     <ZapIcon className="mr-2 h-4 w-4" />
                     Connect Resource
                   </Link>

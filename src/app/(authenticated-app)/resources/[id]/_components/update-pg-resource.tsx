@@ -1,12 +1,11 @@
 'use client'
 
 import { CheckCircle2Icon, ZapIcon } from 'lucide-react'
-import Link from 'next/link'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, useWatch } from 'react-hook-form'
-import { useRouter } from 'next/navigation'
-import { BaseButton, Button } from '@/components/ui/button'
+import { useForm, useFormState, useWatch } from 'react-hook-form'
+import { InferSelectModel } from 'drizzle-orm'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -14,7 +13,8 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { trpc } from '@/lib/trpc/client'
 import { useToast } from '@/components/ui/use-toast'
-import { PG_URL_REGEX, createUrlFromConfig } from '@/lib/pg/utils'
+import { PG_URL_REGEX, createUrlFromConfig, extractConfigFromUrl } from '@/lib/pg/utils'
+import { resources } from '@/db/schema/resource'
 
 const validationSchema = z
   .discriminatedUnion('config', [
@@ -37,26 +37,26 @@ const validationSchema = z
   ])
   .and(z.object({ name: z.string() }))
 
-export default function CreatePGResource() {
+type UpdatePGResourceProps = {
+  resource: InferSelectModel<typeof resources>
+  onUpdate?: (updatedResource: InferSelectModel<typeof resources>) => void
+}
+
+export default function UpdatePGResource({ resource, onUpdate }: UpdatePGResourceProps) {
+  const url = (resource.connectionConfig as unknown as { url: string }).url
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      name: '',
-      url: '',
       config: 'url',
-      // @ts-expect-error
-      host: '',
-      port: '',
-      dbUsername: '',
-      dbPassword: '',
-      database: '',
+      name: resource.name,
+      url,
+      ...extractConfigFromUrl(url),
     },
   })
-
   const { config } = useWatch(form)
+  const { isDirty } = useFormState(form)
 
   const { toast } = useToast()
-
   const testConnectionMutation = trpc.resource.testConnection.useMutation({
     onSuccess: (success) => {
       if (success) {
@@ -75,17 +75,22 @@ export default function CreatePGResource() {
     },
   })
 
-  const router = useRouter()
   const getResourcesQuery = trpc.resource.getResources.useQuery()
-  const createResourceMutation = trpc.resource.createResource.useMutation({
-    onSuccess: (createdResource) => {
+  const updateResourceMutation = trpc.resource.updateResource.useMutation({
+    onSuccess: (updatedResource) => {
+      const updatedUrl = (updatedResource.connectionConfig as unknown as { url: string }).url
       getResourcesQuery.refetch()
-      form.reset()
+      form.reset({
+        config: 'url',
+        name: updatedResource.name,
+        url: updatedUrl,
+        ...extractConfigFromUrl(updatedUrl),
+      })
       toast({
         title: 'Success',
-        description: 'Resource created successfully',
+        description: 'Resource updated successfully',
       })
-      router.push(`/resources/${createdResource.id}`)
+      onUpdate?.(updatedResource)
     },
     onError: (error) => {
       toast({
@@ -102,7 +107,8 @@ export default function CreatePGResource() {
         <form
           onSubmit={form.handleSubmit((values) => {
             const url = values.config === 'url' ? values.url : createUrlFromConfig(values)
-            createResourceMutation.mutate({
+            updateResourceMutation.mutate({
+              id: resource.id,
               name: values.name,
               type: 'postgres',
               url,
@@ -113,7 +119,7 @@ export default function CreatePGResource() {
           }}
         >
           <CardHeader>
-            <CardTitle>Create Resource</CardTitle>
+            <CardTitle>Update Resource</CardTitle>
             <CardDescription>Enter database credentials</CardDescription>
           </CardHeader>
           <CardContent>
@@ -291,11 +297,14 @@ export default function CreatePGResource() {
               </div>
             ) : null}
             <div className="flex-1" />
-            <BaseButton variant="secondary" asChild size="sm">
-              <Link href="/resources">Cancel</Link>
-            </BaseButton>
-            <Button size="sm" type="submit" loading={createResourceMutation.isLoading}>
-              Create
+            <Button
+              size="sm"
+              type="submit"
+              loading={updateResourceMutation.isLoading}
+              variant="secondary"
+              disabled={!isDirty}
+            >
+              Update
             </Button>
           </CardFooter>
         </form>

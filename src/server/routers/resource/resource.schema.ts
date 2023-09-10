@@ -19,6 +19,16 @@ export const createResourceSchema = testConnectionSchema.and(
   }),
 )
 
+export const updateResourceSchema = createResourceSchema.optional().and(
+  z.object({
+    id: z.number().positive(),
+  }),
+)
+
 export const getResourceSchema = z.object({
+  id: z.number().positive(),
+})
+
+export const deleteResourceSchema = z.object({
   id: z.number().positive(),
 })
