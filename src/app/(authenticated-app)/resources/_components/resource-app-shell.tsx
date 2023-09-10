@@ -50,13 +50,20 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
       }
 
       return (
-        <div className="space-y-3">
-          {getResourcesQuery.data.map((resource) => {
-            const resourceIcon = DATABASES[resource.type]?.icon
-            return (
-              <NavLink key={resource.id} href={`/resources/${resource.id}`} icon={resourceIcon} label={resource.name} />
-            )
-          })}
+        <div className="flex h-full flex-col space-y-3">
+          <div className="flex-1 space-y-3 overflow-auto">
+            {getResourcesQuery.data.map((resource) => {
+              const resourceIcon = DATABASES[resource.type]?.icon
+              return (
+                <NavLink
+                  key={resource.id}
+                  href={`/resources/${resource.id}`}
+                  icon={resourceIcon}
+                  label={resource.name}
+                />
+              )
+            })}
+          </div>
           {pathname !== '/resources' ? (
             <BaseButton variant="outline" size="sm" className="w-full" asChild>
               <Link href="/resources">Create Resource</Link>
