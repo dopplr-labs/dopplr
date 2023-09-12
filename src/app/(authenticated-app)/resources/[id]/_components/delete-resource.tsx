@@ -1,6 +1,5 @@
 'use client'
 
-import { InferSelectModel } from 'drizzle-orm'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,12 +15,12 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog'
-import { resources } from '@/db/schema/resource'
+import { type Resource } from '@/db/schema/resource'
 import { cn } from '@/lib/utils'
 import { trpc } from '@/lib/trpc/client'
 
 type DeleteResourceProps = {
-  resource: InferSelectModel<typeof resources>
+  resource: Resource
   className?: string
   style?: React.CSSProperties
 }

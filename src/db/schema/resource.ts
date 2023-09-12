@@ -1,5 +1,5 @@
 import { pgTable, text, json, time, serial } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 
 export const resources = pgTable('resource', {
@@ -10,6 +10,8 @@ export const resources = pgTable('resource', {
   type: text('type', { enum: ['postgres'] }).notNull(),
   connectionConfig: json('connection_config').notNull(),
 })
+
+export type Resource = InferSelectModel<typeof resources>
 
 export const resourcesRelations = relations(resources, ({ one }) => ({
   createdBy: one(users, {

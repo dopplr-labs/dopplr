@@ -18,3 +18,7 @@ export type DatabaseFunction = {
   argument_types: any
   args?: string[]
 }
+
+export type DatabaseKeyword = {
+  word: string
+}

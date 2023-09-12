@@ -4,16 +4,16 @@ import postgres from 'postgres'
 import { type Session } from 'next-auth'
 import { and, eq } from 'drizzle-orm'
 import {
-  createResourceSchema,
-  deleteResourceSchema,
-  getResourceSchema,
-  testConnectionSchema,
-  updateResourceSchema,
-} from './resource.schema'
+  createResourceInput,
+  deleteResourceInput,
+  getResourceInput,
+  testConnectionInput,
+  updateResourceInput,
+} from './input'
 import { db } from '@/db'
 import { resources } from '@/db/schema/resource'
 
-export async function testConnection(input: z.infer<typeof testConnectionSchema>) {
+export async function testConnection(input: z.infer<typeof testConnectionInput>) {
   if (input.type === 'postgres') {
     const client = postgres(input.url)
     try {
@@ -32,7 +32,7 @@ export async function testConnection(input: z.infer<typeof testConnectionSchema>
   }
 }
 
-export async function createResource(input: z.infer<typeof createResourceSchema>, session: Session) {
+export async function createResource(input: z.infer<typeof createResourceInput>, session: Session) {
   if (input.type === 'postgres') {
     const resource = await db
       .insert(resources)
@@ -50,7 +50,7 @@ export async function getResources(session: Session) {
   return db.select().from(resources).where(eq(resources.createdBy, session.user.id))
 }
 
-export async function getResource(input: z.infer<typeof getResourceSchema>, session: Session) {
+export async function getResource(input: z.infer<typeof getResourceInput>, session: Session) {
   const result = await db
     .select()
     .from(resources)
@@ -63,7 +63,7 @@ export async function getResource(input: z.infer<typeof getResourceSchema>, sess
   return result[0]
 }
 
-export async function updateResource(input: z.infer<typeof updateResourceSchema>, session: Session) {
+export async function updateResource(input: z.infer<typeof updateResourceInput>, session: Session) {
   if (input.type === 'postgres') {
     const result = await db
       .update(resources)
@@ -85,7 +85,7 @@ export async function updateResource(input: z.infer<typeof updateResourceSchema>
   })
 }
 
-export async function deleteResource(input: z.infer<typeof deleteResourceSchema>, session: Session) {
+export async function deleteResource(input: z.infer<typeof deleteResourceInput>, session: Session) {
   const result = await db
     .delete(resources)
     .where(and(eq(resources.id, input.id), eq(resources.createdBy, session.user.id)))

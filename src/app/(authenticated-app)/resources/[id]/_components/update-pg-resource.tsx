@@ -4,7 +4,6 @@ import { CheckCircle2Icon, ZapIcon } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useFormState, useWatch } from 'react-hook-form'
-import { InferSelectModel } from 'drizzle-orm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -14,7 +13,7 @@ import { Label } from '@/components/ui/label'
 import { trpc } from '@/lib/trpc/client'
 import { useToast } from '@/components/ui/use-toast'
 import { PG_URL_REGEX, createUrlFromConfig, extractConfigFromUrl } from '@/lib/pg/utils'
-import { resources } from '@/db/schema/resource'
+import { type Resource } from '@/db/schema/resource'
 
 const validationSchema = z
   .discriminatedUnion('config', [
@@ -38,8 +37,8 @@ const validationSchema = z
   .and(z.object({ name: z.string() }))
 
 type UpdatePGResourceProps = {
-  resource: InferSelectModel<typeof resources>
-  onUpdate?: (updatedResource: InferSelectModel<typeof resources>) => void
+  resource: Resource
+  onUpdate?: (updatedResource: Resource) => void
 }
 
 export default function UpdatePGResource({ resource, onUpdate }: UpdatePGResourceProps) {
