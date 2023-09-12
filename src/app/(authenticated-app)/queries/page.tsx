@@ -33,7 +33,7 @@ export default function QueriesPage() {
     <div className="flex h-full">
       <div className="w-[240px] border-r" />
       <div className="flex flex-1 flex-col">
-        <div className="flex items-center justify-end space-x-4 px-4 py-2">
+        <div className="flex items-center justify-end space-x-4 border-b px-4 py-2">
           <Button icon={<Code2Icon />} variant="ghost">
             Format
           </Button>
