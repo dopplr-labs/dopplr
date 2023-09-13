@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { Loader } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useMemo } from 'react'
 
 const Editor = dynamic(() => import('./monaco-editor'), {
   ssr: false,
@@ -12,6 +13,13 @@ type BaseEditorProps = Omit<React.ComponentProps<typeof Editor>, 'loading' | 'th
 
 export default function BaseEditor({ ...props }: BaseEditorProps) {
   const { theme } = useTheme()
+  const mode = useMemo(() => {
+    if (theme === 'system') {
+      const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      return isDarkMode ? 'dark' : 'light'
+    }
+    return theme
+  }, [theme])
 
   return (
     <Editor
@@ -22,7 +30,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
           <h1 className="text-xs font-medium text-muted-foreground">Loading Editor...</h1>
         </div>
       }
-      theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
+      theme={mode === 'dark' ? 'vs-dark' : 'vs-light'}
       onMount={(editor) => {
         // add margin above first line
         editor.changeViewZones((accessor) => {

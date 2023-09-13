@@ -45,7 +45,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="relative flex flex-1 overflow-hidden">
-        <div className="sticky left-0 top-0 flex flex-col gap-3 overflow-auto border-r p-3">
+        <div className="sticky left-0 top-0 flex flex-shrink-0 flex-col gap-3 overflow-auto border-r p-3">
           {MENU_ITEMS.map((item) => {
             return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
           })}

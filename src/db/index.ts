@@ -4,12 +4,12 @@ import 'dotenv/config'
 
 const client = postgres(process.env.DATABASE_URL!)
 
-const globalForPrisma = globalThis as unknown as {
+const globalForDb = globalThis as unknown as {
   db: PostgresJsDatabase
 }
 
-export const db = globalForPrisma.db ?? drizzle(client)
+export const db = globalForDb.db ?? drizzle(client)
 
 if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.db = db
+  globalForDb.db = db
 }
