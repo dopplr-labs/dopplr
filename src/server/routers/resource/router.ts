@@ -1,15 +1,8 @@
 import { protectedProcedure, router } from '@/server/trpc'
-import {
-  createResourceInput,
-  deleteResourceInput,
-  getResourceInput,
-  testConnectionInput,
-  updateResourceInput,
-} from './input'
-import { createResource, deleteResource, getResource, getResources, testConnection, updateResource } from './service'
+import { createResourceInput, deleteResourceInput, getResourceInput, updateResourceInput } from './input'
+import { createResource, deleteResource, getResource, getResources, updateResource } from './service'
 
 export const resourceRouter = router({
-  testConnection: protectedProcedure.input(testConnectionInput).mutation(({ input }) => testConnection(input)),
   createResource: protectedProcedure
     .input(createResourceInput)
     .mutation(({ input, ctx: { session } }) => createResource(input, session)),

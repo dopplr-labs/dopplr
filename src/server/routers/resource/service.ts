@@ -1,36 +1,10 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import postgres from 'postgres'
 import { type Session } from 'next-auth'
 import { and, eq } from 'drizzle-orm'
-import {
-  createResourceInput,
-  deleteResourceInput,
-  getResourceInput,
-  testConnectionInput,
-  updateResourceInput,
-} from './input'
+import { createResourceInput, deleteResourceInput, getResourceInput, updateResourceInput } from './input'
 import { db } from '@/db'
 import { resources } from '@/db/schema/resource'
-
-export async function testConnection(input: z.infer<typeof testConnectionInput>) {
-  if (input.type === 'postgres') {
-    const client = postgres(input.url)
-    try {
-      const result = await client`SELECT 1 AS testValue;`
-      return result[0].testvalue === 1
-    } catch (error) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Could not connect to database',
-      })
-    }
-  } else {
-    throw new TRPCError({
-      code: 'NOT_IMPLEMENTED',
-    })
-  }
-}
 
 export async function createResource(input: z.infer<typeof createResourceInput>, session: Session) {
   if (input.type === 'postgres') {

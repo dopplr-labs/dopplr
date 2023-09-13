@@ -56,8 +56,9 @@ export default function UpdatePGResource({ resource, onUpdate }: UpdatePGResourc
   const { isDirty } = useFormState(form)
 
   const { toast } = useToast()
-  const testConnectionMutation = trpc.resource.testConnection.useMutation({
-    onSuccess: (success) => {
+  const testConnectionMutation = trpc.query.runQueryMutation.useMutation({
+    onSuccess: (result) => {
+      const success = result[0].test_value === 1
       if (success) {
         toast({
           title: 'Success',
@@ -282,7 +283,11 @@ export default function UpdatePGResource({ resource, onUpdate }: UpdatePGResourc
                       ? createUrlFromConfig(values)
                       : undefined
                   if (url) {
-                    testConnectionMutation.mutate({ url, type: 'postgres' })
+                    testConnectionMutation.mutate({
+                      connectionString: url,
+                      type: 'postgres',
+                      query: 'SELECT 1 as test_value;',
+                    })
                   }
                 }
               }}
