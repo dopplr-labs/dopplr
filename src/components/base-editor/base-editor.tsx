@@ -31,7 +31,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
         </div>
       }
       theme={mode === 'dark' ? 'vs-dark' : 'vs-light'}
-      onMount={(editor) => {
+      onMount={(editor, ...args) => {
         // add margin above first line
         editor.changeViewZones((accessor) => {
           accessor.addZone({
@@ -40,12 +40,14 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
             domNode: document.createElement('div'),
           })
         })
+        props.onMount?.(editor, ...args)
       }}
       options={{
         tabSize: 2,
         fontSize: 13,
         minimap: { enabled: false },
         wordWrap: 'on',
+        ...props.options,
       }}
     />
   )
