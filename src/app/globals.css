@@ -65,3 +65,13 @@
     margin: 0;
   }
 }
+
+@layer components {
+  .query-tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .query-tabs-container {
+    scrollbar-width: none;
+  }
+}

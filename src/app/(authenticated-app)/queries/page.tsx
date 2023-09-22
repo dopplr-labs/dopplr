@@ -35,7 +35,7 @@ export default function QueriesPage() {
   }, [getResourceQuery])
 
   return (
-    <PanelGroup direction="horizontal" className="h-full">
+    <PanelGroup direction="horizontal" className="h-full overflow-hidden">
       <Panel maxSize={40} minSize={20} defaultSize={25}>
         <SidePanel />
       </Panel>
