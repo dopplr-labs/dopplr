@@ -22,5 +22,5 @@ export function getPgClientForConnectionString(connectionString: string) {
 
     _connectionCaches.set(connectionString, postgres(connectionString))
   }
-  return _connectionCaches.get(connectionString)
+  return _connectionCaches.get(connectionString)!
 }

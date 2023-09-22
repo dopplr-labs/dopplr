@@ -14,15 +14,15 @@ export default function SidePanel({ className, style }: SidePanelProps) {
       <div className="border-b p-2">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger className="truncate" value="schema">
-            <DatabaseZapIcon className="mr-2 h-5 w-5" />
+            <DatabaseZapIcon className="mr-2 h-4 w-4 flex-shrink-0" />
             <span className="truncate">Schema</span>
           </TabsTrigger>
           <TabsTrigger className="truncate" value="history">
-            <FileClockIcon className="mr-2 h-5 w-5" />
+            <FileClockIcon className="mr-2 h-4 w-4 flex-shrink-0" />
             <span className="truncate">History</span>
           </TabsTrigger>
           <TabsTrigger className="truncate" value="saved-queries">
-            <SaveAllIcon className="mr-2 h-5 w-5" />
+            <SaveAllIcon className="mr-2 h-4 w-4 flex-shrink-0" />
             <span className="truncate">Saved Queries</span>
           </TabsTrigger>
         </TabsList>
