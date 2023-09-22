@@ -1,7 +1,7 @@
 'use client'
 
 import { useMonaco } from '@monaco-editor/react'
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import BaseEditor from '../base-editor'
 import getPgsqlCompletionProvider from '@/lib/code-editor/pqsql-completion-provider'
 import getPgsqlSignatureHelpProvider from '@/lib/code-editor/pqsql-signature-help-provider'
@@ -71,5 +71,35 @@ export default function PgEditor({ resource, ...props }: PgEditorProps) {
     [isPgInfoReady, monaco],
   )
 
-  return <BaseEditor {...props} defaultLanguage="pgsql" />
+  return (
+    <BaseEditor
+      {...props}
+      defaultLanguage="pgsql"
+      onMount={(editor, monaco) => {
+        editor.addAction({
+          id: 'run-query',
+          label: 'Run Query',
+          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter],
+          contextMenuGroupId: 'operation',
+          contextMenuOrder: 0,
+          run() {
+            // eslint-disable-next-line no-console
+            console.log('running query')
+          },
+        })
+
+        editor.addAction({
+          id: 'format-query',
+          label: 'Format Query',
+          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.Shift + monaco.KeyCode.KeyF],
+          contextMenuGroupId: 'operation',
+          contextMenuOrder: 0,
+          run() {
+            // eslint-disable-next-line no-console
+            console.log('formatting code')
+          },
+        })
+      }}
+    />
+  )
 }

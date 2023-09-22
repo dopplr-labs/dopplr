@@ -3,7 +3,9 @@
 import dynamic from 'next/dynamic'
 import { Loader } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useMonaco } from '@monaco-editor/react'
+import { mono } from '@/lib/fonts'
 
 const Editor = dynamic(() => import('./monaco-editor'), {
   ssr: false,
@@ -12,6 +14,8 @@ const Editor = dynamic(() => import('./monaco-editor'), {
 type BaseEditorProps = Omit<React.ComponentProps<typeof Editor>, 'loading' | 'theme'>
 
 export default function BaseEditor({ ...props }: BaseEditorProps) {
+  const monaco = useMonaco()
+
   const { theme } = useTheme()
   const mode = useMemo(() => {
     if (theme === 'system') {
@@ -20,6 +24,24 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
     }
     return theme
   }, [theme])
+
+  useEffect(
+    function handleKeyboardShortcuts() {
+      function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === 'p' && (event.metaKey || event.ctrlKey)) {
+          event.preventDefault()
+          event.stopPropagation()
+          if (monaco) {
+            monaco.editor.getEditors()?.[0]?.trigger('anyString', 'editor.action.quickCommand', {})
+          }
+        }
+      }
+
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    },
+    [monaco],
+  )
 
   return (
     <Editor
@@ -43,11 +65,12 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
         props.onMount?.(editor, ...args)
       }}
       options={{
+        ...props.options,
         tabSize: 2,
         fontSize: 13,
         minimap: { enabled: false },
         wordWrap: 'on',
-        ...props.options,
+        fontFamily: mono.style.fontFamily,
       }}
     />
   )

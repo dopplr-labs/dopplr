@@ -1,13 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
 import TrpcProvider from '@/lib/trpc/provider'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from './_components/theme-provider'
 import NextAuthProvider from './_components/next-auth-provider'
 import './globals.css'
-
-const sans = Inter({ subsets: ['latin'], variable: '--font-sans' })
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
+import { mono, sans } from '@/lib/fonts'
 
 export const metadata: Metadata = {
   title: 'Dopplr',
