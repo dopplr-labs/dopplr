@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, Sele
 import SidePanel from './_components/side-panel'
 import QueryTabs from './_components/query-tabs'
 import { useToast } from '@/components/ui/use-toast'
+import { cn } from '@/lib/utils'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
@@ -95,7 +96,15 @@ export default function QueriesPage() {
             Save Query
           </Button>
         </div>
-        <div className="flex-1">
+        <div className="relative flex-1">
+          <div
+            className={cn(
+              'pointer-events-none absolute left-0 right-0 top-0 z-10 h-0.5 w-full bg-muted',
+              runQueryMutation.isLoading ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            <div className="animate-progress-bar h-full origin-left bg-muted-foreground" />
+          </div>
           {match(getResourceQuery)
             .returnType<React.ReactNode>()
             .with({ status: 'loading' }, () => <Skeleton className="h-full rounded-none" />)
