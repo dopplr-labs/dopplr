@@ -8,7 +8,6 @@ import { trpc } from '@/lib/trpc/client'
 import { range } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { simpleHash } from '@/lib/random/utils'
-import { DATABASES } from '@/lib/data/databases'
 import NavLink from './nav-link'
 import { BaseButton } from '@/components/ui/button'
 import { ErrorMessage } from '@/components/ui/error-message'
@@ -61,12 +60,11 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
               <div className="flex h-full flex-col space-y-3">
                 <div className="flex-1 space-y-3 overflow-auto">
                   {data.map((resource) => {
-                    const resourceIcon = DATABASES[resource.type]?.icon
                     return (
                       <NavLink
                         key={resource.id}
                         href={`/resources/${resource.id}`}
-                        icon={resourceIcon}
+                        type={resource.type}
                         label={resource.name}
                       />
                     )
