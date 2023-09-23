@@ -55,6 +55,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
+    "react-hotkeys-hook": "^4.4.1",
     "react-resizable-panels": "^0.0.55",
     "superjson": "^1.13.1",
     "tailwind-merge": "^1.14.0",

@@ -64,8 +64,33 @@ export default function PgEditor({ resource, ...props }: PgEditorProps) {
   useEffect(
     function registerCompletions() {
       if (monaco) {
-        monaco.languages.registerCompletionItemProvider('pgsql', getPgsqlCompletionProvider(monaco, pgInfoRef))
-        monaco.languages.registerSignatureHelpProvider('pgsql', getPgsqlSignatureHelpProvider(monaco, pgInfoRef))
+        const completionItemProvider = monaco.languages.registerCompletionItemProvider(
+          'pgsql',
+          getPgsqlCompletionProvider(monaco, pgInfoRef),
+        )
+        const signatureHelpProvider = monaco.languages.registerSignatureHelpProvider(
+          'pgsql',
+          getPgsqlSignatureHelpProvider(monaco, pgInfoRef),
+        )
+
+        // Enable pgsql format
+        const formatprovider = monaco.languages.registerDocumentFormattingEditProvider('pgsql', {
+          async provideDocumentFormattingEdits(model: any) {
+            const value = model.getValue()
+            return [
+              {
+                range: model.getFullModelRange(),
+                text: value,
+              },
+            ]
+          },
+        })
+
+        return () => {
+          formatprovider.dispose()
+          completionItemProvider.dispose()
+          signatureHelpProvider.dispose()
+        }
       }
     },
     [isPgInfoReady, monaco],
@@ -85,18 +110,6 @@ export default function PgEditor({ resource, ...props }: PgEditorProps) {
           run() {
             // eslint-disable-next-line no-console
             console.log('running query')
-          },
-        })
-
-        editor.addAction({
-          id: 'format-query',
-          label: 'Format Query',
-          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.Shift + monaco.KeyCode.KeyF],
-          contextMenuGroupId: 'operation',
-          contextMenuOrder: 0,
-          run() {
-            // eslint-disable-next-line no-console
-            console.log('formatting code')
           },
         })
       }}
