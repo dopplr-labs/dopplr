@@ -1,6 +1,6 @@
 import { protectedProcedure, router } from '@/server/trpc'
-import { runQueryInput } from './input'
-import { runQuery } from './service'
+import { formatQueryInput, runQueryInput } from './input'
+import { formatQuery, runQuery } from './service'
 
 export const queryRouter = router({
   /**
@@ -10,4 +10,5 @@ export const queryRouter = router({
    */
   runQuery: protectedProcedure.input(runQueryInput).query(({ input }) => runQuery(input)),
   runQueryMutation: protectedProcedure.input(runQueryInput).mutation(({ input }) => runQuery(input)),
+  formatQuery: protectedProcedure.input(formatQueryInput).mutation(({ input }) => formatQuery(input)),
 })

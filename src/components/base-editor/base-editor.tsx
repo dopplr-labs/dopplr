@@ -71,7 +71,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
           label: 'Command Pallete',
           keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.KeyP],
           run() {
-            editor.trigger('anyString', 'editor.action.quickCommand', {})
+            editor.getAction('editor.action.quickCommand')?.run()
           },
         })
 
@@ -81,6 +81,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
         ...props.options,
         tabSize: 2,
         fontSize: 13,
+        lineHeight: 20,
         minimap: { enabled: false },
         wordWrap: 'on',
         fontFamily: mono.style.fontFamily,
