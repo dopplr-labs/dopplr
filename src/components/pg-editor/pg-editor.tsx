@@ -79,7 +79,7 @@ export default function PgEditor({ resource, format, runQuery, ...props }: PgEdi
 
         // Enable pgsql format
         const formatprovider = monaco.languages.registerDocumentFormattingEditProvider('pgsql', {
-          async provideDocumentFormattingEdits(model: any) {
+          async provideDocumentFormattingEdits(model) {
             const value = model.getValue()
             const formattedText = await format({ type: resource.type, query: value })
             return [

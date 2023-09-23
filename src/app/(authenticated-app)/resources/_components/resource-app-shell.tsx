@@ -11,6 +11,7 @@ import { simpleHash } from '@/lib/random/utils'
 import { DATABASES } from '@/lib/data/databases'
 import NavLink from './nav-link'
 import { BaseButton } from '@/components/ui/button'
+import { ErrorMessage } from '@/components/ui/error-message'
 
 type ResourceAppShellProps = {
   children: React.ReactNode
@@ -38,8 +39,12 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
               })}
             </div>
           ))
-          // TODO: Add error handler
-          .with({ status: 'error' }, () => null)
+          .with({ status: 'error' }, ({ error }) => (
+            <ErrorMessage
+              title="Error fetching resources"
+              description={error.message ?? 'Something went wrong. Please try again later.'}
+            />
+          ))
           .with({ status: 'success' }, ({ data }) => {
             if (data.length === 0) {
               return (
