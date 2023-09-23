@@ -40,10 +40,15 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
             transition,
             transform: CSS.Transform.toString(transform),
           }}
-          suppressHydrationWarning
           onClick={onSelect}
         >
-          <button className="truncate py-2 pl-3 pr-1" {...listeners} {...attributes} ref={setActivatorNodeRef}>
+          <button
+            className="truncate py-2 pl-3 pr-1"
+            {...listeners}
+            {...attributes}
+            ref={setActivatorNodeRef}
+            suppressHydrationWarning
+          >
             {tab}
           </button>
           <Button size="icon-xs" icon={<XIcon />} variant="ghost" onClick={onClose} />

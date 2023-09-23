@@ -32,7 +32,9 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
           event.preventDefault()
           event.stopPropagation()
           if (monaco) {
-            monaco.editor.getEditors()?.[0]?.trigger('anyString', 'editor.action.quickCommand', {})
+            monaco.editor.getEditors().forEach((editor) => {
+              editor.trigger('anyString', 'editor.action.quickCommand', {})
+            })
           }
         }
       }
@@ -53,7 +55,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
         </div>
       }
       theme={mode === 'dark' ? 'vs-dark' : 'vs-light'}
-      onMount={(editor, ...args) => {
+      onMount={(editor, monaco) => {
         // add margin above first line
         editor.changeViewZones((accessor) => {
           accessor.addZone({
@@ -62,7 +64,18 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
             domNode: document.createElement('div'),
           })
         })
-        props.onMount?.(editor, ...args)
+
+        // open quick command palette on cmd/ctrl + p
+        editor.addAction({
+          id: 'open-command-pallete',
+          label: 'Command Pallete',
+          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.KeyP],
+          run() {
+            editor.trigger('anyString', 'editor.action.quickCommand', {})
+          },
+        })
+
+        props.onMount?.(editor, monaco)
       }}
       options={{
         ...props.options,
