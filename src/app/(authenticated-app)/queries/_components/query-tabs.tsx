@@ -2,7 +2,8 @@
 
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
 import { DndContext, MouseSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { SortableContext, arrayMove } from '@dnd-kit/sortable'
+import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -56,10 +57,12 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
         const overData = validationSchema.safeParse(over?.data.current)
         if (activeData.success && overData.success) {
           setTabs((state) => arrayMove(state, activeData.data.index, overData.data.index))
+          setActiveTab(activeData.data.tab)
         }
       }}
+      modifiers={[restrictToHorizontalAxis]}
     >
-      <SortableContext items={tabs}>
+      <SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
         <div className={cn('flex items-end space-x-2 overflow-hidden px-2 pt-2.5', className)} style={style}>
           {hasScroll ? (
             <div
@@ -71,7 +74,7 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
               <Button size="icon-xs" icon={<ChevronLeftIcon />} variant="ghost" />
             </div>
           ) : null}
-          <div className="query-tabs-container flex items-end space-x-2 overflow-auto" ref={ref}>
+          <div className="query-tabs-container flex items-end space-x-2 overflow-x-auto overflow-y-hidden" ref={ref}>
             {tabs.map((tab, index) => {
               return (
                 <QueryTab

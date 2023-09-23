@@ -43,7 +43,7 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
           onClick={onSelect}
         >
           <button
-            className="truncate py-2 pl-3 pr-1"
+            className="w-20 truncate py-2 pl-3 pr-1 text-left"
             {...listeners}
             {...attributes}
             ref={setActivatorNodeRef}
