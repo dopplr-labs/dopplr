@@ -52,3 +52,31 @@ export function groupBy<T>(array: T[], getKey: (item: T) => string): Record<stri
 
   return result
 }
+
+export function getNextActiveId(idsList: string[], activeId: string) {
+  const currentIndex = idsList.indexOf(activeId)
+  // If the tabId is not found in the array
+  if (currentIndex === -1) {
+    return undefined
+  }
+  // If the current active ID is not the last one
+  if (currentIndex < idsList.length - 1) {
+    return idsList[currentIndex + 1]
+  }
+  // If the current active ID is the last one, but it's not the only ID in the array
+  if (currentIndex > 0) {
+    return idsList[currentIndex - 1]
+  }
+  // If there's only one ID in the array (which is the active one)
+  return undefined
+}
+
+export function generateRandomId(length: number = 8): string {
+  const chars: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let id: string = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex: number = Math.floor(Math.random() * chars.length)
+    id += chars.charAt(randomIndex)
+  }
+  return id
+}

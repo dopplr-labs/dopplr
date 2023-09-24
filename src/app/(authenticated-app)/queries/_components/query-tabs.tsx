@@ -2,14 +2,16 @@
 
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
 import { DndContext, MouseSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
-import { useEffect, useState } from 'react'
 import { z } from 'zod'
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, generateRandomId } from '@/lib/utils'
 import QueryTab from './query-tab'
 import { useHasScroll } from '@/hooks/use-has-scroll'
+import { useStore } from '@/stores'
+import { trpc } from '@/lib/trpc/client'
 
 type QueryTabsProps = {
   className?: string
@@ -17,16 +19,23 @@ type QueryTabsProps = {
 }
 
 export default function QueryTabs({ className, style }: QueryTabsProps) {
-  const [tabs, setTabs] = useState(['Query 1'])
-  const [activeTab, setActiveTab] = useState(tabs[0])
+  const getResourcesQuery = trpc.resource.getResources.useQuery()
+
+  const queryTabsOrder = useStore((store) => store.queryTabsOrder)
+  const updateQueryTabsOrder = useStore((store) => store.updateQueryTabsOrder)
+  const closeQueryTab = useStore((store) => store.closeQueryTab)
+  const addQueryTab = useStore((store) => store.addQueryTab)
+  const activeQueryTabId = useStore((store) => store.activeQueryTabId)
+  const setActiveQueryTabId = useStore((store) => store.setActiveQueryTabId)
+
   const { ref, hasScroll } = useHasScroll<HTMLDivElement>()
 
   useEffect(
-    function scrollToLatestTab() {
-      const element = document.getElementById(`query-tab-${tabs[tabs.length - 1]}`)
+    function scrollToActiveTab() {
+      const element = document.getElementById(`query-tab-${activeQueryTabId}`)
       element?.scrollIntoView()
     },
-    [tabs],
+    [activeQueryTabId],
   )
 
   const sensors = useSensors(
@@ -56,13 +65,13 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
         const activeData = validationSchema.safeParse(active.data.current)
         const overData = validationSchema.safeParse(over?.data.current)
         if (activeData.success && overData.success) {
-          setTabs((state) => arrayMove(state, activeData.data.index, overData.data.index))
-          setActiveTab(activeData.data.tab)
+          updateQueryTabsOrder(activeData.data.index, overData.data.index)
+          setActiveQueryTabId(activeData.data.tab)
         }
       }}
       modifiers={[restrictToHorizontalAxis]}
     >
-      <SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
+      <SortableContext items={queryTabsOrder} strategy={horizontalListSortingStrategy}>
         <div className={cn('flex items-end space-x-2 overflow-hidden px-2 pt-2.5', className)} style={style}>
           {hasScroll ? (
             <div
@@ -75,18 +84,18 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
             </div>
           ) : null}
           <div className="query-tabs-container flex items-end space-x-2 overflow-x-auto overflow-y-hidden" ref={ref}>
-            {tabs.map((tab, index) => {
+            {queryTabsOrder.map((tabId, index) => {
               return (
                 <QueryTab
                   index={index}
-                  key={tab}
-                  tab={tab}
+                  key={tabId}
+                  tab={tabId}
                   onClose={() => {
-                    setTabs((state) => state.filter((t) => t !== tab))
+                    closeQueryTab(tabId)
                   }}
-                  active={tab === activeTab}
+                  active={tabId === activeQueryTabId}
                   onSelect={() => {
-                    setActiveTab(tab)
+                    setActiveQueryTabId(tabId)
                   }}
                 />
               )
@@ -110,7 +119,10 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
               icon={<PlusIcon />}
               variant="ghost"
               onClick={() => {
-                setTabs((state) => [...state, `Query ${Math.random().toString(16).slice(2, 6)}`])
+                if (getResourcesQuery.data?.[0]) {
+                  const tabId = generateRandomId(16)
+                  addQueryTab(tabId, getResourcesQuery.data?.[0].id)
+                }
               }}
             />
           </div>

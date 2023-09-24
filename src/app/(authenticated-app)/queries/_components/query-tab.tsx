@@ -4,6 +4,7 @@ import { XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
+import { useStore } from '@/stores'
 
 type QueryTabProps = {
   tab: string
@@ -14,6 +15,8 @@ type QueryTabProps = {
 }
 
 export default function QueryTab({ tab, index, active, onClose, onSelect }: QueryTabProps) {
+  const tabData = useStore((store) => store.queryTabData[tab])
+
   const { setNodeRef, setActivatorNodeRef, attributes, listeners, isDragging, transform, transition } = useSortable({
     id: tab,
     data: {
@@ -49,13 +52,30 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
             ref={setActivatorNodeRef}
             suppressHydrationWarning
           >
-            {tab}
+            {(tabData?.query ?? '') || 'New Query'}
           </button>
-          <Button size="icon-xs" icon={<XIcon />} variant="ghost" onClick={onClose} />
+          <Button
+            size="icon-xs"
+            icon={<XIcon />}
+            variant="ghost"
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onClose?.()
+            }}
+          />
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem onClick={onClose}>Close Tab</ContextMenuItem>
+        <ContextMenuItem
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            onClose?.()
+          }}
+        >
+          Close Tab
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )
