@@ -40,7 +40,7 @@ export default function Command() {
             }}
           >
             <ZapIcon className="mr-2 h-4 w-4" />
-            <span>Create Resource</span>
+            <span>Create Postgres Resource</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
