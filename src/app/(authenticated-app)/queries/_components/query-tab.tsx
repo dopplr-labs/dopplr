@@ -1,10 +1,17 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { XIcon } from 'lucide-react'
+import { SaveIcon, XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
 import { useStore } from '@/stores'
+import { TabDataStatus } from '@/types/tab'
 
 type QueryTabProps = {
   tab: string
@@ -26,6 +33,10 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
     },
   })
 
+  if (!tabData) {
+    return null
+  }
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -46,13 +57,16 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
           onClick={onSelect}
         >
           <button
-            className="w-20 truncate py-2 pl-3 pr-1 text-left"
+            className="flex w-20 items-center space-x-1 truncate py-2 pl-3 pr-1 text-left"
             {...listeners}
             {...attributes}
             ref={setActivatorNodeRef}
             suppressHydrationWarning
           >
-            {(tabData?.query ?? '') || 'New Query'}
+            {tabData.dataStatus === TabDataStatus.UNSAVED ? (
+              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
+            ) : null}
+            <span className="truncate">{(tabData.name ?? tabData?.query ?? '') || 'New Query'}</span>
           </button>
           <Button
             size="icon-xs"
@@ -67,6 +81,25 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
+        <ContextMenuItem
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+        >
+          Duplicate Query
+        </ContextMenuItem>
+        <ContextMenuItem
+          disabled
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+        >
+          <span className="flex-1">Save Query</span>
+          <SaveIcon className="h-4 w-4" />
+        </ContextMenuItem>
+        <ContextMenuSeparator />
         <ContextMenuItem
           onClick={(event) => {
             event.preventDefault()

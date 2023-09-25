@@ -14,6 +14,7 @@ import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 import ResourceSelector from './resource-selector'
 import { useStore } from '@/stores'
+import { TabDataStatus } from '@/types/tab'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
@@ -116,6 +117,7 @@ export default function QueryEditor() {
                       if (value && activeQueryTabId) {
                         updateQueryTabData(activeQueryTabId, {
                           query: value,
+                          dataStatus: TabDataStatus.UNSAVED,
                         })
                       }
                     }}
