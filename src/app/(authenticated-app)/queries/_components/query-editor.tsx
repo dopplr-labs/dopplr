@@ -13,18 +13,25 @@ import { useToast } from '@/components/ui/use-toast'
 import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 import ResourceSelector from './resource-selector'
-
-type QueryEditorProps = {
-  resourceId: number
-  tempId: string
-}
+import { useStore } from '@/stores'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
-export default function QueryEditor({ resourceId }: QueryEditorProps) {
-  const getResourceQuery = trpc.resource.getResource.useQuery({
-    id: resourceId,
-  })
+export default function QueryEditor() {
+  const activeQueryTabId = useStore((store) => store.activeQueryTabId)
+  const activeQueryTabData = useStore((store) =>
+    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+  )
+  const updateQueryTabData = useStore((store) => store.updateQueryTabData)
+
+  const getResourceQuery = trpc.resource.getResource.useQuery(
+    {
+      id: activeQueryTabData?.resourceId!,
+    },
+    {
+      enabled: !!activeQueryTabData?.resourceId,
+    },
+  )
 
   const { toast } = useToast()
 
@@ -103,6 +110,15 @@ export default function QueryEditor({ resourceId }: QueryEditorProps) {
               <PanelGroup direction="vertical">
                 <Panel defaultSize={60}>
                   <PgEditor
+                    key={`${activeQueryTabData?.resourceId}-${activeQueryTabData?.tabId}-${activeQueryTabData?.savedQueryId}`}
+                    value={activeQueryTabData?.query}
+                    onChange={(value) => {
+                      if (value && activeQueryTabId) {
+                        updateQueryTabData(activeQueryTabId, {
+                          query: value,
+                        })
+                      }
+                    }}
                     resource={data}
                     format={formatQueryMutation.mutateAsync}
                     runQuery={runQueryMutation.mutate}

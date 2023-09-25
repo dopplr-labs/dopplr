@@ -5,8 +5,15 @@ import { useRouter } from 'next/navigation'
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { trpc } from '@/lib/trpc/client'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useStore } from '@/stores'
 
 export default function ResourceSelector() {
+  const activeQueryTabId = useStore((store) => store.activeQueryTabId)
+  const activeQueryTabData = useStore((store) =>
+    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+  )
+  const updateQueryTabData = useStore((store) => store.updateQueryTabData)
+
   const getResourcesQuery = trpc.resource.getResources.useQuery()
 
   const router = useRouter()
@@ -17,9 +24,15 @@ export default function ResourceSelector() {
     .with({ status: 'error' }, () => null)
     .with({ status: 'success' }, ({ data: resources }) => (
       <Select
+        value={`resource-${activeQueryTabData?.resourceId}`}
         onValueChange={(value) => {
           if (value === 'resource-new') {
             router.push('/resources')
+          } else {
+            const resourceId = parseInt(value.replace('resource-', ''))
+            updateQueryTabData(activeQueryTabId!, {
+              resourceId,
+            })
           }
         }}
       >

@@ -95,7 +95,7 @@ export default function QueriesPage() {
           <PanelResizeHandle className="w-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
           <Panel className="flex flex-col" defaultSize={75}>
             <QueryTabs className="border-b" />
-            <QueryEditor resourceId={3} tempId="foo" />
+            <QueryEditor />
           </Panel>
         </PanelGroup>
       )

@@ -72,7 +72,7 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
       modifiers={[restrictToHorizontalAxis]}
     >
       <SortableContext items={queryTabsOrder} strategy={horizontalListSortingStrategy}>
-        <div className={cn('flex items-end space-x-2 overflow-hidden px-2 pt-2.5', className)} style={style}>
+        <div className={cn('flex items-end space-x-2 overflow-hidden px-2 pt-[15px]', className)} style={style}>
           {hasScroll ? (
             <div
               className="flex flex-shrink-0 items-center justify-center rounded-t-md border border-b-0 p-1"
