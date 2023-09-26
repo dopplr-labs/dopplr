@@ -50,7 +50,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
           })}
         </div>
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 overflow-hidden">{children}</div>
       </div>
     </div>
   )

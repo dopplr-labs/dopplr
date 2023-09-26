@@ -1,7 +1,8 @@
 'use client'
 
-import { useMonaco } from '@monaco-editor/react'
 import React, { useEffect, useRef } from 'react'
+import { useMonaco } from '@monaco-editor/react'
+import { z } from 'zod'
 import BaseEditor from '../base-editor'
 import getPgsqlCompletionProvider from '@/lib/code-editor/pqsql-completion-provider'
 import getPgsqlSignatureHelpProvider from '@/lib/code-editor/pqsql-signature-help-provider'
@@ -9,12 +10,15 @@ import { type Resource } from '@/db/schema/resource'
 import { trpc } from '@/lib/trpc/client'
 import { getFunctionsQuery, getKeywordsQuery, getSchemasQuery, getTableColumnsQuery } from '@/lib/pg/sql-queries'
 import { DatabaseFunction, DatabaseKeyword, Schema, TableColumn } from '@/types/database'
+import { formatQueryInput, runQueryInput } from '@/server/routers/query/input'
 
 type PgEditorProps = Omit<React.ComponentProps<typeof BaseEditor>, 'defaultLanguage'> & {
   resource: Resource
+  format: (input: z.infer<typeof formatQueryInput>) => Promise<string>
+  runQuery: (input: z.infer<typeof runQueryInput>) => void
 }
 
-export default function PgEditor({ resource, ...props }: PgEditorProps) {
+export default function PgEditor({ resource, format, runQuery, ...props }: PgEditorProps) {
   const monaco = useMonaco()
   const pgInfoRef = useRef<any>(null)
 
@@ -64,11 +68,37 @@ export default function PgEditor({ resource, ...props }: PgEditorProps) {
   useEffect(
     function registerCompletions() {
       if (monaco) {
-        monaco.languages.registerCompletionItemProvider('pgsql', getPgsqlCompletionProvider(monaco, pgInfoRef))
-        monaco.languages.registerSignatureHelpProvider('pgsql', getPgsqlSignatureHelpProvider(monaco, pgInfoRef))
+        const completionItemProvider = monaco.languages.registerCompletionItemProvider(
+          'pgsql',
+          getPgsqlCompletionProvider(monaco, pgInfoRef),
+        )
+        const signatureHelpProvider = monaco.languages.registerSignatureHelpProvider(
+          'pgsql',
+          getPgsqlSignatureHelpProvider(monaco, pgInfoRef),
+        )
+
+        // Enable pgsql format
+        const formatprovider = monaco.languages.registerDocumentFormattingEditProvider('pgsql', {
+          async provideDocumentFormattingEdits(model) {
+            const value = model.getValue()
+            const formattedText = await format({ type: resource.type, query: value })
+            return [
+              {
+                range: model.getFullModelRange(),
+                text: formattedText,
+              },
+            ]
+          },
+        })
+
+        return () => {
+          formatprovider.dispose()
+          completionItemProvider.dispose()
+          signatureHelpProvider.dispose()
+        }
       }
     },
-    [isPgInfoReady, monaco],
+    [isPgInfoReady, monaco, format, resource],
   )
 
   return (
@@ -77,28 +107,22 @@ export default function PgEditor({ resource, ...props }: PgEditorProps) {
       defaultLanguage="pgsql"
       onMount={(editor, monaco) => {
         editor.addAction({
-          id: 'run-query',
+          id: 'editor.action.runQuery',
           label: 'Run Query',
           keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter],
           contextMenuGroupId: 'operation',
           contextMenuOrder: 0,
-          run() {
-            // eslint-disable-next-line no-console
-            console.log('running query')
+          run(editor) {
+            const query = editor.getValue()
+            runQuery({
+              type: resource.type,
+              connectionString: (resource.connectionConfig as unknown as { url: string }).url,
+              query,
+            })
           },
         })
 
-        editor.addAction({
-          id: 'format-query',
-          label: 'Format Query',
-          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.Shift + monaco.KeyCode.KeyF],
-          contextMenuGroupId: 'operation',
-          contextMenuOrder: 0,
-          run() {
-            // eslint-disable-next-line no-console
-            console.log('formatting code')
-          },
-        })
+        props.onMount?.(editor, monaco)
       }}
     />
   )
