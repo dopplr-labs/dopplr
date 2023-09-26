@@ -2,12 +2,20 @@ export type Schema = {
   name: string
 }
 
+type Column = {
+  attisdropped: boolean
+  attname: string
+  attnum: number
+  attrelid: string
+  data_type: string
+}
+
 export type TableColumn = {
   schemaname: string
   tablename: string
   quoted_name: string
   is_table: boolean
-  columns: any[]
+  columns: Column[]
 }
 
 export type DatabaseFunction = {

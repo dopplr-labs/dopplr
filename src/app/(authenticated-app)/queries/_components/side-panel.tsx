@@ -1,7 +1,8 @@
 'use client'
 
 import { DatabaseZapIcon, FileClockIcon, SaveAllIcon } from 'lucide-react'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import SchemaTab from './schema-tab/schema-tab'
 
 type SidePanelProps = {
   className?: string
@@ -27,6 +28,10 @@ export default function SidePanel({ className, style }: SidePanelProps) {
           </TabsTrigger>
         </TabsList>
       </div>
+
+      <TabsContent value="schema">
+        <SchemaTab />
+      </TabsContent>
     </Tabs>
   )
 }
