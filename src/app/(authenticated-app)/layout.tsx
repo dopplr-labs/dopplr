@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import AppShell from './_components/app-shell'
 import { checkAuth } from '@/lib/auth/utils'
+import Command from '@/components/command'
 
 export const metadata: Metadata = {
   title: 'Dopplr',
@@ -9,5 +10,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   await checkAuth()
-  return <AppShell>{children}</AppShell>
+  return (
+    <AppShell>
+      <Command />
+      {children}
+    </AppShell>
+  )
 }

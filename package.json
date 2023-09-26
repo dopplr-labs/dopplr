@@ -21,6 +21,7 @@
     "@hookform/resolvers": "^3.3.1",
     "@monaco-editor/react": "^4.5.2",
     "@radix-ui/react-alert-dialog": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^1.2.2",
@@ -40,6 +41,7 @@
     "autoprefixer": "10.4.15",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "cmdk": "^0.2.0",
     "drizzle-orm": "^0.28.5",
     "drizzle-zod": "^0.5.1",
     "lucide-react": "^0.274.0",
@@ -51,6 +53,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
+    "react-hotkeys-hook": "^4.4.1",
     "react-resizable-panels": "^0.0.55",
     "superjson": "^1.13.1",
     "tailwind-merge": "^1.14.0",
@@ -62,6 +65,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.4.7",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.3.1",
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.43.0",
@@ -75,5 +79,10 @@
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.4",
     "tsx": "^3.12.8"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
