@@ -3,6 +3,9 @@ import { QueryTabData, TabDataStatus } from '@/types/tab'
 import { arrayMove, getNextActiveId } from '@/lib/utils'
 
 export type Store = {
+  commandPalleteVisible: boolean
+  setCommandPalleteVisible: (visible: boolean) => void
+
   queryTabsOrder: string[]
   activeQueryTabId?: string
   setActiveQueryTabId: (tabId: string) => void
@@ -14,6 +17,13 @@ export type Store = {
 }
 
 export const useStore = create<Store>((set) => ({
+  commandPalleteVisible: false,
+  setCommandPalleteVisible: (visible) => {
+    set({
+      commandPalleteVisible: visible,
+    })
+  },
+
   queryTabsOrder: [],
   acitveQueryTabId: undefined,
   queryTabData: {},

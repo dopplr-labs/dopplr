@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes'
 import { useEffect, useMemo } from 'react'
 import { useMonaco } from '@monaco-editor/react'
 import { mono } from '@/lib/fonts'
+import { useStore } from '@/stores'
 
 const Editor = dynamic(() => import('./monaco-editor'), {
   ssr: false,
@@ -24,6 +25,8 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
     }
     return theme
   }, [theme])
+
+  const setCommandPalleteVisible = useStore((store) => store.setCommandPalleteVisible)
 
   useEffect(
     function handleKeyboardShortcuts() {
@@ -72,6 +75,15 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
           keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.KeyP],
           run() {
             editor.getAction('editor.action.quickCommand')?.run()
+          },
+        })
+
+        editor.addAction({
+          id: 'open-global-command-pallete',
+          label: 'Dopplr Command Pallete',
+          keybindings: [monaco.KeyMod.CtrlCmd + monaco.KeyCode.KeyK],
+          run() {
+            setCommandPalleteVisible(true)
           },
         })
 
