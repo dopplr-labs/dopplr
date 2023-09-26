@@ -7,7 +7,7 @@ export type TabState = {
   activeQueryTabId?: string
   setActiveQueryTabId: (tabId: string) => void
   queryTabData: Record<string, Omit<QueryTabData, 'id'>>
-  addQueryTab: (tabId: string, resourceId: number) => void
+  addQueryTab: (tabId: string, resourceId: number, initialQuery?: string) => void
   closeQueryTab: (tabId: string) => void
   updateQueryTabsOrder: (fromIndex: number, toIndex: number) => void
   updateQueryTabData: (id: string, data: Partial<QueryTabData>) => void
@@ -23,7 +23,7 @@ export const createTabSlice: StateCreator<TabState> = (set, get) => ({
       activeQueryTabId: tabId,
     })
   },
-  addQueryTab: (tabId, resourceId) => {
+  addQueryTab: (tabId, resourceId, initialQuery = '') => {
     set((state) => ({
       queryTabsOrder: [...state.queryTabsOrder, tabId],
       queryTabData: {
@@ -31,7 +31,7 @@ export const createTabSlice: StateCreator<TabState> = (set, get) => ({
         [tabId]: {
           tabId,
           resourceId,
-          query: '',
+          query: initialQuery,
           dataStatus: TabDataStatus.SAVED,
         },
       },

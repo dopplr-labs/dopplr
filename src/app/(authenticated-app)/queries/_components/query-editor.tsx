@@ -126,7 +126,7 @@ export default function QueryEditor() {
               description={error.message ?? 'Something went wrong. Please try again'}
             />
           ))
-          .with({ status: 'success' }, ({ data }) => {
+          .with({ status: 'success' }, ({ data: resource }) => {
             return (
               <PanelGroup direction="vertical">
                 <Panel defaultSize={60}>
@@ -141,7 +141,7 @@ export default function QueryEditor() {
                         })
                       }
                     }}
-                    resource={data}
+                    resource={resource}
                     format={formatQueryMutation.mutateAsync}
                     runQuery={runQueryMutation.mutate}
                     onMount={(editor) => {

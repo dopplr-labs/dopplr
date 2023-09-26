@@ -15,4 +15,13 @@ declare global {
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void
   }
 }
-export {}
+
+export function createRunQueryEvent(tabId: string) {
+  const runQueryEvent = new CustomEvent('run-query', {
+    detail: {
+      tabId,
+    },
+  })
+
+  return runQueryEvent
+}

@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useStore } from '@/stores'
 import { TabDataStatus } from '@/types/tab'
+import { createRunQueryEvent } from '@/lib/event'
 
 type QueryTabProps = {
   tab: string
@@ -89,12 +90,7 @@ export default function QueryTab({ tab, index }: QueryTabProps) {
           onClick={(event) => {
             event.stopPropagation()
             if (typeof window !== 'undefined') {
-              const runQueryEvent = new CustomEvent('run-query', {
-                detail: {
-                  tabId: tab,
-                },
-              })
-              document.dispatchEvent(runQueryEvent)
+              document.dispatchEvent(createRunQueryEvent(tab))
             }
           }}
         >
