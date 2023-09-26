@@ -23,7 +23,6 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
 
   const queryTabsOrder = useStore((store) => store.queryTabsOrder)
   const updateQueryTabsOrder = useStore((store) => store.updateQueryTabsOrder)
-  const closeQueryTab = useStore((store) => store.closeQueryTab)
   const addQueryTab = useStore((store) => store.addQueryTab)
   const activeQueryTabId = useStore((store) => store.activeQueryTabId)
   const setActiveQueryTabId = useStore((store) => store.setActiveQueryTabId)
@@ -85,20 +84,7 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
           ) : null}
           <div className="query-tabs-container flex items-end space-x-2 overflow-x-auto overflow-y-hidden" ref={ref}>
             {queryTabsOrder.map((tabId, index) => {
-              return (
-                <QueryTab
-                  index={index}
-                  key={tabId}
-                  tab={tabId}
-                  onClose={() => {
-                    closeQueryTab(tabId)
-                  }}
-                  active={tabId === activeQueryTabId}
-                  onSelect={() => {
-                    setActiveQueryTabId(tabId)
-                  }}
-                />
-              )
+              return <QueryTab index={index} key={tabId} tab={tabId} />
             })}
           </div>
           {hasScroll ? (

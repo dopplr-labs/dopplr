@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { SaveIcon, XIcon } from 'lucide-react'
+import { SaveIcon, TerminalIcon, XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   ContextMenu,
@@ -16,12 +16,9 @@ import { TabDataStatus } from '@/types/tab'
 type QueryTabProps = {
   tab: string
   index: number
-  active: boolean
-  onClose?: () => void
-  onSelect?: () => void
 }
 
-export default function QueryTab({ tab, index, active, onClose, onSelect }: QueryTabProps) {
+export default function QueryTab({ tab, index }: QueryTabProps) {
   const tabData = useStore((store) => store.queryTabData[tab])
 
   const { setNodeRef, setActivatorNodeRef, attributes, listeners, isDragging, transform, transition } = useSortable({
@@ -32,6 +29,11 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
       index,
     },
   })
+
+  const active = useStore((store) => store.activeQueryTabId === tab)
+  const setActiveQueryTabId = useStore((store) => store.setActiveQueryTabId)
+  const closeQueryTab = useStore((store) => store.closeQueryTab)
+  const duplicateQueryTab = useStore((store) => store.duplicateQueryTab)
 
   if (!tabData) {
     return null
@@ -54,7 +56,9 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
             transition,
             transform: CSS.Transform.toString(transform),
           }}
-          onClick={onSelect}
+          onClick={() => {
+            setActiveQueryTabId(tab)
+          }}
         >
           <button
             className="flex w-20 items-center space-x-1 truncate py-2 pl-3 pr-1 text-left"
@@ -73,18 +77,34 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
             icon={<XIcon />}
             variant="ghost"
             onClick={(event) => {
-              event.preventDefault()
               event.stopPropagation()
-              onClose?.()
+              closeQueryTab(tab)
             }}
           />
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem
+          disabled={!active}
           onClick={(event) => {
-            event.preventDefault()
             event.stopPropagation()
+            if (typeof window !== 'undefined') {
+              const runQueryEvent = new CustomEvent('run-query', {
+                detail: {
+                  tabId: tab,
+                },
+              })
+              document.dispatchEvent(runQueryEvent)
+            }
+          }}
+        >
+          <span className="flex-1">Run Query</span>
+          <TerminalIcon className="h-4 w-4" />
+        </ContextMenuItem>
+        <ContextMenuItem
+          onClick={(event) => {
+            event.stopPropagation()
+            duplicateQueryTab(tab)
           }}
         >
           Duplicate Query
@@ -92,7 +112,6 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
         <ContextMenuItem
           disabled
           onClick={(event) => {
-            event.preventDefault()
             event.stopPropagation()
           }}
         >
@@ -102,9 +121,8 @@ export default function QueryTab({ tab, index, active, onClose, onSelect }: Quer
         <ContextMenuSeparator />
         <ContextMenuItem
           onClick={(event) => {
-            event.preventDefault()
             event.stopPropagation()
-            onClose?.()
+            closeQueryTab(tab)
           }}
         >
           Close Tab

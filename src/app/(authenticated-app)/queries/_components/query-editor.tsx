@@ -1,10 +1,11 @@
 'use client'
 
 import { Code2Icon, SaveIcon, TerminalIcon } from 'lucide-react'
-import { useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { match } from 'ts-pattern'
 import { Monaco } from '@monaco-editor/react'
+import { z } from 'zod'
 import PgEditor from '@/components/pg-editor'
 import { Button } from '@/components/ui/button'
 import { ErrorMessage } from '@/components/ui/error-message'
@@ -50,6 +51,32 @@ export default function QueryEditor() {
     },
   })
 
+  const handleRunQuery = useCallback(() => {
+    editorRef.current?.getAction('editor.action.runQuery')?.run()
+  }, [])
+
+  useEffect(
+    function registerRunQueryEventListener() {
+      if (typeof document !== 'undefined') {
+        function handler(event: CustomEvent) {
+          try {
+            const tabId = z.object({ tabId: z.string() }).parse(event.detail).tabId
+            if (tabId === activeQueryTabId) {
+              handleRunQuery()
+            }
+          } catch (error) {}
+        }
+
+        document.addEventListener('run-query', handler)
+
+        return () => {
+          document.removeEventListener('run-query', handler)
+        }
+      }
+    },
+    [activeQueryTabId, handleRunQuery],
+  )
+
   return (
     <>
       <div className="flex items-center space-x-4 border-b px-4 py-2">
@@ -65,14 +92,7 @@ export default function QueryEditor() {
         >
           Format
         </Button>
-        <Button
-          icon={<TerminalIcon />}
-          variant="outline"
-          loading={runQueryMutation.isLoading}
-          onClick={() => {
-            editorRef.current?.getAction('editor.action.runQuery')?.run()
-          }}
-        >
+        <Button icon={<TerminalIcon />} variant="outline" loading={runQueryMutation.isLoading} onClick={handleRunQuery}>
           Run Query
         </Button>
         <Button
@@ -95,7 +115,7 @@ export default function QueryEditor() {
             runQueryMutation.isLoading ? 'opacity-100' : 'opacity-0',
           )}
         >
-          <div className="animate-progress-bar h-full origin-left bg-muted-foreground" />
+          <div className="h-full origin-left animate-progress-bar bg-muted-foreground" />
         </div>
         {match(getResourceQuery)
           .returnType<React.ReactNode>()
