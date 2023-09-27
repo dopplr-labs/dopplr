@@ -3,6 +3,7 @@
 import { DatabaseZapIcon, FileClockIcon, SaveAllIcon } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import SchemaTab from './schema-tab/schema-tab'
+import HistoryTab from './history-tab/history-tab'
 
 type SidePanelProps = {
   className?: string
@@ -11,7 +12,7 @@ type SidePanelProps = {
 
 export default function SidePanel({ className, style }: SidePanelProps) {
   return (
-    <Tabs className={className} style={style} value="schema">
+    <Tabs className={className} style={style} defaultValue="schema">
       <div className="border-b p-2">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger className="truncate" value="schema">
@@ -31,6 +32,9 @@ export default function SidePanel({ className, style }: SidePanelProps) {
 
       <TabsContent value="schema">
         <SchemaTab />
+      </TabsContent>
+      <TabsContent value="history">
+        <HistoryTab />
       </TabsContent>
     </Tabs>
   )
