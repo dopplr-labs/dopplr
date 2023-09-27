@@ -72,7 +72,7 @@ export default function SchemaTab() {
       return (
         <Accordion
           type="multiple"
-          className="hide-scrollbar h-screen w-full overflow-y-auto font-mono"
+          className="h-screen w-full overflow-y-auto font-mono"
           defaultValue={publicSchemaTables.map((table) => table.tablename)}
         >
           {publicSchemaTables.map((table) => (
@@ -84,9 +84,9 @@ export default function SchemaTab() {
                 {table.columns.map((column) => (
                   <div
                     key={column.attnum}
-                    className="flex cursor-pointer items-center justify-between px-6 py-2 hover:bg-muted"
+                    className="flex cursor-pointer items-center justify-between px-6 py-2 text-xs text-muted-foreground hover:bg-muted"
                   >
-                    <div className="w-2/3 truncate font-bold">{column.attname}</div>
+                    <div className="w-2/3 truncate">{column.attname}</div>
                     <div className="truncate">{column.data_type}</div>
                   </div>
                 ))}

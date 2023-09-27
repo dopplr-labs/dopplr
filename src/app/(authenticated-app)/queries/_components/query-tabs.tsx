@@ -82,7 +82,7 @@ export default function QueryTabs({ className, style }: QueryTabsProps) {
               <Button size="icon-xs" icon={<ChevronLeftIcon />} variant="ghost" />
             </div>
           ) : null}
-          <div className="query-tabs-container flex items-end space-x-2 overflow-x-auto overflow-y-hidden" ref={ref}>
+          <div className="hide-scrollbar flex items-end space-x-2 overflow-x-auto overflow-y-hidden" ref={ref}>
             {queryTabsOrder.map((tabId, index) => {
               return <QueryTab index={index} key={tabId} tab={tabId} />
             })}

@@ -13,7 +13,7 @@ export default function Command() {
   const setCommandPalleteVisible = useStore((store) => store.setCommandPalleteVisible)
   const router = useRouter()
 
-  useHotkeys('ctrl+k', (e) => {
+  useHotkeys('ctrl+k, meta+k', (e) => {
     e.preventDefault()
     setCommandPalleteVisible(true)
   })

@@ -64,22 +64,14 @@
     appearance: none;
     margin: 0;
   }
+}
 
+@layer components {
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
   .hide-scrollbar {
-    scrollbar-width: none;
-  }
-}
-
-@layer components {
-  .query-tabs-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  .query-tabs-container {
     scrollbar-width: none;
   }
 }
