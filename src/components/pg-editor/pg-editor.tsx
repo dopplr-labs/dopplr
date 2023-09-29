@@ -114,11 +114,13 @@ export default function PgEditor({ resource, format, runQuery, ...props }: PgEdi
           contextMenuOrder: 0,
           run(editor) {
             const query = editor.getValue()
-            runQuery({
-              type: resource.type,
-              connectionString: (resource.connectionConfig as unknown as { url: string }).url,
-              query,
-            })
+            if (query) {
+              runQuery({
+                type: resource.type,
+                connectionString: (resource.connectionConfig as unknown as { url: string }).url,
+                query,
+              })
+            }
           },
         })
 
