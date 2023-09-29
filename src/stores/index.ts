@@ -4,6 +4,8 @@ import { TabState, createTabSlice } from './tabs'
 export type Store = {
   commandPalleteVisible: boolean
   setCommandPalleteVisible: (visible: boolean) => void
+  saveQueryVisible: boolean
+  setSaveQueryVisible: (visible: boolean) => void
 } & TabState
 
 export const useStore = create<Store>((set, ...args) => ({
@@ -12,6 +14,10 @@ export const useStore = create<Store>((set, ...args) => ({
     set({
       commandPalleteVisible: visible,
     })
+  },
+  saveQueryVisible: false,
+  setSaveQueryVisible: (visible) => {
+    set({ saveQueryVisible: visible })
   },
   ...createTabSlice(set, ...args),
 }))

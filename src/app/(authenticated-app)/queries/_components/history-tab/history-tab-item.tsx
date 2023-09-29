@@ -27,7 +27,7 @@ export default function HistoryTabItem({ className, style, item }: HistoryTabIte
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger asChild>
+      <ContextMenuTrigger asChild onDoubleClick={handleRunQuery}>
         <div className={cn('cursor-pointer truncate border-b px-4 py-2 hover:bg-muted', className)} style={style}>
           {item.query}
         </div>
