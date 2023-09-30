@@ -63,6 +63,13 @@ export default function QueryTab({ tab, index }: QueryTabProps) {
             onClick={() => {
               setActiveQueryTabId(tab)
             }}
+            onMouseDown={(e) => {
+              e.stopPropagation()
+              /** Close on middle mouse click */
+              if (e.button === 1) {
+                closeQueryTab(tab)
+              }
+            }}
           >
             <button
               className="flex w-20 items-center space-x-1 truncate py-2 pl-3 pr-1 text-left"
