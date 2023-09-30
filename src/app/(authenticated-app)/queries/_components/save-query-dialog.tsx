@@ -22,6 +22,7 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   const tabData = useStore((store) => store.queryTabData[tabId])
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
   const { toast } = useToast()
+  const utils = trpc.useContext()
 
   const form = useForm<z.infer<typeof createHistoryInput>>({
     resolver: zodResolver(createHistoryInput.required()),
@@ -40,11 +41,13 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
       })
     },
     onSuccess: (savedQuery) => {
+      utils.history.getSavedQueriesForUser.invalidate()
       updateQueryTabData(tabId, {
         ...tabData,
         dataStatus: TabDataStatus.SAVED,
         name: savedQuery.name ?? '',
         savedQueryId: savedQuery.id,
+        query: savedQuery.query,
       })
       form.reset()
       setSaveQueryVisible(false)
@@ -56,7 +59,7 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   })
 
   const handleSaveQuery = (values: z.infer<typeof createHistoryInput>) => {
-    saveQueryMutation.mutate(values)
+    saveQueryMutation.mutate({ ...values, query: tabData.query, resource: tabData.resourceId })
   }
 
   return (

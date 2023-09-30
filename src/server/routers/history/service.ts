@@ -28,4 +28,5 @@ export async function getSavedQueriesForUser(session: Session) {
     .select()
     .from(history)
     .where(and(eq(history.createdBy, session.user.id), isNotNull(history.name)))
+    .orderBy(desc(history.createdAt))
 }

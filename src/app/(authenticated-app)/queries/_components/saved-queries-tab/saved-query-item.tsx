@@ -8,7 +8,7 @@ import { createRunQueryEvent } from '@/lib/event'
 type SavedQueryItemProps = {
   className?: string
   style?: React.CSSProperties
-  item: NonNullable<History>
+  item: History & { name: string }
 }
 
 export default function SavedQueryItem({ className, style, item }: SavedQueryItemProps) {
@@ -17,7 +17,7 @@ export default function SavedQueryItem({ className, style, item }: SavedQueryIte
   const handleRunQuery = () => {
     if (typeof window !== 'undefined') {
       const tabId = generateRandomId(16)
-      addQueryTab(tabId, item.resourceId!, item.query)
+      addQueryTab(tabId, item.resourceId!, item.query, item.name, item.id)
 
       setTimeout(() => {
         document.dispatchEvent(createRunQueryEvent(tabId))
@@ -29,7 +29,7 @@ export default function SavedQueryItem({ className, style, item }: SavedQueryIte
     <ContextMenu>
       <ContextMenuTrigger asChild onDoubleClick={handleRunQuery}>
         <div
-          className={cn('cursor-pointer truncate border-b px-4 py-2 text-sm hover:bg-muted', className)}
+          className={cn('cursor-pointer select-none truncate border-b px-4 py-2 text-sm hover:bg-muted', className)}
           style={style}
         >
           {item.name}

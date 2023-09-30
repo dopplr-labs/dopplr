@@ -117,7 +117,7 @@ export default function QueryTab({ tab, index }: QueryTabProps) {
             }}
             disabled={!tabData.query}
           >
-            <span className="flex-1">Save Query</span>
+            <span className="flex-1">{tabData.savedQueryId ? 'Update Query' : 'Save Query'}</span>
             <SaveIcon className="h-4 w-4" />
           </ContextMenuItem>
           <ContextMenuSeparator />
