@@ -1,9 +1,11 @@
-import { TerminalIcon } from 'lucide-react'
+import { TerminalIcon, Trash } from 'lucide-react'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import { History } from '@/db/schema/history'
 import { cn, generateRandomId } from '@/lib/utils'
 import { useStore } from '@/stores'
 import { createRunQueryEvent } from '@/lib/event'
+import { trpc } from '@/lib/trpc/client'
+import { useToast } from '@/components/ui/use-toast'
 
 type HistoryTabItemProps = {
   className?: string
@@ -13,6 +15,22 @@ type HistoryTabItemProps = {
 
 export default function HistoryTabItem({ className, style, item }: HistoryTabItemProps) {
   const addQueryTab = useStore((state) => state.addQueryTab)
+  const { toast } = useToast()
+  const utils = trpc.useContext()
+
+  const removeQueryMutation = trpc.history.removeHistoryItem.useMutation({
+    onError: (error) => {
+      toast({
+        title: 'Error while removing query',
+        description: error.message ?? 'Something went wrong. Please try again later.',
+        variant: 'destructive',
+      })
+    },
+    onSuccess: () => {
+      utils.history.getHistoryForUser.invalidate()
+      toast({ title: 'Query removed successfully!' })
+    },
+  })
 
   const handleRunQuery = () => {
     if (typeof window !== 'undefined') {
@@ -45,6 +63,17 @@ export default function HistoryTabItem({ className, style, item }: HistoryTabIte
         >
           <span className="flex-1">Run query</span>
           <TerminalIcon className="h-4 w-4" />
+        </ContextMenuItem>
+        <ContextMenuItem
+          disabled={removeQueryMutation.isLoading}
+          className="cursor-pointer"
+          onClick={(event) => {
+            event.stopPropagation()
+            removeQueryMutation.mutate({ id: item.id })
+          }}
+        >
+          <span className="flex-1">Remove query</span>
+          <Trash className="h-4 w-4" />
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

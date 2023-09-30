@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { simpleHash } from '@/lib/random/utils'
 import { ErrorMessage } from '@/components/ui/error-message'
 import SavedQueryItem from './saved-query-item'
+import { EmptyMessage } from '@/components/ui/empty-message'
 
 export default function SavedQueriesTab() {
   const savedQueriesQuery = trpc.history.getSavedQueriesForUser.useQuery()
@@ -34,6 +35,10 @@ export default function SavedQueriesTab() {
       )
     })
     .with({ status: 'success' }, ({ data: savedQueries }) => {
+      if (savedQueries.length === 0) {
+        return <EmptyMessage title="No saved queries" description="You have not saved any query yet!" />
+      }
+
       return (
         <div className="font-mono">
           {savedQueries.map((item) => (

@@ -5,6 +5,7 @@ import { range } from '@/lib/utils'
 import { simpleHash } from '@/lib/random/utils'
 import { ErrorMessage } from '@/components/ui/error-message'
 import HistoryTabItem from './history-tab-item'
+import { EmptyMessage } from '@/components/ui/empty-message'
 
 export default function HistoryTab() {
   const getHistoryQuery = trpc.history.getHistoryForUser.useQuery()
@@ -34,6 +35,10 @@ export default function HistoryTab() {
       )
     })
     .with({ status: 'success' }, ({ data: history }) => {
+      if (history.length === 0) {
+        return <EmptyMessage title="Nothing in history!" description='Try running a query' />
+      }
+
       return (
         <div className="font-mono">
           {history.map((item) => (
