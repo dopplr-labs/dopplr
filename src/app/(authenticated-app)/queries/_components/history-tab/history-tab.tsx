@@ -35,7 +35,7 @@ export default function HistoryTab() {
     })
     .with({ status: 'success' }, ({ data: history }) => {
       return (
-        <div>
+        <div className="font-mono">
           {history.map((item) => (
             <HistoryTabItem key={item.id} item={item} />
           ))}

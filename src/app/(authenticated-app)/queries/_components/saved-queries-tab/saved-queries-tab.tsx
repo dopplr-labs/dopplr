@@ -35,7 +35,7 @@ export default function SavedQueriesTab() {
     })
     .with({ status: 'success' }, ({ data: savedQueries }) => {
       return (
-        <div>
+        <div className="font-mono">
           {savedQueries.map((item) => (
             <SavedQueryItem key={item.id} item={item} />
           ))}

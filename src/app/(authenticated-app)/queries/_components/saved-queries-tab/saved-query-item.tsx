@@ -28,7 +28,10 @@ export default function SavedQueryItem({ className, style, item }: SavedQueryIte
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild onDoubleClick={handleRunQuery}>
-        <div className={cn('cursor-pointer truncate border-b px-4 py-2 hover:bg-muted', className)} style={style}>
+        <div
+          className={cn('cursor-pointer truncate border-b px-4 py-2 text-sm hover:bg-muted', className)}
+          style={style}
+        >
           {item.name}
         </div>
       </ContextMenuTrigger>
