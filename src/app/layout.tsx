@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
       <body suppressHydrationWarning>
-        <ThemeProvider>
+        <ThemeProvider themes={['light', 'dark', 'light-blue', 'dark-blue']}>
           <NextAuthProvider>
             <TrpcProvider>{children}</TrpcProvider>
           </NextAuthProvider>
