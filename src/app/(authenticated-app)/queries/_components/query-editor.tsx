@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import ResourceSelector from './resource-selector'
 import { useStore } from '@/stores'
 import { TabDataStatus } from '@/types/tab'
+import QueryTable from './query-table/query-table'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
@@ -25,6 +26,7 @@ export default function QueryEditor() {
     store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
   )
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
+  const setCurrentQueryData = useStore((store) => store.setCurrentQueryData)
 
   const getResourceQuery = trpc.resource.getResource.useQuery(
     {
@@ -56,7 +58,8 @@ export default function QueryEditor() {
         variant: 'destructive',
       })
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setCurrentQueryData(data)
       if (activeQueryTabData && getResourceQuery.data) {
         createHistoryMutation.mutate({
           query: activeQueryTabData.query,
@@ -165,7 +168,9 @@ export default function QueryEditor() {
                   />
                 </Panel>
                 <PanelResizeHandle className="h-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
-                <Panel defaultSize={40} minSize={30} maxSize={60} />
+                <Panel defaultSize={40} minSize={30} maxSize={60}>
+                  <QueryTable />
+                </Panel>
               </PanelGroup>
             )
           })
