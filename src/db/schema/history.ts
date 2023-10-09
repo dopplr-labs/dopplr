@@ -1,13 +1,16 @@
-import { integer, pgTable, serial, text, time } from 'drizzle-orm/pg-core'
+import { integer, pgEnum, pgTable, serial, text, time } from 'drizzle-orm/pg-core'
 import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 import { resources } from './resource'
+
+const historyType = pgEnum('history_type', ['SAVED_QUERY', 'HISTORY'])
 
 export const history = pgTable('history', {
   id: serial('id').primaryKey(),
   createdAt: time('created_at').defaultNow(),
   query: text('query').notNull(),
   name: text('name'),
+  type: historyType('type').default('HISTORY'),
   createdBy: text('user_id').references(() => users.id),
   resourceId: integer('resource_id').references(() => resources.id),
 })

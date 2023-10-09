@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { Session } from 'next-auth'
-import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { createHistoryInput } from './input'
+import { createHistoryInput, updateHistoryInput } from './input'
 import { db } from '@/db'
 import { history } from '@/db/schema/history'
 
@@ -20,11 +20,25 @@ export async function createHistory(input: z.infer<typeof createHistoryInput>, s
   return historyCreated[0]
 }
 
+export async function updateHistory(input: z.infer<typeof updateHistoryInput>, session: Session) {
+  const historyUpdated = await db
+    .update(history)
+    .set({
+      query: input.query,
+      name: input.name,
+      resourceId: input.resource,
+    })
+    .where(and(eq(history.id, input.id), eq(history.createdBy, session.user.id), eq(history.type, 'SAVED_QUERY')))
+    .returning()
+
+  return historyUpdated
+}
+
 export async function getHistoryForUser(session: Session) {
   return db
     .select()
     .from(history)
-    .where(and(eq(history.createdBy, session.user.id), isNull(history.name)))
+    .where(and(eq(history.createdBy, session.user.id), eq(history.type, 'HISTORY')))
     .orderBy(desc(history.createdAt))
 }
 
@@ -32,7 +46,7 @@ export async function getSavedQueriesForUser(session: Session) {
   return db
     .select()
     .from(history)
-    .where(and(eq(history.createdBy, session.user.id), isNotNull(history.name)))
+    .where(and(eq(history.createdBy, session.user.id), eq(history.type, 'SAVED_QUERY')))
     .orderBy(desc(history.createdAt))
 }
 

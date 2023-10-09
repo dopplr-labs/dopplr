@@ -9,3 +9,10 @@ export const createHistoryInput = z.object({
 export const removeHistoryItemInput = z.object({
   id: z.number().positive(),
 })
+
+export const updateHistoryInput = z.object({
+  id: z.number().positive(),
+  query: z.string().optional(),
+  name: z.string().optional(),
+  resource: z.number().positive().optional(),
+})

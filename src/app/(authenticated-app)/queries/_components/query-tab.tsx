@@ -14,6 +14,7 @@ import { useStore } from '@/stores'
 import { TabDataStatus } from '@/types/tab'
 import { createRunQueryEvent } from '@/lib/event'
 import SaveQueryDialog from './save-query-dialog'
+import { trpc } from '@/lib/trpc/client'
 
 type QueryTabProps = {
   tab: string
@@ -33,10 +34,25 @@ export default function QueryTab({ tab, index }: QueryTabProps) {
     },
   })
 
+  const activeQueryTabId = useStore((store) => store.activeQueryTabId)
   const active = useStore((store) => store.activeQueryTabId === tab)
   const setActiveQueryTabId = useStore((store) => store.setActiveQueryTabId)
   const closeQueryTab = useStore((store) => store.closeQueryTab)
   const duplicateQueryTab = useStore((store) => store.duplicateQueryTab)
+  const updateQueryTabData = useStore((store) => store.updateQueryTabData)
+
+  const utils = trpc.useContext()
+
+  const updateQueryMutation = trpc.history.updateHistory.useMutation({
+    onSuccess: () => {
+      if (activeQueryTabId) {
+        updateQueryTabData(activeQueryTabId, {
+          dataStatus: TabDataStatus.SAVED,
+        })
+        utils.history.getSavedQueriesForUser.invalidate()
+      }
+    },
+  })
 
   if (!tabData) {
     return null
@@ -120,7 +136,14 @@ export default function QueryTab({ tab, index }: QueryTabProps) {
               event.stopPropagation()
             }}
             onSelect={() => {
-              setSaveQueryVisible(true)
+              if (tabData.savedQueryId) {
+                updateQueryMutation.mutate({
+                  id: tabData.savedQueryId,
+                  query: tabData.query,
+                })
+              } else {
+                setSaveQueryVisible(true)
+              }
             }}
             disabled={!tabData.query}
           >

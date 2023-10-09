@@ -26,7 +26,6 @@ export default function QueryEditor() {
     store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
   )
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
-  const setCurrentQueryData = useStore((store) => store.setCurrentQueryData)
 
   const getResourceQuery = trpc.resource.getResource.useQuery(
     {
@@ -59,7 +58,9 @@ export default function QueryEditor() {
       })
     },
     onSuccess: (data) => {
-      setCurrentQueryData(data)
+      updateQueryTabData(activeQueryTabId!, {
+        queryResult: data,
+      })
       if (activeQueryTabData && getResourceQuery.data) {
         createHistoryMutation.mutate({
           query: activeQueryTabData.query,

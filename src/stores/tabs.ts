@@ -16,7 +16,7 @@ export type TabState = {
 
 export const createTabSlice: StateCreator<TabState> = (set, get) => ({
   queryTabsOrder: [],
-  acitveQueryTabId: undefined,
+  activeQueryTabId: undefined,
   queryTabData: {},
   setActiveQueryTabId: (tabId) => {
     set({
