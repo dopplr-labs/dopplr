@@ -1,4 +1,4 @@
-import { TerminalIcon, Trash } from 'lucide-react'
+import { EraserIcon, TerminalIcon, Trash } from 'lucide-react'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import { History } from '@/db/schema/history'
 import { cn, generateRandomId } from '@/lib/utils'
@@ -29,6 +29,20 @@ export default function HistoryTabItem({ className, style, item }: HistoryTabIte
     onSuccess: () => {
       utils.history.getHistoryForUser.invalidate()
       toast({ title: 'Query removed successfully!' })
+    },
+  })
+
+  const clearHistoryForUserMutation = trpc.history.clearHistoryForUser.useMutation({
+    onError: (error) => {
+      toast({
+        title: 'Error clearing history',
+        description: error.message ?? 'Something went wrong. Please try again later.',
+        variant: 'destructive',
+      })
+    },
+    onSuccess: () => {
+      utils.history.getHistoryForUser.invalidate()
+      toast({ title: 'History cleared!' })
     },
   })
 
@@ -74,6 +88,15 @@ export default function HistoryTabItem({ className, style, item }: HistoryTabIte
         >
           <span className="flex-1">Remove query</span>
           <Trash className="h-4 w-4" />
+        </ContextMenuItem>
+        <ContextMenuItem
+          onClick={(event) => {
+            event.stopPropagation()
+            clearHistoryForUserMutation.mutate()
+          }}
+        >
+          <span className="flex-1">Clear All</span>
+          <EraserIcon className="h-4 w-4" />
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

@@ -41,7 +41,12 @@ export default function QueryEditor() {
 
   const formatQueryMutation = trpc.query.formatQuery.useMutation()
 
-  const createHistoryMutation = trpc.history.create.useMutation()
+  const utils = trpc.useContext()
+  const createHistoryMutation = trpc.history.create.useMutation({
+    onSuccess: () => {
+      utils.history.getHistoryForUser.invalidate()
+    },
+  })
 
   const runQueryMutation = trpc.query.runQueryMutation.useMutation({
     onError: (error) => {

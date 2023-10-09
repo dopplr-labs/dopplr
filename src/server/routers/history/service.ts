@@ -48,3 +48,7 @@ export async function removeHistoryItem(id: number, session: Session) {
 
   return db.delete(history).where(eq(history.id, id)).returning()
 }
+
+export async function clearAllHistoryForUser(session: Session) {
+  return db.delete(history).where(eq(history.createdBy, session.user.id)).returning()
+}
