@@ -74,6 +74,8 @@ export default function QueryEditor() {
     editorRef.current?.getAction('editor.action.runQuery')?.run()
   }, [])
 
+  const setSaveQueryVisible = useStore((store) => store.setSaveQueryVisible)
+
   useEffect(
     function registerRunQueryEventListener() {
       if (typeof document !== 'undefined') {
@@ -95,6 +97,17 @@ export default function QueryEditor() {
     },
     [activeQueryTabId, handleRunQuery],
   )
+
+  const updateQueryMutation = trpc.history.updateHistory.useMutation({
+    onSuccess: () => {
+      if (activeQueryTabId) {
+        updateQueryTabData(activeQueryTabId, {
+          dataStatus: TabDataStatus.SAVED,
+        })
+        utils.history.getSavedQueriesForUser.invalidate()
+      }
+    },
+  })
 
   return (
     <>
@@ -118,13 +131,21 @@ export default function QueryEditor() {
           icon={<SaveIcon />}
           variant="outline"
           onClick={() => {
-            toast({
-              title: 'Save Query',
-              description: 'Not yet implemented. Please come back later.',
-            })
+            if (!activeQueryTabData) {
+              return
+            }
+
+            if (activeQueryTabData.savedQueryId) {
+              updateQueryMutation.mutate({
+                id: activeQueryTabData.savedQueryId,
+                query: activeQueryTabData.query,
+              })
+            } else {
+              setSaveQueryVisible(true)
+            }
           }}
         >
-          Save Query
+          {activeQueryTabData?.savedQueryId ? 'Update Query' : 'Save Query'}
         </Button>
       </div>
       <div className="relative flex-1">

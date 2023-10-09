@@ -4,7 +4,6 @@ import z from 'zod'
 import { Save } from 'lucide-react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useStore } from '@/stores'
-import { createHistoryInput } from '@/server/routers/history/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -16,6 +15,10 @@ type SaveQueryDialogProps = {
   tabId: string
 }
 
+const validationSchema = z.object({
+  name: z.string(),
+})
+
 export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   const saveQueryVisible = useStore((store) => store.saveQueryVisible)
   const setSaveQueryVisible = useStore((store) => store.setSaveQueryVisible)
@@ -24,18 +27,15 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   const { toast } = useToast()
   const utils = trpc.useContext()
 
-  const form = useForm<z.infer<typeof createHistoryInput>>({
-    resolver: zodResolver(createHistoryInput.required()),
+  const form = useForm<z.infer<typeof validationSchema>>({
+    resolver: zodResolver(validationSchema),
     defaultValues: {
-      query: tabData.query,
-      resource: tabData.resourceId,
       name: '',
     },
   })
 
   const saveQueryMutation = trpc.history.create.useMutation({
     onError: (error) => {
-      console.log(error)
       toast({
         title: 'Error while saving query',
         description: error.message ?? 'Something went wrong. Please try again later.',
@@ -60,18 +60,24 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
     },
   })
 
-  const handleSaveQuery = (values: z.infer<typeof createHistoryInput>) => {
-    saveQueryMutation.mutate({ ...values, query: tabData.query, resource: tabData.resourceId, type: 'SAVED_QUERY' })
-  }
-
   return (
     <Dialog open={saveQueryVisible} onOpenChange={setSaveQueryVisible}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Save Query</DialogTitle>
-        </DialogHeader>
         <Form {...form}>
-          <form className="space-y-2" onSubmit={form.handleSubmit(handleSaveQuery)}>
+          <form
+            className="space-y-2"
+            onSubmit={form.handleSubmit(({ name }) => {
+              saveQueryMutation.mutate({
+                name,
+                query: tabData.query,
+                resource: tabData.resourceId,
+                type: 'SAVED_QUERY',
+              })
+            })}
+          >
+            <DialogHeader>
+              <DialogTitle>Save Query</DialogTitle>
+            </DialogHeader>
             <FormField
               control={form.control}
               name="name"
@@ -80,18 +86,13 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter name for your query"
-                        disabled={saveQueryMutation.isLoading}
-                        {...field}
-                      />
+                      <Input placeholder="Enter name for your query" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )
               }}
             />
-
             <DialogFooter>
               <Button
                 type="submit"
