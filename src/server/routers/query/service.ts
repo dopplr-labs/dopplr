@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import * as prettier from 'prettier/standalone'
-import SqlFormatter from 'prettier-plugin-sql'
+import { format } from 'sql-formatter'
 import { formatQueryInput, runQueryInput } from './input'
 import { getPgClientForConnectionString } from '@/lib/pg/client'
 
@@ -21,18 +20,7 @@ export async function runQuery(input: z.infer<typeof runQueryInput>) {
 }
 
 export async function formatQuery(input: z.infer<typeof formatQueryInput>) {
-  const FORMATTER_OPTIONS = {
-    plugins: [SqlFormatter],
-    formatter: 'sql-formatter',
-    language: 'postgresql',
-    database: 'postgresql',
-    parser: 'sql',
-  }
-
-  const formattedQuery = prettier.format(input.query, {
-    ...FORMATTER_OPTIONS,
-    ...input.options,
-  })
+  const formattedQuery = format(input.query)
 
   return formattedQuery
 }
