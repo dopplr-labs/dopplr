@@ -18,13 +18,7 @@ export default function BaseEditor({ ...props }: BaseEditorProps) {
   const monaco = useMonaco()
 
   const { theme } = useTheme()
-  const mode = useMemo(() => {
-    if (theme === 'system') {
-      const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-      return isDarkMode ? 'dark' : 'light'
-    }
-    return theme
-  }, [theme])
+  const mode = useMemo(() => (theme?.endsWith('dark') ? 'dark' : 'light'), [theme])
 
   const setCommandPalleteVisible = useStore((store) => store.setCommandPalleteVisible)
 
