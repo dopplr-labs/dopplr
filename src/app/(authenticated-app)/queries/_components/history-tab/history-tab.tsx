@@ -36,11 +36,11 @@ export default function HistoryTab() {
     })
     .with({ status: 'success' }, ({ data: history }) => {
       if (history.length === 0) {
-        return <EmptyMessage title="Nothing in history!" description='Try running a query' />
+        return <EmptyMessage title="Nothing in history!" description="Try running a query" />
       }
 
       return (
-        <div className="font-mono">
+        <div className="h-full overflow-auto font-mono">
           {history.map((item) => (
             <HistoryTabItem key={item.id} item={item} />
           ))}
