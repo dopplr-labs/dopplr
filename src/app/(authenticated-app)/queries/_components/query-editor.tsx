@@ -41,6 +41,13 @@ export default function QueryEditor() {
 
   const formatQueryMutation = trpc.query.formatQuery.useMutation()
 
+  const utils = trpc.useContext()
+  const createHistoryMutation = trpc.history.create.useMutation({
+    onSuccess: () => {
+      utils.history.getHistoryForUser.invalidate()
+    },
+  })
+
   const runQueryMutation = trpc.query.runQueryMutation.useMutation({
     onError: (error) => {
       toast({
@@ -48,6 +55,14 @@ export default function QueryEditor() {
         description: error.message ?? 'Something went wrong. Please try again later.',
         variant: 'destructive',
       })
+    },
+    onSuccess: () => {
+      if (activeQueryTabData && getResourceQuery.data) {
+        createHistoryMutation.mutate({
+          query: activeQueryTabData.query,
+          resource: getResourceQuery.data.id,
+        })
+      }
     },
   })
 
