@@ -1,8 +1,11 @@
+import dynamic from 'next/dynamic'
 import { DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import NavLink from './nav-link'
 import AccountMenu from './account-menu'
+
+const ThemeToggle = dynamic(() => import('./theme-toggle'), { ssr: false })
 
 const MENU_ITEMS = [
   {
@@ -38,6 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex-1" />
           <AccountMenu />
+          <ThemeToggle />
         </div>
       </div>
       <div className="relative flex flex-1 overflow-hidden">
