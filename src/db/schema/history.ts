@@ -3,7 +3,7 @@ import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 import { resources } from './resource'
 
-const historyType = pgEnum('history_type', ['SAVED_QUERY', 'HISTORY'])
+export const historyType = pgEnum('history_type', ['SAVED_QUERY', 'HISTORY'])
 
 export const history = pgTable('history', {
   id: serial('id').primaryKey(),

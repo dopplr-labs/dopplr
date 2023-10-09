@@ -4,6 +4,7 @@ export const createHistoryInput = z.object({
   query: z.string(),
   name: z.string().optional(),
   resource: z.number().positive(),
+  type: z.enum(['SAVED_QUERY', 'HISTORY']).optional(),
 })
 
 export const removeHistoryItemInput = z.object({

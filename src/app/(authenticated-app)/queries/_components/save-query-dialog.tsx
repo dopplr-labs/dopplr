@@ -29,11 +29,13 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
     defaultValues: {
       query: tabData.query,
       resource: tabData.resourceId,
+      name: '',
     },
   })
 
   const saveQueryMutation = trpc.history.create.useMutation({
     onError: (error) => {
+      console.log(error)
       toast({
         title: 'Error while saving query',
         description: error.message ?? 'Something went wrong. Please try again later.',
@@ -59,7 +61,7 @@ export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   })
 
   const handleSaveQuery = (values: z.infer<typeof createHistoryInput>) => {
-    saveQueryMutation.mutate({ ...values, query: tabData.query, resource: tabData.resourceId })
+    saveQueryMutation.mutate({ ...values, query: tabData.query, resource: tabData.resourceId, type: 'SAVED_QUERY' })
   }
 
   return (

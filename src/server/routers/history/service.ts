@@ -14,6 +14,7 @@ export async function createHistory(input: z.infer<typeof createHistoryInput>, s
       name: input.name,
       resourceId: input.resource,
       createdBy: session.user.id,
+      type: input.type,
     })
     .returning()
 
