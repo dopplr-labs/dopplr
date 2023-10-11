@@ -1,18 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { match } from 'ts-pattern'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import {
-  QUERY_CHARTS,
-  QUERY_CHARTS_CONFIG,
-  getConfigFromValues,
-  isFormValid,
-  parseQueryResult,
-} from '@/lib/query-chart/utils'
+import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useStore } from '@/stores'
 import { Checkbox } from '@/components/ui/checkbox'
+import { EmptyMessage } from '@/components/ui/empty-message'
 
 export default function QueryChart() {
   const queryResult = useStore((store) =>
@@ -22,18 +18,24 @@ export default function QueryChart() {
   const [chartSelected, setChartSelected] = useState<QueryChartType>('bar-chart')
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
 
-  const form = useForm()
+  const form = useForm({
+    resolver: zodResolver(chartConfig.validationSchema),
+  })
   const values = form.watch()
 
   const chartContent = useMemo(() => {
-    if (!queryResult || queryResult.length === 0 || !isFormValid(chartConfig.inputs, values)) {
-      return null
+    if (!queryResult || queryResult.length === 0 || !form.formState.isValid) {
+      return (
+        <div className="grid h-full w-full place-content-center">
+          <EmptyMessage title="No fields selected!" description="Select all required fields to plot a chart!" />
+        </div>
+      )
     }
 
     return (
       <chartConfig.Component data={parseQueryResult(queryResult)} {...getConfigFromValues(chartConfig.type, values)} />
     )
-  }, [queryResult, chartConfig, values])
+  }, [queryResult, chartConfig, values, form.formState.isValid])
 
   const handleChartCreate = (values: any) => {
     console.log(values)
@@ -53,7 +55,7 @@ export default function QueryChart() {
   const columns = Object.keys(queryResult.length > 0 ? queryResult[0] : {})
 
   return (
-    <div className="grid grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-3 gap-4 overflow-y-auto p-4">
       <div className="col-span-2">{chartContent}</div>
       <div className="space-y-4">
         <div>Chart Configuration</div>
@@ -106,14 +108,9 @@ export default function QueryChart() {
                             </Select>
                           )
                         })
-                        .with({ type: 'boolean' }, ({ key, label, defaultValue }) => (
+                        .with({ type: 'boolean' }, ({ key, label }) => (
                           <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id={key}
-                              checked={field.value}
-                              defaultChecked={defaultValue}
-                              onCheckedChange={field.onChange}
-                            />
+                            <Checkbox id={key} checked={field.value} onCheckedChange={field.onChange} />
                             <label
                               htmlFor={key}
                               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
