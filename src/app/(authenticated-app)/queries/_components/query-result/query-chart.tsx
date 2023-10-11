@@ -2,17 +2,24 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { match } from 'ts-pattern'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, isFormValid } from '@/lib/query-chart/utils'
+import {
+  QUERY_CHARTS,
+  QUERY_CHARTS_CONFIG,
+  getConfigFromValues,
+  isFormValid,
+  parseQueryResult,
+} from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useStore } from '@/stores'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function QueryChart() {
   const queryResult = useStore((store) =>
     store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId]?.queryResult : undefined,
   )
 
-  const [chartSelected, setChartSelected] = useState<QueryChartType>('pie-chart')
+  const [chartSelected, setChartSelected] = useState<QueryChartType>('bar-chart')
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
 
   const form = useForm()
@@ -23,7 +30,9 @@ export default function QueryChart() {
       return null
     }
 
-    return <chartConfig.Component data={queryResult} {...getConfigFromValues(chartConfig.type, values)} />
+    return (
+      <chartConfig.Component data={parseQueryResult(queryResult)} {...getConfigFromValues(chartConfig.type, values)} />
+    )
   }, [queryResult, chartConfig, values])
 
   const handleChartCreate = (values: any) => {
@@ -47,9 +56,12 @@ export default function QueryChart() {
     <div className="grid grid-cols-3 gap-4 p-4">
       <div className="col-span-2">{chartContent}</div>
       <div className="space-y-4">
+        <div>Chart Configuration</div>
+
         <Select
           value={chartSelected}
           onValueChange={(value) => {
+            form.reset()
             setChartSelected(value as QueryChartType)
           }}
         >
@@ -74,15 +86,15 @@ export default function QueryChart() {
                 name={input.key}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{input.label}</FormLabel>
+                    {input.type !== 'boolean' ? <FormLabel>{input.label}</FormLabel> : null}
                     <FormControl>
                       {match(input)
                         .returnType<React.ReactNode>()
-                        .with({ type: 'col-select' }, () => {
+                        .with({ type: 'col-select' }, ({ label }) => {
                           return (
                             <Select onValueChange={field.onChange} {...field}>
                               <SelectTrigger className="w-full">
-                                <SelectValue placeholder={`Select ${input.label}`} />
+                                <SelectValue placeholder={`Select ${label}`} />
                               </SelectTrigger>
                               <SelectContent>
                                 {columns.map((column) => (
@@ -94,6 +106,22 @@ export default function QueryChart() {
                             </Select>
                           )
                         })
+                        .with({ type: 'boolean' }, ({ key, label, defaultValue }) => (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={key}
+                              checked={field.value}
+                              defaultChecked={defaultValue}
+                              onCheckedChange={field.onChange}
+                            />
+                            <label
+                              htmlFor={key}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {label}
+                            </label>
+                          </div>
+                        ))
                         .exhaustive()}
                     </FormControl>
                     <FormMessage />

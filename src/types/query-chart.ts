@@ -5,14 +5,19 @@ export type QueryChartType = (typeof QUERY_CHARTS)[number]['id']
 type BaseInput = {
   key: string
   label: string
-  required: boolean
+  required?: boolean
+  defaultValue?: any
 }
 
 type ColSelectInput = BaseInput & {
   type: 'col-select'
 }
 
-export type QueryChartConfigInput = ColSelectInput
+type BooleanInput = BaseInput & {
+  type: 'boolean'
+}
+
+export type QueryChartConfigInput = ColSelectInput | BooleanInput
 
 export type QueryChartConfig = {
   type: QueryChartType

@@ -1,5 +1,7 @@
 import { Bar, Line, Pie } from '@ant-design/plots'
+import dayjs from 'dayjs'
 import { QueryChartConfig, QueryChartConfigInput, QueryChartType } from '@/types/query-chart'
+import { QueryResult } from '@/types/tab'
 
 export const QUERY_CHARTS = [
   {
@@ -32,6 +34,17 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         label: 'Y Field',
         type: 'col-select',
         required: true,
+      },
+      {
+        key: 'seriesField',
+        label: 'Series Field',
+        type: 'col-select',
+      },
+      {
+        key: 'legend',
+        label: 'Show Legend',
+        type: 'boolean',
+        defaultValue: true,
       },
     ],
   },
@@ -111,4 +124,29 @@ export function isFormValid(
   })
 
   return isValid
+}
+
+export function parseQueryResult(queryResult: QueryResult) {
+  return queryResult.map((result) => {
+    return Object.entries(result).reduce(
+      (acc, [key, value]) => {
+        if (value instanceof Date) {
+          acc = {
+            ...acc,
+            [key]: dayjs(value as Date).format('DD-MM-YYYY'),
+          }
+        } else if (!Number.isNaN(Number(value))) {
+          acc = {
+            ...acc,
+            [key]: Number(value),
+          }
+        } else {
+          acc[key] = value as string
+        }
+
+        return acc
+      },
+      {} as Record<string, string | number>,
+    )
+  })
 }
