@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import dayjs from 'dayjs'
 import { useStore } from '@/stores'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
@@ -22,7 +23,18 @@ export default function QueryTable() {
   }, [queryResult])
 
   const table = useReactTable({
-    data: queryResult ?? [],
+    data: (queryResult ?? []).map((result) => {
+      return Object.entries(result).reduce(
+        (acc, [key, value]) => {
+          if (typeof value === 'object') {
+            acc[key] = dayjs(value as Date).format('DD-MM-YYYY')
+          }
+
+          return acc
+        },
+        {} as Record<string, string | number>,
+      )
+    }),
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
@@ -32,7 +44,7 @@ export default function QueryTable() {
       <div className="flex items-center justify-center space-x-1 p-8 text-sm">
         <span>Run the query</span> <span className="rounded border bg-muted p-1 font-mono text-xs">Ctrl/Cmd</span>{' '}
         <span>+</span>
-        <span className="rounded border bg-muted p-1 font-mono text-xs">k</span>
+        <span className="rounded border bg-muted p-1 font-mono text-xs">Enter</span>
         <span>to see results.</span>
       </div>
     )
