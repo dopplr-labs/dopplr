@@ -26,8 +26,13 @@ export default function QueryTable() {
     data: (queryResult ?? []).map((result) => {
       return Object.entries(result).reduce(
         (acc, [key, value]) => {
-          if (typeof value === 'object') {
-            acc[key] = dayjs(value as Date).format('DD-MM-YYYY')
+          if (value instanceof Date) {
+            acc = {
+              ...acc,
+              [key]: dayjs(value as Date).format('DD-MM-YYYY'),
+            }
+          } else {
+            acc[key] = value as string
           }
 
           return acc
