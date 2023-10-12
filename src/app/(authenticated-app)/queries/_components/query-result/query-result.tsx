@@ -5,7 +5,7 @@ import QueryChart from './query-chart'
 
 export default function QueryResult() {
   return (
-    <Tabs className="flex h-full flex-col" defaultValue="chart">
+    <Tabs className="flex h-full flex-col" defaultValue="table">
       <div className="border-b p-2">
         <TabsList>
           <TabsTrigger value="table">

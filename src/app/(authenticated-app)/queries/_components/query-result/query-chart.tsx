@@ -57,11 +57,10 @@ export default function QueryChart() {
   const columns = Object.keys(queryResult.length > 0 ? queryResult[0] : {})
 
   return (
-    <div className="grid grid-cols-3 gap-4 overflow-y-auto p-4">
+    <div className="grid grid-cols-3 gap-4 p-4">
       <div className="col-span-2">{chartContent}</div>
       <div className="space-y-4">
         <div>Chart Configuration</div>
-
         <Select
           value={chartSelected}
           onValueChange={(value) => {
@@ -82,7 +81,7 @@ export default function QueryChart() {
         </Select>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleChartCreate)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleChartCreate)} className="max-h-96 space-y-4 overflow-y-auto">
             {chartConfig.inputs.map((input) => (
               <FormField
                 key={input.key}
