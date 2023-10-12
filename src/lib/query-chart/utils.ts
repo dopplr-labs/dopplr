@@ -153,12 +153,22 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         step: 0.1,
         defaultValue: 0.9,
       },
+      {
+        key: 'innerRadius',
+        label: 'Inner Radius',
+        type: 'slider',
+        min: 0,
+        max: 1,
+        step: 0.1,
+        defaultValue: 0,
+      },
     ],
     validationSchema: z.object({
       angleField: z.string(),
       colorField: z.string(),
-      radius: z.coerce.number().min(0.1).max(1).default(0.9),
       labelType: z.string().default('outer').optional(),
+      radius: z.coerce.number().min(0.1).max(1).default(0.9),
+      innerRadius: z.coerce.number().min(0).max(1).default(0),
     }),
   },
   'line-chart': {
