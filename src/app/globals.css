@@ -338,18 +338,20 @@
     margin: 0;
   }
 
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 10px;
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
     background-color: hsl(var(--background));
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
+  *::-webkit-scrollbar-track {
     background-color: hsl(var(--background));
   }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background-color: hsl(var(--primary));
+    opacity: 0.5;
   }
 }
 

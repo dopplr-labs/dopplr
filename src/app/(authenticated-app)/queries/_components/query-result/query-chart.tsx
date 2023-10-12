@@ -26,7 +26,8 @@ export default function QueryChart() {
   const values = form.watch()
 
   const chartContent = useMemo(() => {
-    if (!queryResult || queryResult.length === 0 || !form.formState.isValid) {
+    const result = chartConfig.validationSchema.safeParse(values)
+    if (!queryResult || queryResult.length === 0 || !result.success) {
       return (
         <div className="grid h-full w-full place-content-center">
           <EmptyMessage title="No fields selected!" description="Select all required fields to plot a chart!" />
@@ -35,9 +36,13 @@ export default function QueryChart() {
     }
 
     return (
-      <chartConfig.Component data={parseQueryResult(queryResult)} {...getConfigFromValues(chartConfig.type, values)} />
+      <chartConfig.Component
+        key={chartSelected}
+        data={parseQueryResult(queryResult)}
+        {...getConfigFromValues(chartConfig.type, result.data)}
+      />
     )
-  }, [queryResult, chartConfig, values, form.formState.isValid])
+  }, [queryResult, chartConfig, values, chartSelected])
 
   const handleChartCreate = (values: any) => {
     console.log(values)

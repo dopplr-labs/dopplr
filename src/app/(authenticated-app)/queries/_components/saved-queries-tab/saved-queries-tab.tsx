@@ -40,7 +40,7 @@ export default function SavedQueriesTab() {
       }
 
       return (
-        <div className="custom-scrollbar h-full overflow-auto font-mono">
+        <div className="h-full overflow-auto font-mono">
           {savedQueries.map((item) => (
             <SavedQueryItem key={item.id} item={item} />
           ))}

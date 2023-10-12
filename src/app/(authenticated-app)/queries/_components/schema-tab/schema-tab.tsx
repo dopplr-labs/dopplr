@@ -72,7 +72,7 @@ export default function SchemaTab() {
       return (
         <Accordion
           type="multiple"
-          className="custom-scrollbar h-full w-full overflow-y-auto font-mono"
+          className="h-full w-full overflow-y-auto font-mono"
           defaultValue={publicSchemaTables.map((table) => table.tablename)}
         >
           {publicSchemaTables.map((table) => (

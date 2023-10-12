@@ -40,7 +40,7 @@ export default function HistoryTab() {
       }
 
       return (
-        <div className="custom-scrollbar h-full overflow-auto font-mono">
+        <div className="h-full overflow-auto font-mono">
           {history.map((item) => (
             <HistoryTabItem key={item.id} item={item} />
           ))}
