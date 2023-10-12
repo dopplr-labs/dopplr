@@ -81,7 +81,7 @@ export default function QueryChart() {
         </Select>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleChartCreate)} className="max-h-96 space-y-4 overflow-y-auto">
+          <form onSubmit={form.handleSubmit(handleChartCreate)} className="space-y-4">
             {chartConfig.inputs.map((input) => (
               <FormField
                 key={input.key}

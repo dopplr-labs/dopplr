@@ -19,10 +19,10 @@ export default function QueryResult() {
         </TabsList>
       </div>
 
-      <TabsContent className="mt-0 flex-1 overflow-y-auto" value="table">
+      <TabsContent className="custom-scrollbar mt-0 flex-1 overflow-y-auto" value="table">
         <QueryTable />
       </TabsContent>
-      <TabsContent className="mt-0 flex-1 overflow-y-auto" value="chart">
+      <TabsContent className="custom-scrollbar mt-0 flex-1 overflow-y-auto" value="chart">
         <QueryChart />
       </TabsContent>
     </Tabs>
