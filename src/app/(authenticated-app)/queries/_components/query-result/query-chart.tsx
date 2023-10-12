@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useStore } from '@/stores'
 import { Checkbox } from '@/components/ui/checkbox'
 import { EmptyMessage } from '@/components/ui/empty-message'
@@ -108,9 +108,14 @@ export default function QueryChart() {
                             </Select>
                           )
                         })
-                        .with({ type: 'boolean' }, ({ key, label }) => (
+                        .with({ type: 'boolean' }, ({ key, label, defaultValue }) => (
                           <div className="flex items-center space-x-2">
-                            <Checkbox id={key} checked={field.value} onCheckedChange={field.onChange} />
+                            <Checkbox
+                              id={key}
+                              defaultChecked={defaultValue}
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
                             <label
                               htmlFor={key}
                               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -119,8 +124,23 @@ export default function QueryChart() {
                             </label>
                           </div>
                         ))
+                        .with({ type: 'select' }, ({ label, options }) => (
+                          <Select onValueChange={field.onChange} {...field}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={`Select ${label}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {options.map((option) => (
+                                <SelectItem key={option.id} value={option.id}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ))
                         .exhaustive()}
                     </FormControl>
+                    <FormDescription>{input.description}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

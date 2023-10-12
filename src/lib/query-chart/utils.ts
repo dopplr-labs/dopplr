@@ -19,6 +19,21 @@ export const QUERY_CHARTS = [
   },
 ] as const
 
+const LEGEND_POSITIONS = [
+  'top',
+  'top-left',
+  'top-right',
+  'right',
+  'right-top',
+  'right-bottom',
+  'left',
+  'left-top',
+  'left-bottom',
+  'bottom',
+  'bottom-left',
+  'bottom-right',
+]
+
 export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
   'bar-chart': {
     type: 'bar-chart',
@@ -43,6 +58,14 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         key: 'legend',
         label: 'Show Legend',
         type: 'boolean',
+        defaultValue: true,
+        description: 'To show a legend make sure you have selected series field!',
+      },
+      {
+        key: 'legendPosition',
+        label: 'Legend Position',
+        type: 'select',
+        options: LEGEND_POSITIONS.map((position) => ({ id: position, label: position.replace('-', ' ') })),
       },
     ],
     validationSchema: z.object({
@@ -100,7 +123,14 @@ export function getConfigFromValues(
 ): Record<string, any> {
   switch (chartType) {
     case 'bar-chart': {
-      return values
+      return {
+        ...values,
+        legend: values.legend
+          ? {
+              position: values.legendPosition,
+            }
+          : values.legend,
+      }
     }
 
     case 'pie-chart': {
