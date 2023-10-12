@@ -9,6 +9,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useStore } from '@/stores'
 import { Checkbox } from '@/components/ui/checkbox'
 import { EmptyMessage } from '@/components/ui/empty-message'
+import { Input } from '@/components/ui/input'
+import { Slider } from '@/components/ui/slider'
 
 export default function QueryChart() {
   const queryResult = useStore((store) =>
@@ -124,8 +126,8 @@ export default function QueryChart() {
                             </label>
                           </div>
                         ))
-                        .with({ type: 'select' }, ({ label, options }) => (
-                          <Select onValueChange={field.onChange} {...field}>
+                        .with({ type: 'select' }, ({ label, options, defaultValue }) => (
+                          <Select defaultValue={defaultValue} onValueChange={field.onChange} {...field}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder={`Select ${label}`} />
                             </SelectTrigger>
@@ -137,6 +139,19 @@ export default function QueryChart() {
                               ))}
                             </SelectContent>
                           </Select>
+                        ))
+                        .with({ type: 'number' }, ({ label, defaultValue }) => (
+                          <Input type="number" placeholder={label} defaultValue={defaultValue} {...field} />
+                        ))
+                        .with({ type: 'slider' }, ({ min, max, step, defaultValue }) => (
+                          <Slider
+                            defaultValue={[defaultValue]}
+                            min={min}
+                            max={max}
+                            step={step}
+                            onValueChange={field.onChange}
+                            {...field}
+                          />
                         ))
                         .exhaustive()}
                     </FormControl>

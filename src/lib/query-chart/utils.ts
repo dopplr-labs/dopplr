@@ -34,6 +34,8 @@ const LEGEND_POSITIONS = [
   'bottom-right',
 ]
 
+const PIE_LABEL_TYPES = ['inner', 'outer', 'spider']
+
 export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
   'bar-chart': {
     type: 'bar-chart',
@@ -73,6 +75,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       yField: z.string(),
       seriesField: z.string().optional(),
       legend: z.boolean().default(true).optional(),
+      legendPosition: z.string().optional(),
     }),
   },
   'pie-chart': {
@@ -89,10 +92,27 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         label: 'Color Field',
         type: 'col-select',
       },
+      {
+        key: 'labelType',
+        label: 'Label Type',
+        type: 'select',
+        options: PIE_LABEL_TYPES.map((labelType) => ({ id: labelType, label: labelType })),
+        defaultValue: 'outer',
+      },
+      {
+        key: 'radius',
+        label: 'Radius',
+        type: 'slider',
+        min: 0.1,
+        max: 1,
+        step: 0.1,
+        defaultValue: 0.9,
+      },
     ],
     validationSchema: z.object({
       angleField: z.string(),
       colorField: z.string(),
+      radius: z.coerce.number().min(0.1).max(1).default(0.9),
     }),
   },
   'line-chart': {
@@ -134,7 +154,7 @@ export function getConfigFromValues(
     }
 
     case 'pie-chart': {
-      return values
+      return { ...values, label: { type: values.labelType } }
     }
 
     case 'line-chart': {

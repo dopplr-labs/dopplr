@@ -23,7 +23,18 @@ type SelectInput = BaseInput & {
   options: Array<{ id: string; label: string }>
 }
 
-export type QueryChartConfigInput = ColSelectInput | BooleanInput | SelectInput
+type NumberInput = BaseInput & {
+  type: 'number'
+}
+
+type SliderInput = BaseInput & {
+  type: 'slider'
+  min: number
+  max: number
+  step: number
+}
+
+export type QueryChartConfigInput = ColSelectInput | BooleanInput | SelectInput | NumberInput | SliderInput
 
 export type QueryChartConfig = {
   type: QueryChartType
