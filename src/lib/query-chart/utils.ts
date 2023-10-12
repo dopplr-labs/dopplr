@@ -113,6 +113,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       angleField: z.string(),
       colorField: z.string(),
       radius: z.coerce.number().min(0.1).max(1).default(0.9),
+      labelType: z.string().default('outer').optional(),
     }),
   },
   'line-chart': {
@@ -129,10 +130,17 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         label: 'Y Field',
         type: 'col-select',
       },
+      {
+        key: 'smooth',
+        label: 'Smooth',
+        type: 'boolean',
+        defaultValue: false,
+      },
     ],
     validationSchema: z.object({
       xField: z.string(),
       yField: z.string(),
+      smooth: z.boolean().default(false),
     }),
   },
 }
