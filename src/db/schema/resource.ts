@@ -1,6 +1,7 @@
 import { pgTable, text, json, time, serial } from 'drizzle-orm/pg-core'
 import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
+import { charts } from './charts'
 
 export const resources = pgTable('resource', {
   id: serial('id').primaryKey(),
@@ -13,9 +14,10 @@ export const resources = pgTable('resource', {
 
 export type Resource = InferSelectModel<typeof resources>
 
-export const resourcesRelations = relations(resources, ({ one }) => ({
+export const resourcesRelations = relations(resources, ({ one, many }) => ({
   createdBy: one(users, {
     fields: [resources.createdBy],
     references: [users.id],
   }),
+  charts: many(charts),
 }))

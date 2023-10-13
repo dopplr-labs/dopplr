@@ -40,5 +40,5 @@ export type QueryChartConfig = {
   type: QueryChartType
   Component: React.ForwardRefExoticComponent<any>
   inputs: QueryChartConfigInput[]
-  validationSchema: z.ZodSchema
+  validationSchema: z.ZodObject<z.ZodRawShape>
 }

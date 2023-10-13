@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { match } from 'ts-pattern'
 import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
+import invariant from 'tiny-invariant'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
@@ -11,22 +13,39 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { EmptyMessage } from '@/components/ui/empty-message'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import { trpc } from '@/lib/trpc/client'
+import { createChartInput } from '@/server/routers/charts/input'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function QueryChart() {
-  const queryResult = useStore((store) =>
-    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId]?.queryResult : undefined,
+  const activeTabData = useStore((store) =>
+    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
   )
+  invariant(activeTabData, 'Could not find active tab data!')
+  const queryResult = activeTabData.queryResult
 
   const [chartSelected, setChartSelected] = useState<QueryChartType>('bar-chart')
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
+  const validationSchema = chartConfig.validationSchema.extend({
+    name: z.string(),
+  })
+
+  const { toast } = useToast()
+  const createChartMutation = trpc.charts.create.useMutation({
+    onSuccess: () => {
+      form.reset()
+      toast({ title: 'Chart created successfully!' })
+    },
+  })
 
   const form = useForm({
-    resolver: zodResolver(chartConfig.validationSchema),
+    resolver: zodResolver(validationSchema),
   })
   const values = form.watch()
+  const result = validationSchema.safeParse(values)
 
   const chartContent = useMemo(() => {
-    const result = chartConfig.validationSchema.safeParse(values)
     if (!queryResult || queryResult.length === 0 || !result.success) {
       return (
         <div className="grid h-full w-full place-content-center">
@@ -42,10 +61,17 @@ export default function QueryChart() {
         {...getConfigFromValues(chartConfig.type, result.data)}
       />
     )
-  }, [queryResult, chartConfig, values, chartSelected])
+  }, [queryResult, result, chartConfig, chartSelected])
 
-  const handleChartCreate = (values: any) => {
-    console.log(values)
+  const handleChartCreate = ({ name, ...config }: z.infer<typeof validationSchema>) => {
+    const dataToSubmit: z.infer<typeof createChartInput> = {
+      name: name!,
+      config,
+      query: activeTabData.query,
+      resource: activeTabData.resourceId,
+    }
+
+    createChartMutation.mutate(dataToSubmit)
   }
 
   if (!queryResult) {
@@ -87,6 +113,20 @@ export default function QueryChart() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleChartCreate)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Chart Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter name of your chart" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {chartConfig.inputs.map((input) => (
               <FormField
                 key={input.key}
@@ -165,6 +205,14 @@ export default function QueryChart() {
                 )}
               />
             ))}
+
+            <Button
+              type="submit"
+              disabled={!result.success || createChartMutation.isLoading}
+              loading={createChartMutation.isLoading}
+            >
+              Create Chart
+            </Button>
           </form>
         </Form>
       </div>
