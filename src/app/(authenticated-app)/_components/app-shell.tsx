@@ -1,4 +1,4 @@
-import { DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
+import { BarChart2Icon, DatabaseZapIcon, LayoutDashboardIcon, SettingsIcon, TerminalIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import NavLink from './nav-link'
@@ -14,6 +14,11 @@ const MENU_ITEMS = [
     icon: <TerminalIcon />,
     label: 'Queries',
     href: '/queries',
+  },
+  {
+    icon: <BarChart2Icon />,
+    label: 'Charts',
+    href: '/charts',
   },
   {
     icon: <LayoutDashboardIcon />,
