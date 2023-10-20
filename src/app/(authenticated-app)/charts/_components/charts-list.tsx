@@ -1,6 +1,6 @@
 import React from 'react'
 import { match } from 'ts-pattern'
-import { Trash } from 'lucide-react'
+import { RepeatIcon, Trash } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { range } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +19,13 @@ export default function ChartList() {
     onSuccess: () => {
       chartsQuery.refetch()
       toast({ title: 'Chart deleted successfully!' })
+    },
+  })
+
+  const duplicateChartMutation = trpc.charts.duplicate.useMutation({
+    onSuccess: () => {
+      chartsQuery.refetch()
+      toast({ title: 'Chart duplicated successfully!' })
     },
   })
 
@@ -57,6 +64,17 @@ export default function ChartList() {
             </div>
           </ContextMenuTrigger>
           <ContextMenuContent className="min-w-[12rem]">
+            <ContextMenuItem
+              disabled={duplicateChartMutation.isLoading}
+              className="cursor-pointer"
+              onClick={(event) => {
+                event.stopPropagation()
+                duplicateChartMutation.mutate({ id: chart.id })
+              }}
+            >
+              <span className="flex-1">Duplicate Chart</span>
+              <RepeatIcon className="h-4 w-4" />
+            </ContextMenuItem>
             <ContextMenuItem
               disabled={deleteChartMutation.isLoading}
               className="cursor-pointer"

@@ -37,3 +37,16 @@ export async function deleteChart(id: number, session: Session) {
   }
   return db.delete(charts).where(eq(charts.id, chart.id)).returning()
 }
+
+export async function duplicateChart(chartId: number, session: Session) {
+  const chart = await findChartById(chartId)
+  return createChart(
+    {
+      name: `${chart.name} Copy`,
+      query: chart.query,
+      config: chart.config,
+      resource: chart.resourceId!,
+    },
+    session,
+  )
+}
