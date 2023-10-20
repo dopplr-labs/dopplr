@@ -1,14 +1,26 @@
 import React from 'react'
 import { match } from 'ts-pattern'
+import { Trash } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { range } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { simpleHash } from '@/lib/random/utils'
 import { ErrorMessage } from '@/components/ui/error-message'
 import { EmptyMessage } from '@/components/ui/empty-message'
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function ChartList() {
+  const { toast } = useToast()
+
   const chartsQuery = trpc.charts.getUserCharts.useQuery()
+
+  const deleteChartMutation = trpc.charts.delete.useMutation({
+    onSuccess: () => {
+      chartsQuery.refetch()
+      toast({ title: 'Chart deleted successfully!' })
+    },
+  })
 
   return match(chartsQuery)
     .returnType<React.ReactNode>()
@@ -38,9 +50,26 @@ export default function ChartList() {
       }
 
       return charts.map((chart) => (
-        <div key={chart.id} className="cursor-pointer select-none truncate border-b px-4 py-2 text-sm hover:bg-muted">
-          {chart.name}
-        </div>
+        <ContextMenu key={chart.id}>
+          <ContextMenuTrigger asChild>
+            <div className="cursor-pointer select-none truncate border-b px-4 py-2 text-sm hover:bg-muted">
+              {chart.name}
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent className="min-w-[12rem]">
+            <ContextMenuItem
+              disabled={deleteChartMutation.isLoading}
+              className="cursor-pointer"
+              onClick={(event) => {
+                event.stopPropagation()
+                deleteChartMutation.mutate({ id: chart.id })
+              }}
+            >
+              <span className="flex-1">Delete Chart</span>
+              <Trash className="h-4 w-4" />
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       ))
     })
     .exhaustive()
