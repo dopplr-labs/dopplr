@@ -64,14 +64,21 @@ export default function QueryChart() {
   }, [queryResult, result, chartConfig, chartSelected])
 
   const handleChartCreate = ({ name, ...config }: z.infer<typeof validationSchema>) => {
-    const dataToSubmit: z.infer<typeof createChartInput> = {
-      name: name!,
-      config,
-      query: activeTabData.query,
-      resource: activeTabData.resourceId,
-    }
+    try {
+      const dataToSubmit = validationSchema.parse({
+        name,
+        config,
+        query: activeTabData.query,
+        resource: activeTabData.resourceId,
+      })
 
-    createChartMutation.mutate(dataToSubmit)
+      createChartMutation.mutate(dataToSubmit as z.infer<typeof createChartInput>)
+    } catch (error) {
+      toast({
+        title: 'Invalid Config Data!',
+        description: 'Invalid config data found, make sure you have selected all the required fields!',
+      })
+    }
   }
 
   if (!queryResult) {
