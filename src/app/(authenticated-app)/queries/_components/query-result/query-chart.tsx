@@ -26,10 +26,10 @@ export default function QueryChart() {
   const queryResult = activeTabData.queryResult
 
   const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
+  const [name, setName] = useState<string>('')
+
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
-  const validationSchema = chartConfig.validationSchema.extend({
-    name: z.string(),
-  })
+  const validationSchema = chartConfig.validationSchema
 
   const { toast } = useToast()
   const createChartMutation = trpc.charts.create.useMutation({
@@ -63,13 +63,14 @@ export default function QueryChart() {
     )
   }, [queryResult, result, chartConfig, chartSelected])
 
-  const handleChartCreate = ({ name, ...config }: z.infer<typeof validationSchema>) => {
+  const handleChartCreate = (config: z.infer<typeof validationSchema>) => {
     try {
-      const dataToSubmit = validationSchema.parse({
+      const dataToSubmit = createChartInput.parse({
         name,
         config,
         query: activeTabData.query,
         resource: activeTabData.resourceId,
+        type: chartSelected,
       })
 
       createChartMutation.mutate(dataToSubmit as z.infer<typeof createChartInput>)
@@ -118,22 +119,18 @@ export default function QueryChart() {
           </SelectContent>
         </Select>
 
+        <div className="space-y-1">
+          <div>Chart Name</div>
+          <Input
+            placeholder="Enter name of your chart"
+            onChange={(e) => {
+              setName(e.target.value)
+            }}
+          />
+        </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleChartCreate)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Chart Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter name of your chart" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {chartConfig.inputs.map((input) => (
               <FormField
                 key={input.key}

@@ -15,6 +15,7 @@ export async function createChart(input: z.infer<typeof createChartInput>, sessi
       query: input.query,
       config: input.config,
       resourceId: input.resource,
+      type: input.type,
       createdBy: session.user.id,
     })
     .returning()
@@ -51,6 +52,7 @@ export async function duplicateChart(chartId: number, session: Session) {
       query: chart.query,
       config: chart.config,
       resource: chart.resourceId!,
+      type: chart.type!,
     },
     session,
   )
