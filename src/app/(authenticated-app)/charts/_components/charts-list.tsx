@@ -3,6 +3,7 @@
 import React from 'react'
 import { match } from 'ts-pattern'
 import { RepeatIcon, Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc/client'
 import { range } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -15,6 +16,7 @@ import NavLink from './nav-link'
 
 export default function ChartsList() {
   const { toast } = useToast()
+  const router = useRouter()
 
   const chartsQuery = trpc.charts.getUserCharts.useQuery()
 
@@ -29,6 +31,7 @@ export default function ChartsList() {
     onSuccess: () => {
       chartsQuery.refetch()
       toast({ title: 'Chart duplicated successfully!' })
+      router.replace('/charts')
     },
   })
 
@@ -61,7 +64,7 @@ export default function ChartsList() {
 
       return charts.map((chart) => (
         <ContextMenu key={chart.id}>
-          <ContextMenuTrigger asChild>
+          <ContextMenuTrigger>
             <NavLink label={chart.name} href={`/charts/${chart.id}`} />
           </ContextMenuTrigger>
           <ContextMenuContent className="min-w-[12rem]">

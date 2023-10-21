@@ -12,7 +12,7 @@ export default function ChartsAppShell({ children }: ChartsAppShellProps) {
       <div className="w-[280px] overflow-auto border-r p-3">
         <ChartsList />
       </div>
-      <div className="flex-1 overflow-auto">{children}</div>
+      <div className="flex-1">{children}</div>
     </div>
   )
 }
