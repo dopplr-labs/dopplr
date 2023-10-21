@@ -6,19 +6,19 @@ import { QueryResult } from '@/types/tab'
 
 export const QUERY_CHARTS = [
   {
-    id: 'bar-chart',
+    id: 'BAR_CHART',
     label: 'Bar Chart',
   },
   {
-    id: 'column-chart',
+    id: 'COLUMN_CHART',
     label: 'Column Chart',
   },
   {
-    id: 'pie-chart',
+    id: 'PIE_CHART',
     label: 'Pie Chart',
   },
   {
-    id: 'line-chart',
+    id: 'LINE_CHART',
     label: 'Line Chart',
   },
 ] as const
@@ -41,8 +41,8 @@ const LEGEND_POSITIONS = [
 const PIE_LABEL_TYPES = ['inner', 'outer', 'spider']
 
 export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
-  'bar-chart': {
-    type: 'bar-chart',
+  BAR_CHART: {
+    type: 'BAR_CHART',
     Component: Bar,
     inputs: [
       {
@@ -82,8 +82,8 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       legendPosition: z.string().optional(),
     }),
   },
-  'column-chart': {
-    type: 'column-chart',
+  COLUMN_CHART: {
+    type: 'COLUMN_CHART',
     Component: Column,
     inputs: [
       {
@@ -123,8 +123,8 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       legendPosition: z.string().optional(),
     }),
   },
-  'pie-chart': {
-    type: 'pie-chart',
+  PIE_CHART: {
+    type: 'PIE_CHART',
     Component: Pie,
     inputs: [
       {
@@ -171,8 +171,8 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       innerRadius: z.coerce.number().min(0).max(1).default(0),
     }),
   },
-  'line-chart': {
-    type: 'line-chart',
+  LINE_CHART: {
+    type: 'LINE_CHART',
     Component: Line,
     inputs: [
       {
@@ -205,7 +205,7 @@ export function getConfigFromValues(
   values: Record<string, string | number | boolean>,
 ): Record<string, any> {
   switch (chartType) {
-    case 'bar-chart': {
+    case 'BAR_CHART': {
       return {
         ...values,
         legend: values.legend
@@ -216,7 +216,7 @@ export function getConfigFromValues(
       }
     }
 
-    case 'column-chart': {
+    case 'COLUMN_CHART': {
       return {
         ...values,
         legend: values.legend
@@ -227,11 +227,11 @@ export function getConfigFromValues(
       }
     }
 
-    case 'pie-chart': {
+    case 'PIE_CHART': {
       return { ...values, label: { type: values.labelType } }
     }
 
-    case 'line-chart': {
+    case 'LINE_CHART': {
       return values
     }
 

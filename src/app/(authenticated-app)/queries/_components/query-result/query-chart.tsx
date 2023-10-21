@@ -25,7 +25,7 @@ export default function QueryChart() {
   invariant(activeTabData, 'Could not find active tab data!')
   const queryResult = activeTabData.queryResult
 
-  const [chartSelected, setChartSelected] = useState<QueryChartType>('bar-chart')
+  const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
   const validationSchema = chartConfig.validationSchema.extend({
     name: z.string(),
