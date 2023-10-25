@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import dayjs from 'dayjs'
 import { useStore } from '@/stores'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { parseQueryResult } from '@/lib/query-chart/utils'
 
 export default function QueryTable() {
   const queryResult = useStore((store) =>
@@ -23,18 +23,7 @@ export default function QueryTable() {
   }, [queryResult])
 
   const table = useReactTable({
-    data: (queryResult ?? []).map((result) => {
-      return Object.entries(result).reduce(
-        (acc, [key, value]) => {
-          if (typeof value === 'object') {
-            acc[key] = dayjs(value as Date).format('DD-MM-YYYY')
-          }
-
-          return acc
-        },
-        {} as Record<string, string | number>,
-      )
-    }),
+    data: parseQueryResult(queryResult ?? []),
     columns,
     getCoreRowModel: getCoreRowModel(),
   })

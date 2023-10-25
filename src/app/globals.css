@@ -337,6 +337,22 @@
     appearance: none;
     margin: 0;
   }
+
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background-color: hsl(var(--background));
+  }
+
+  *::-webkit-scrollbar-track {
+    background-color: hsl(var(--background));
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: hsl(var(--primary));
+    opacity: 0.5;
+  }
 }
 
 @layer components {

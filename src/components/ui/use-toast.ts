@@ -1,4 +1,5 @@
 // Inspired by react-hot-toast library
+'use client'
 
 import { useEffect, useState } from 'react'
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast'
