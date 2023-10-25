@@ -82,6 +82,14 @@ export default function ChartDetails() {
     },
   })
 
+  const deleteChartMutation = trpc.charts.delete.useMutation({
+    onSuccess: () => {
+      utils.charts.getUserCharts.invalidate()
+      toast({ title: 'Chart deleted successfully!' })
+      router.push('/charts')
+    },
+  })
+
   const columns = Object.keys(
     runQueryMutation?.data && runQueryMutation?.data.length > 0 ? runQueryMutation.data[0] : {},
   )
@@ -98,6 +106,7 @@ export default function ChartDetails() {
     return (
       <chartConfig.Component
         key={chartSelected}
+        className="w-full"
         data={parseQueryResult(runQueryMutation.data)}
         {...getConfigFromValues(chartConfig.type, result.data)}
       />
@@ -179,9 +188,14 @@ export default function ChartDetails() {
 
             <div className="flex items-center gap-2">
               <Button
+                loading={deleteChartMutation.isLoading}
+                disabled={deleteChartMutation.isLoading}
                 className="opacity-40 hover:opacity-100"
                 variant="destructive-outline"
                 icon={<TrashIcon className="h-4 w-4" />}
+                onClick={() => {
+                  deleteChartMutation.mutate({ id: Number(id) })
+                }}
               >
                 Delete
               </Button>
