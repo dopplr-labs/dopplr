@@ -28,10 +28,10 @@ export default function ChartsList() {
   })
 
   const duplicateChartMutation = trpc.charts.duplicate.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       chartsQuery.refetch()
       toast({ title: 'Chart duplicated successfully!' })
-      router.replace('/charts')
+      router.replace(`/charts/${data.id}`)
     },
   })
 

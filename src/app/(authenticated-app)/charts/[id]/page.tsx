@@ -1,8 +1,8 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { match } from 'ts-pattern'
-import { Code2Icon, SaveIcon, TerminalIcon, TrashIcon } from 'lucide-react'
+import { Code2Icon, LoaderIcon, SaveIcon, TerminalIcon, TrashIcon } from 'lucide-react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Monaco } from '@monaco-editor/react'
@@ -16,18 +16,24 @@ import { Button } from '@/components/ui/button'
 import PgEditor from '@/components/pg-editor'
 import { EmptyMessage } from '@/components/ui/empty-message'
 import { useToast } from '@/components/ui/use-toast'
-import { QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
+import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
 import { Form } from '@/components/ui/form'
 import QueryChartConfigInputs from '../../_components/query-chart-config-inputs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
 export default function ChartDetails() {
   const { id } = useParams() as { id: string }
   const { toast } = useToast()
+  const router = useRouter()
+
   const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
-  const [query, setQuery] = useState<string | undefined>(undefined)
+  const [query, setQuery] = useState('')
+  const [name, setName] = useState<string>('')
+  const utils = trpc.useContext()
 
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
   const validationSchema = chartConfig.validationSchema
@@ -44,6 +50,7 @@ export default function ChartDetails() {
     {
       onSuccess: (data) => {
         form.reset(data.charts.config as Record<string, string | number>)
+        setName(data.charts.name)
         setQuery(data.charts.query)
         setChartSelected(data.charts.type!)
       },
@@ -60,19 +67,20 @@ export default function ChartDetails() {
     },
   })
 
-  useEffect(
-    function runQueryOnPageLoad() {
-      if (chartDetailsQuery.status === 'success') {
-        runQueryMutation.mutate({
-          type: chartDetailsQuery.data.resource?.type!,
-          connectionString: (chartDetailsQuery.data?.resource?.connectionConfig as unknown as { url: string })?.url,
-          query: chartDetailsQuery?.data.charts?.query,
-        })
-      }
+  const updateChartMutation = trpc.charts.update.useMutation({
+    onSuccess: () => {
+      chartDetailsQuery.refetch()
+      utils.charts.getUserCharts.invalidate()
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chartDetailsQuery.status],
-  )
+  })
+
+  const duplicateChartMutation = trpc.charts.duplicate.useMutation({
+    onSuccess: (data) => {
+      utils.charts.getUserCharts.invalidate()
+      toast({ title: 'Chart duplicated successfully!' })
+      router.replace(`/charts/${data.id}`)
+    },
+  })
 
   const columns = Object.keys(
     runQueryMutation?.data && runQueryMutation?.data.length > 0 ? runQueryMutation.data[0] : {},
@@ -104,9 +112,29 @@ export default function ChartDetails() {
     editorRef.current?.getAction('editor.action.runQuery')?.run()
   }, [])
 
-  const handleChartUpdate = (values: z.infer<typeof validationSchema>) => {
-    console.log(values)
+  const handleChartUpdate = (config: z.infer<typeof validationSchema>) => {
+    updateChartMutation.mutate({
+      id: Number(id),
+      name,
+      query,
+      type: chartSelected,
+      config: config as Record<string, string | number>,
+    })
   }
+
+  useEffect(
+    function runQueryOnPageLoad() {
+      if (chartDetailsQuery.status === 'success') {
+        runQueryMutation.mutate({
+          type: chartDetailsQuery.data.resource?.type!,
+          connectionString: (chartDetailsQuery.data?.resource?.connectionConfig as unknown as { url: string })?.url,
+          query: chartDetailsQuery?.data.charts?.query,
+        })
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chartDetailsQuery.status],
+  )
 
   return match(chartDetailsQuery)
     .returnType<React.ReactNode>()
@@ -157,8 +185,26 @@ export default function ChartDetails() {
               >
                 Delete
               </Button>
-              <Button variant="secondary">Duplicate</Button>
-              <Button icon={<SaveIcon className="h-4 w-4" />}>Save</Button>
+              <Button
+                loading={duplicateChartMutation.isLoading}
+                disabled={duplicateChartMutation.isLoading}
+                variant="secondary"
+                onClick={() => {
+                  duplicateChartMutation.mutate({ id: Number(id) })
+                }}
+              >
+                Duplicate
+              </Button>
+              <Button
+                loading={updateChartMutation.isLoading}
+                disabled={updateChartMutation.isLoading}
+                icon={<SaveIcon className="h-4 w-4" />}
+                onClick={() => {
+                  handleChartUpdate(values)
+                }}
+              >
+                Save
+              </Button>
             </div>
           </div>
 
@@ -189,7 +235,9 @@ export default function ChartDetails() {
                 key={`${chart.id}-${chart.resourceId}`}
                 value={query}
                 onChange={(value) => {
-                  setQuery(value)
+                  if (value) {
+                    setQuery(value)
+                  }
                 }}
                 resource={resource}
                 format={formatQueryMutation.mutateAsync}
@@ -202,14 +250,67 @@ export default function ChartDetails() {
             <PanelResizeHandle className="w-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
             <Panel>
               <PanelGroup direction="vertical">
-                <Panel>{chartContent}</Panel>
+                <Panel className="relative flex items-center justify-center">
+                  {runQueryMutation.isLoading ? (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+                      <LoaderIcon className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : (
+                    chartContent
+                  )}
+                </Panel>
                 <PanelResizeHandle className="h-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
-                <Panel className="p-4">
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleChartUpdate)} className="space-y-4 overflow-auto">
-                      <QueryChartConfigInputs inputs={chartConfig.inputs} control={form.control} columns={columns} />
-                    </form>
-                  </Form>
+                <Panel className="mb-14">
+                  <div className="relative h-full space-y-4 overflow-y-auto p-4">
+                    {runQueryMutation.isLoading ? (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+                        <LoaderIcon className="h-4 w-4 animate-spin" />
+                      </div>
+                    ) : (
+                      <>
+                        <div>Chart Configuration</div>
+                        <Select
+                          value={chartSelected}
+                          onValueChange={(value) => {
+                            form.reset()
+                            setChartSelected(value as QueryChartType)
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Chart Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {QUERY_CHARTS.map((chart) => (
+                              <SelectItem key={chart.id} value={chart.id}>
+                                {chart.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <div className="space-y-1">
+                          <div>Chart Name</div>
+                          <Input
+                            value={name}
+                            placeholder="Enter name of your chart"
+                            onChange={(e) => {
+                              setName(e.target.value)
+                            }}
+                          />
+                        </div>
+
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(handleChartUpdate)} className="space-y-4 overflow-auto">
+                            <QueryChartConfigInputs
+                              inputs={chartConfig.inputs}
+                              control={form.control}
+                              columns={columns}
+                            />
+                          </form>
+                        </Form>
+                      </>
+                    )}
+                  </div>
                 </Panel>
               </PanelGroup>
             </Panel>

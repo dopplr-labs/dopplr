@@ -2,7 +2,7 @@ import z from 'zod'
 import { Session } from 'next-auth'
 import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { createChartInput } from './input'
+import { createChartInput, updateChartInput } from './input'
 import { db } from '@/db'
 import { charts } from '@/db/schema/charts'
 import { resources } from '@/db/schema/resource'
@@ -56,4 +56,23 @@ export async function duplicateChart(chartId: number, session: Session) {
     },
     session,
   )
+}
+
+export async function updateChart(input: z.infer<typeof updateChartInput>, session: Session) {
+  const { charts: chart } = await findChartById(input.id)
+  if (chart.createdBy !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update this chart!' })
+  }
+
+  const updatedChart = await db
+    .update(charts)
+    .set({
+      name: input.name,
+      query: input.query,
+      config: input.config,
+      type: input.type,
+    })
+    .where(eq(charts.id, input.id))
+    .returning()
+  return updatedChart[0]
 }

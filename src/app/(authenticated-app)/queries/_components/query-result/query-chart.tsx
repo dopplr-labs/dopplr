@@ -120,6 +120,7 @@ export default function QueryChart() {
         <div className="space-y-1">
           <div>Chart Name</div>
           <Input
+            value={name}
             placeholder="Enter name of your chart"
             onChange={(e) => {
               setName(e.target.value)

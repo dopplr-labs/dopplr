@@ -7,3 +7,12 @@ export const createChartInput = z.object({
   type: z.enum(['BAR_CHART', 'COLUMN_CHART', 'PIE_CHART', 'LINE_CHART']),
   resource: z.number().positive(),
 })
+
+export const updateChartInput = createChartInput
+  .omit({
+    resource: true,
+  })
+  .partial()
+  .extend({
+    id: z.number(),
+  })
