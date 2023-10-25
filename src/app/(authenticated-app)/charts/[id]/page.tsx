@@ -4,8 +4,11 @@ import { useParams } from 'next/navigation'
 import { match } from 'ts-pattern'
 import { Code2Icon, SaveIcon, TerminalIcon, TrashIcon } from 'lucide-react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Monaco } from '@monaco-editor/react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -13,25 +16,39 @@ import { Button } from '@/components/ui/button'
 import PgEditor from '@/components/pg-editor'
 import { EmptyMessage } from '@/components/ui/empty-message'
 import { useToast } from '@/components/ui/use-toast'
+import { QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
+import { QueryChartType } from '@/types/query-chart'
+import { Form } from '@/components/ui/form'
+import QueryChartConfigInputs from '../../_components/query-chart-config-inputs'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
 export default function ChartDetails() {
   const { id } = useParams() as { id: string }
   const { toast } = useToast()
+  const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
   const [query, setQuery] = useState<string | undefined>(undefined)
+
+  const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
+  const validationSchema = chartConfig.validationSchema
+
+  const form = useForm({
+    resolver: zodResolver(validationSchema),
+  })
+
+  const values = form.watch()
+  const result = validationSchema.safeParse(values)
 
   const chartDetailsQuery = trpc.charts.findOneById.useQuery(
     { id: Number(id) },
     {
       onSuccess: (data) => {
+        form.reset(data.charts.config as Record<string, string | number>)
         setQuery(data.charts.query)
+        setChartSelected(data.charts.type!)
       },
     },
   )
-  const formatQueryMutation = trpc.query.formatQuery.useMutation()
-
-  const editorRef = useRef<CodeEditor | null>(null)
 
   const runQueryMutation = trpc.query.runQueryMutation.useMutation({
     onError: (error) => {
@@ -43,11 +60,53 @@ export default function ChartDetails() {
     },
   })
 
-  console.log(chartDetailsQuery.data)
+  useEffect(
+    function runQueryOnPageLoad() {
+      if (chartDetailsQuery.status === 'success') {
+        runQueryMutation.mutate({
+          type: chartDetailsQuery.data.resource?.type!,
+          connectionString: (chartDetailsQuery.data?.resource?.connectionConfig as unknown as { url: string })?.url,
+          query: chartDetailsQuery?.data.charts?.query,
+        })
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chartDetailsQuery.status],
+  )
+
+  const columns = Object.keys(
+    runQueryMutation?.data && runQueryMutation?.data.length > 0 ? runQueryMutation.data[0] : {},
+  )
+
+  const chartContent = useMemo(() => {
+    if (!runQueryMutation?.data || runQueryMutation.data?.length === 0 || !result.success) {
+      return (
+        <div className="grid h-full w-full place-content-center">
+          <EmptyMessage title="No fields selected!" description="Select all required fields to plot a chart!" />
+        </div>
+      )
+    }
+
+    return (
+      <chartConfig.Component
+        key={chartSelected}
+        data={parseQueryResult(runQueryMutation.data)}
+        {...getConfigFromValues(chartConfig.type, result.data)}
+      />
+    )
+  }, [runQueryMutation, result, chartConfig, chartSelected])
+
+  const formatQueryMutation = trpc.query.formatQuery.useMutation()
+
+  const editorRef = useRef<CodeEditor | null>(null)
 
   const handleRunQuery = useCallback(() => {
     editorRef.current?.getAction('editor.action.runQuery')?.run()
   }, [])
+
+  const handleChartUpdate = (values: z.infer<typeof validationSchema>) => {
+    console.log(values)
+  }
 
   return match(chartDetailsQuery)
     .returnType<React.ReactNode>()
@@ -128,7 +187,7 @@ export default function ChartDetails() {
               </div>
               <PgEditor
                 key={`${chart.id}-${chart.resourceId}`}
-                value={chart.query}
+                value={query}
                 onChange={(value) => {
                   setQuery(value)
                 }}
@@ -143,9 +202,15 @@ export default function ChartDetails() {
             <PanelResizeHandle className="w-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
             <Panel>
               <PanelGroup direction="vertical">
-                <Panel>top</Panel>
+                <Panel>{chartContent}</Panel>
                 <PanelResizeHandle className="h-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
-                <Panel>bottom</Panel>
+                <Panel className="p-4">
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleChartUpdate)} className="space-y-4 overflow-auto">
+                      <QueryChartConfigInputs inputs={chartConfig.inputs} control={form.control} columns={columns} />
+                    </form>
+                  </Form>
+                </Panel>
               </PanelGroup>
             </Panel>
           </PanelGroup>

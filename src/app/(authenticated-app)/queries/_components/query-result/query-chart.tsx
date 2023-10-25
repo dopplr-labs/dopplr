@@ -1,22 +1,20 @@
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { match } from 'ts-pattern'
 import { zodResolver } from '@hookform/resolvers/zod'
 import z from 'zod'
 import invariant from 'tiny-invariant'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { QUERY_CHARTS, QUERY_CHARTS_CONFIG, getConfigFromValues, parseQueryResult } from '@/lib/query-chart/utils'
 import { QueryChartType } from '@/types/query-chart'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { useStore } from '@/stores'
-import { Checkbox } from '@/components/ui/checkbox'
 import { EmptyMessage } from '@/components/ui/empty-message'
 import { Input } from '@/components/ui/input'
-import { Slider } from '@/components/ui/slider'
 import { trpc } from '@/lib/trpc/client'
 import { createChartInput } from '@/server/routers/charts/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
+import QueryChartConfigInputs from '@/app/(authenticated-app)/_components/query-chart-config-inputs'
 
 export default function QueryChart() {
   const activeTabData = useStore((store) =>
@@ -131,84 +129,7 @@ export default function QueryChart() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleChartCreate)} className="space-y-4">
-            {chartConfig.inputs.map((input) => (
-              <FormField
-                key={input.key}
-                control={form.control}
-                name={input.key}
-                render={({ field }) => (
-                  <FormItem>
-                    {input.type !== 'boolean' ? <FormLabel>{input.label}</FormLabel> : null}
-                    <FormControl>
-                      {match(input)
-                        .returnType<React.ReactNode>()
-                        .with({ type: 'col-select' }, ({ label }) => {
-                          return (
-                            <Select onValueChange={field.onChange} {...field}>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder={`Select ${label}`} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {columns.map((column) => (
-                                  <SelectItem key={column} value={column}>
-                                    {column}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )
-                        })
-                        .with({ type: 'boolean' }, ({ key, label, defaultValue }) => (
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id={key}
-                              defaultChecked={defaultValue}
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                            <label
-                              htmlFor={key}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {label}
-                            </label>
-                          </div>
-                        ))
-                        .with({ type: 'select' }, ({ label, options, defaultValue }) => (
-                          <Select defaultValue={defaultValue} onValueChange={field.onChange} {...field}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder={`Select ${label}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {options.map((option) => (
-                                <SelectItem key={option.id} value={option.id}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ))
-                        .with({ type: 'number' }, ({ label, defaultValue }) => (
-                          <Input type="number" placeholder={label} defaultValue={defaultValue} {...field} />
-                        ))
-                        .with({ type: 'slider' }, ({ min, max, step, defaultValue }) => (
-                          <Slider
-                            defaultValue={[defaultValue]}
-                            min={min}
-                            max={max}
-                            step={step}
-                            onValueChange={field.onChange}
-                            {...field}
-                          />
-                        ))
-                        .exhaustive()}
-                    </FormControl>
-                    <FormDescription>{input.description}</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
+            <QueryChartConfigInputs inputs={chartConfig.inputs} control={form.control} columns={columns} />
 
             <Button
               type="submit"
