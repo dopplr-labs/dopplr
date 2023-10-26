@@ -1,4 +1,4 @@
-import { Bar, Column, Line, Pie } from '@ant-design/plots'
+import { Area, Bar, Column, Line, Pie } from '@ant-design/plots'
 import dayjs from 'dayjs'
 import z from 'zod'
 import { P, match } from 'ts-pattern'
@@ -21,6 +21,10 @@ export const QUERY_CHARTS = [
   {
     id: 'LINE_CHART',
     label: 'Line Chart',
+  },
+  {
+    id: 'AREA_CHART',
+    label: 'Area Chart',
   },
 ] as const
 
@@ -203,6 +207,39 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       yField: z.string(),
       seriesField: z.string().optional(),
       smooth: z.boolean().default(false),
+    }),
+  },
+  AREA_CHART: {
+    type: 'AREA_CHART',
+    Component: Area,
+    inputs: [
+      {
+        key: 'xField',
+        label: 'X Field',
+        type: 'col-select',
+      },
+      {
+        key: 'yField',
+        label: 'Y Field',
+        type: 'col-select',
+      },
+      {
+        key: 'seriesField',
+        label: 'Series Field',
+        type: 'col-select',
+      },
+      {
+        key: 'isPercent',
+        label: 'Is Percent?',
+        type: 'boolean',
+      },
+    ],
+    validationSchema: z.object({
+      xField: z.string(),
+      yField: z.string(),
+      seriesField: z.string().optional(),
+      smooth: z.boolean().default(false),
+      isPercent: z.boolean().default(false),
     }),
   },
 }
