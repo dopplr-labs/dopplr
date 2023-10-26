@@ -22,7 +22,7 @@ const validationSchema = z.object({
 export default function SaveQueryDialog({ tabId }: SaveQueryDialogProps) {
   const saveQueryVisible = useStore((store) => store.saveQueryVisible)
   const setSaveQueryVisible = useStore((store) => store.setSaveQueryVisible)
-  const tabData = useStore((store) => store.queryTabData[tabId])
+  const tabData = useStore((store) => store.getTabData(tabId))
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
   const { toast } = useToast()
   const utils = trpc.useContext()

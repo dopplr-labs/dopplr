@@ -23,8 +23,9 @@ type CodeEditor = ReturnType<Monaco['editor']['create']>
 export default function QueryEditor() {
   const activeQueryTabId = useStore((store) => store.activeQueryTabId)
   const activeQueryTabData = useStore((store) =>
-    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+    store.activeQueryTabId ? store.getTabData(store.activeQueryTabId) : undefined,
   )
+
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
 
   const getResourceQuery = trpc.resource.getResource.useQuery(
@@ -98,7 +99,7 @@ export default function QueryEditor() {
     [activeQueryTabId, handleRunQuery],
   )
 
-  const updateQueryMutation = trpc.history.updateHistory.useMutation({
+  const updateHistoryMutation = trpc.history.updateHistory.useMutation({
     onSuccess: () => {
       if (activeQueryTabId) {
         updateQueryTabData(activeQueryTabId, {
@@ -136,7 +137,7 @@ export default function QueryEditor() {
             }
 
             if (activeQueryTabData.savedQueryId) {
-              updateQueryMutation.mutate({
+              updateHistoryMutation.mutate({
                 id: activeQueryTabData.savedQueryId,
                 query: activeQueryTabData.query,
               })
@@ -191,7 +192,9 @@ export default function QueryEditor() {
                 </Panel>
                 <PanelResizeHandle className="h-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
                 <Panel defaultSize={40} minSize={30} maxSize={60}>
-                  <QueryResult />
+                  <QueryResult
+                    key={`${activeQueryTabData?.resourceId}-${activeQueryTabData?.tabId}-${activeQueryTabData?.savedQueryId}`}
+                  />
                 </Panel>
               </PanelGroup>
             )

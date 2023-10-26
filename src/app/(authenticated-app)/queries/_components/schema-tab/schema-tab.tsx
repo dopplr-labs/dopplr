@@ -13,7 +13,7 @@ import { EmptyMessage } from '@/components/ui/empty-message'
 
 export default function SchemaTab() {
   const activeQueryTabData = useStore((store) =>
-    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+    store.activeQueryTabId ? store.getTabData(store.activeQueryTabId) : undefined,
   )
 
   const getResourceQuery = trpc.resource.getResource.useQuery(

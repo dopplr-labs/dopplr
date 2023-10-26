@@ -18,7 +18,7 @@ import QueryChartConfigInputs from '@/app/(authenticated-app)/_components/query-
 
 export default function QueryChart() {
   const activeTabData = useStore((store) =>
-    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+    store.activeQueryTabId ? store.getTabData(store.activeQueryTabId) : undefined,
   )
   invariant(activeTabData, 'Could not find active tab data!')
   const queryResult = activeTabData.queryResult

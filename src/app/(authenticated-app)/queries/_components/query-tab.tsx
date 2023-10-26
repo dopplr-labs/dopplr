@@ -22,7 +22,7 @@ type QueryTabProps = {
 }
 
 export default function QueryTab({ tab, index }: QueryTabProps) {
-  const tabData = useStore((store) => store.queryTabData[tab])
+  const tabData = useStore((store) => store.getTabData(tab))
   const setSaveQueryVisible = useStore((state) => state.setSaveQueryVisible)
 
   const { setNodeRef, setActivatorNodeRef, attributes, listeners, isDragging, transform, transition } = useSortable({

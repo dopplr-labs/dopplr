@@ -1,6 +1,7 @@
 import { Bar, Column, Line, Pie } from '@ant-design/plots'
 import dayjs from 'dayjs'
 import z from 'zod'
+import { P, match } from 'ts-pattern'
 import { QueryChartConfig, QueryChartType } from '@/types/query-chart'
 import { QueryResult } from '@/types/tab'
 
@@ -186,6 +187,11 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         type: 'col-select',
       },
       {
+        key: 'seriesField',
+        label: 'Series Field',
+        type: 'col-select',
+      },
+      {
         key: 'smooth',
         label: 'Smooth',
         type: 'boolean',
@@ -195,6 +201,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
     validationSchema: z.object({
       xField: z.string(),
       yField: z.string(),
+      seriesField: z.string().optional(),
       smooth: z.boolean().default(false),
     }),
   },
@@ -245,23 +252,28 @@ export function parseQueryResult(queryResult: QueryResult) {
   return queryResult.map((result) => {
     return Object.entries(result).reduce(
       (acc, [key, value]) => {
-        if (value instanceof Date) {
-          acc = {
+        return match(value)
+          .with(P.instanceOf(Date), (_value) => ({
             ...acc,
-            [key]: dayjs(value as Date).format('DD-MM-YYYY'),
-          }
-        } else if (!Number.isNaN(Number(value))) {
-          acc = {
+            [key]: dayjs(_value).format('DD-MM-YYYY'),
+          }))
+          .with(P.array(P.instanceOf(Date)), (_value) => ({
             ...acc,
-            [key]: Number(value),
-          }
-        } else {
-          acc[key] = value as string
-        }
-
-        return acc
+            [key]: _value.map((date) => dayjs(date).format('DD-MM-YYYY')),
+          }))
+          .with(
+            P.when((_value) => !Number.isNaN(Number(_value))),
+            (_value) => ({
+              ...acc,
+              [key]: Number(_value),
+            }),
+          )
+          .otherwise((_value) => ({
+            ...acc,
+            [key]: _value as string,
+          }))
       },
-      {} as Record<string, string | number>,
+      {} as Record<string, string | number | string[]>,
     )
   })
 }
