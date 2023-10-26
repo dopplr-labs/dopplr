@@ -268,6 +268,7 @@ export function parseQueryResult(queryResult: QueryResult) {
               [key]: Number(_value),
             }),
           )
+          .with(P.instanceOf(Object), (_value) => ({ ...acc, [key]: JSON.stringify(_value) }))
           .otherwise((_value) => ({
             ...acc,
             [key]: _value as string,
