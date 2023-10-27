@@ -52,13 +52,10 @@ export default function QueryChart() {
       )
     }
 
-    return (
-      <chartConfig.Component
-        key={chartSelected}
-        data={parseQueryResult(queryResult)}
-        {...getConfigFromValues(chartConfig.type, result.data)}
-      />
-    )
+    const parsedQueryResult = parseQueryResult(queryResult)
+    const config = getConfigFromValues(chartConfig.type, result.data, parsedQueryResult)
+
+    return <chartConfig.Component key={chartSelected} data={parseQueryResult(queryResult)} {...config} />
   }, [queryResult, result, chartConfig, chartSelected])
 
   const handleChartCreate = (config: z.infer<typeof validationSchema>) => {

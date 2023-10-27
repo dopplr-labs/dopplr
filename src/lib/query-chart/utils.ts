@@ -427,61 +427,63 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
 
 export function getConfigFromValues(
   chartType: QueryChartType,
-  values: Record<string, string | number | boolean>,
+  chartConfig: Record<string, string | number | boolean>,
+  queryResult: Record<string, string | number | string[]>[],
 ): Record<string, any> {
   switch (chartType) {
     case 'BAR_CHART': {
       return {
-        ...values,
-        legend: values.legend
+        ...chartConfig,
+        legend: chartConfig.legend
           ? {
-              position: values.legendPosition,
+              position: chartConfig.legendPosition,
             }
-          : values.legend,
+          : chartConfig.legend,
       }
     }
 
     case 'COLUMN_CHART': {
       return {
-        ...values,
-        legend: values.legend
+        ...chartConfig,
+        legend: chartConfig.legend
           ? {
-              position: values.legendPosition,
+              position: chartConfig.legendPosition,
             }
-          : values.legend,
+          : chartConfig.legend,
       }
     }
 
     case 'PIE_CHART': {
-      return { ...values, label: { type: values.labelType } }
+      return { ...chartConfig, label: { type: chartConfig.labelType } }
     }
 
     case 'LINE_CHART': {
-      return values
+      return chartConfig
     }
 
     case 'GAUGE_CHART': {
+      const item = queryResult[0]
+
       return {
-        ...values,
-        /** @TODO: Find a way to format incoming data to get single value */
-        percent: 0.5,
+        ...chartConfig,
+        percent: item[chartConfig.percent as string],
       }
     }
 
     case 'HEAT_MAP': {
       return {
-        ...values,
+        ...chartConfig,
         coordinate:
-          values.type === 'polar'
+          chartConfig.type === 'polar'
             ? {
                 type: 'polar',
                 cfg: {
-                  innerRadius: values.innerRadius,
+                  innerRadius: chartConfig.innerRadius,
                 },
               }
             : undefined,
         meta: {
-          [values.xField as string]: {
+          [chartConfig.xField as string]: {
             type: 'cat',
           },
         },
@@ -494,7 +496,7 @@ export function getConfigFromValues(
     }
 
     default: {
-      return values
+      return chartConfig
     }
   }
 }
