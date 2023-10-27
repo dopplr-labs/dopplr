@@ -4,6 +4,7 @@ import z from 'zod'
 import { P, match } from 'ts-pattern'
 import { QueryChartConfig, QueryChartType } from '@/types/query-chart'
 import { QueryResult } from '@/types/tab'
+import StatsCard from '@/app/(authenticated-app)/charts/_components/stats-card'
 
 export const QUERY_CHARTS = [
   {
@@ -37,6 +38,10 @@ export const QUERY_CHARTS = [
   {
     id: 'HEAT_MAP',
     label: 'Heat Map',
+  },
+  {
+    id: 'STAT_CARD',
+    label: 'Stats Card',
   },
 ] as const
 
@@ -390,6 +395,32 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       sizeRatio: z.number().min(0.1).max(1).default(0.5).optional(),
       type: z.string().default('default').optional(),
       innerRadius: z.number().min(0.1).max(1).default(0.2).optional(),
+    }),
+  },
+  STAT_CARD: {
+    type: 'STAT_CARD',
+    Component: StatsCard,
+    inputs: [
+      {
+        key: 'dataField',
+        label: 'Data Field',
+        type: 'col-select',
+      },
+      {
+        key: 'nameField',
+        label: 'Name Field',
+        type: 'col-select',
+      },
+      {
+        key: 'unit',
+        label: 'Unit',
+        type: 'text',
+      },
+    ],
+    validationSchema: z.object({
+      dataField: z.string(),
+      nameField: z.string(),
+      unit: z.string().optional(),
     }),
   },
 }

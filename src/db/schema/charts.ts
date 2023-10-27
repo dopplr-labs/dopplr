@@ -12,6 +12,7 @@ export const chartType = pgEnum('chart_type', [
   'GAUGE_CHART',
   'SCATTER_CHART',
   'HEAT_MAP',
+  'STAT_CARD',
 ])
 
 export const charts = pgTable('charts', {

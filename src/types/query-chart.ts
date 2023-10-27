@@ -34,7 +34,11 @@ type SliderInput = BaseInput & {
   step: number
 }
 
-export type QueryChartConfigInput = ColSelectInput | BooleanInput | SelectInput | NumberInput | SliderInput
+type TextInput = BaseInput & {
+  type: 'text'
+}
+
+export type QueryChartConfigInput = ColSelectInput | BooleanInput | SelectInput | NumberInput | SliderInput | TextInput
 
 export type QueryChartConfig = {
   type: QueryChartType

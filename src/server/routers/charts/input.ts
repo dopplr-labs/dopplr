@@ -13,6 +13,7 @@ export const createChartInput = z.object({
     'GAUGE_CHART',
     'SCATTER_CHART',
     'HEAT_MAP',
+    'STAT_CARD',
   ]),
   resource: z.number().positive(),
 })

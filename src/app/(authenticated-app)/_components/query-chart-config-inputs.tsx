@@ -90,6 +90,9 @@ export default function QueryChartConfigInputs({ inputs, control, columns }: Que
                   />
                 )
               })
+              .with({ type: 'text' }, ({ label, defaultValue }) => (
+                <Input placeholder={label} defaultValue={defaultValue} {...field} />
+              ))
               .exhaustive()}
           </FormControl>
           <FormDescription>{input.description}</FormDescription>
