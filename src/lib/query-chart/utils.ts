@@ -317,7 +317,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         key: 'shape',
         label: 'Shape',
         type: 'select',
-        options: SHAPES.map((labelType) => ({ id: labelType, label: labelType })),
+        options: SHAPES.map((shape) => ({ id: shape, label: shape })),
         defaultValue: 'circle',
       },
     ],
@@ -353,7 +353,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         key: 'shape',
         label: 'Shape',
         type: 'select',
-        options: [...SHAPES, 'rectangle'].map((labelType) => ({ id: labelType, label: labelType })),
+        options: [...SHAPES, 'rectangle'].map((shape) => ({ id: shape, label: shape })),
         defaultValue: 'rectangle',
       },
       {
@@ -365,6 +365,22 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         step: 0.1,
         defaultValue: 0.5,
       },
+      {
+        key: 'type',
+        label: 'Type',
+        type: 'select',
+        options: ['default', 'polar'].map((type) => ({ id: type, label: type })),
+        defaultValue: 'default',
+      },
+      {
+        key: 'innerRadius',
+        label: 'Inner Radius',
+        type: 'slider',
+        min: 0.1,
+        max: 1,
+        step: 0.1,
+        defaultValue: 0.2,
+      },
     ],
     validationSchema: z.object({
       xField: z.string(),
@@ -372,6 +388,8 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       colorField: z.string(),
       shape: z.string().optional(),
       sizeRatio: z.number().min(0.1).max(1).default(0.5).optional(),
+      type: z.string().default('default').optional(),
+      innerRadius: z.number().min(0.1).max(1).default(0.2).optional(),
     }),
   },
 }
@@ -422,11 +440,25 @@ export function getConfigFromValues(
     case 'HEAT_MAP': {
       return {
         ...values,
+        coordinate:
+          values.type === 'polar'
+            ? {
+                type: 'polar',
+                cfg: {
+                  innerRadius: values.innerRadius,
+                },
+              }
+            : undefined,
         meta: {
           [values.xField as string]: {
             type: 'cat',
           },
         },
+        interactions: [
+          {
+            type: 'element-active',
+          },
+        ],
       }
     }
 
