@@ -1,4 +1,4 @@
-import { Area, Bar, Column, Gauge, Line, Pie } from '@ant-design/plots'
+import { Area, Bar, Column, Gauge, Line, Pie, Scatter } from '@ant-design/plots'
 import dayjs from 'dayjs'
 import z from 'zod'
 import { P, match } from 'ts-pattern'
@@ -30,6 +30,10 @@ export const QUERY_CHARTS = [
     id: 'GAUGE_CHART',
     label: 'Gauge Chart',
   },
+  {
+    id: 'SCATTER_CHART',
+    label: 'Scatter Chart',
+  },
 ] as const
 
 const LEGEND_POSITIONS = [
@@ -48,6 +52,8 @@ const LEGEND_POSITIONS = [
 ]
 
 const PIE_LABEL_TYPES = ['inner', 'outer', 'spider']
+
+const SCATTER_SHAPES = ['circle', 'square']
 
 export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
   BAR_CHART: {
@@ -268,6 +274,56 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
     validationSchema: z.object({
       percent: z.string(),
       radius: z.coerce.number().min(0.1).max(1).default(0.9),
+    }),
+  },
+  SCATTER_CHART: {
+    type: 'SCATTER_CHART',
+    Component: Scatter,
+    inputs: [
+      {
+        key: 'xField',
+        label: 'X Field',
+        type: 'col-select',
+      },
+      {
+        key: 'yField',
+        label: 'Y Field',
+        type: 'col-select',
+      },
+      {
+        key: 'colorField',
+        label: 'Color Field',
+        type: 'col-select',
+      },
+      {
+        key: 'appendPadding',
+        label: 'Append Padding',
+        type: 'number',
+      },
+      {
+        key: 'size',
+        label: 'Size',
+        type: 'slider',
+        min: 2,
+        max: 10,
+        step: 1,
+        defaultValue: 2,
+      },
+      {
+        key: 'shape',
+        label: 'Shape',
+        type: 'select',
+        options: SCATTER_SHAPES.map((labelType) => ({ id: labelType, label: labelType })),
+        defaultValue: 'circle',
+      },
+    ],
+    validationSchema: z.object({
+      xField: z.string(),
+      yField: z.string(),
+      colorField: z.string().optional(),
+      appendPadding: z.coerce.number().optional(),
+      size: z.number().min(2).max(10).default(2),
+      shape: z.string().optional(),
     }),
   },
 }
