@@ -11,6 +11,7 @@ export const chartType = pgEnum('chart_type', [
   'AREA_CHART',
   'GAUGE_CHART',
   'SCATTER_CHART',
+  'HEAT_MAP',
 ])
 
 export const charts = pgTable('charts', {

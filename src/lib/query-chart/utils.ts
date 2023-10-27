@@ -1,4 +1,4 @@
-import { Area, Bar, Column, Gauge, Line, Pie, Scatter } from '@ant-design/plots'
+import { Area, Bar, Column, Gauge, Heatmap, Line, Pie, Scatter } from '@ant-design/plots'
 import dayjs from 'dayjs'
 import z from 'zod'
 import { P, match } from 'ts-pattern'
@@ -34,6 +34,10 @@ export const QUERY_CHARTS = [
     id: 'SCATTER_CHART',
     label: 'Scatter Chart',
   },
+  {
+    id: 'HEAT_MAP',
+    label: 'Heat Map',
+  },
 ] as const
 
 const LEGEND_POSITIONS = [
@@ -53,7 +57,7 @@ const LEGEND_POSITIONS = [
 
 const PIE_LABEL_TYPES = ['inner', 'outer', 'spider']
 
-const SCATTER_SHAPES = ['circle', 'square']
+const SHAPES = ['circle', 'square']
 
 export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
   BAR_CHART: {
@@ -313,7 +317,7 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
         key: 'shape',
         label: 'Shape',
         type: 'select',
-        options: SCATTER_SHAPES.map((labelType) => ({ id: labelType, label: labelType })),
+        options: SHAPES.map((labelType) => ({ id: labelType, label: labelType })),
         defaultValue: 'circle',
       },
     ],
@@ -324,6 +328,50 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       appendPadding: z.coerce.number().optional(),
       size: z.number().min(2).max(10).default(2),
       shape: z.string().optional(),
+    }),
+  },
+  HEAT_MAP: {
+    type: 'HEAT_MAP',
+    Component: Heatmap,
+    inputs: [
+      {
+        key: 'xField',
+        label: 'X Field',
+        type: 'col-select',
+      },
+      {
+        key: 'yField',
+        label: 'Y Field',
+        type: 'col-select',
+      },
+      {
+        key: 'colorField',
+        label: 'Color Field',
+        type: 'col-select',
+      },
+      {
+        key: 'shape',
+        label: 'Shape',
+        type: 'select',
+        options: [...SHAPES, 'rectangle'].map((labelType) => ({ id: labelType, label: labelType })),
+        defaultValue: 'rectangle',
+      },
+      {
+        key: 'sizeRatio',
+        label: 'Size Ratio',
+        type: 'slider',
+        min: 0.1,
+        max: 1,
+        step: 0.1,
+        defaultValue: 0.5,
+      },
+    ],
+    validationSchema: z.object({
+      xField: z.string(),
+      yField: z.string(),
+      colorField: z.string(),
+      shape: z.string().optional(),
+      sizeRatio: z.number().min(0.1).max(1).default(0.5).optional(),
     }),
   },
 }
@@ -368,6 +416,17 @@ export function getConfigFromValues(
         ...values,
         /** @TODO: Find a way to format incoming data to get single value */
         percent: 0.5,
+      }
+    }
+
+    case 'HEAT_MAP': {
+      return {
+        ...values,
+        meta: {
+          [values.xField as string]: {
+            type: 'cat',
+          },
+        },
       }
     }
 
