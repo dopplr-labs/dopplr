@@ -1,4 +1,4 @@
-import { Area, Bar, Column, Line, Pie } from '@ant-design/plots'
+import { Area, Bar, Column, Gauge, Line, Pie } from '@ant-design/plots'
 import dayjs from 'dayjs'
 import z from 'zod'
 import { P, match } from 'ts-pattern'
@@ -25,6 +25,10 @@ export const QUERY_CHARTS = [
   {
     id: 'AREA_CHART',
     label: 'Area Chart',
+  },
+  {
+    id: 'GAUGE_CHART',
+    label: 'Gauge Chart',
   },
 ] as const
 
@@ -242,6 +246,30 @@ export const QUERY_CHARTS_CONFIG: Record<QueryChartType, QueryChartConfig> = {
       isPercent: z.boolean().default(false),
     }),
   },
+  GAUGE_CHART: {
+    type: 'GAUGE_CHART',
+    Component: Gauge,
+    inputs: [
+      {
+        key: 'percent',
+        label: 'Percentage Field',
+        type: 'col-select',
+      },
+      {
+        key: 'radius',
+        label: 'Radius',
+        type: 'slider',
+        min: 0.1,
+        max: 1,
+        step: 0.1,
+        defaultValue: 0.9,
+      },
+    ],
+    validationSchema: z.object({
+      percent: z.string(),
+      radius: z.coerce.number().min(0.1).max(1).default(0.9),
+    }),
+  },
 }
 
 export function getConfigFromValues(
@@ -277,6 +305,14 @@ export function getConfigFromValues(
 
     case 'LINE_CHART': {
       return values
+    }
+
+    case 'GAUGE_CHART': {
+      return {
+        ...values,
+        /** @TODO: Find a way to format incoming data to get single value */
+        percent: 0.5,
+      }
     }
 
     default: {
