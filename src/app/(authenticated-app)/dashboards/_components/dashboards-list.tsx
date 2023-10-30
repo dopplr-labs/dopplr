@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { match } from 'ts-pattern'
-import { RepeatIcon, Trash } from 'lucide-react'
+import { PlusIcon, RepeatIcon, Trash } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { Skeleton } from '@/components/ui/skeleton'
 import { range } from '@/lib/utils'
@@ -11,6 +11,8 @@ import { ErrorMessage } from '@/components/ui/error-message'
 import { EmptyMessage } from '@/components/ui/empty-message'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NavLink from './nav-link'
+import CreateDashboardDialog from './create-dashboard-dialog'
+import { Button } from '@/components/ui/button'
 
 export default function DashboardsList() {
   const dashboardsQuery = trpc.dashboards.findUserDashboard.useQuery()
@@ -44,7 +46,8 @@ export default function DashboardsList() {
             title="No dashboard created yet!"
             description={
               <div>
-                <div>Try creating a new dashboard.</div>
+                <div className="mb-2">Try creating a new dashboard.</div>
+                <CreateDashboardDialog trigger={<Button icon={<PlusIcon />}>Create Dashboard</Button>} />
               </div>
             }
           />
