@@ -13,9 +13,19 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import NavLink from './nav-link'
 import CreateDashboardDialog from './create-dashboard-dialog'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function DashboardsList() {
+  const { toast } = useToast()
   const dashboardsQuery = trpc.dashboards.findUserDashboard.useQuery()
+
+  const deleteDashboardMutation = trpc.dashboards.delete.useMutation({
+    onSuccess: () => {
+      dashboardsQuery.refetch()
+
+      toast({ title: 'Dashboard deleted successfully!' })
+    },
+  })
 
   return match(dashboardsQuery)
     .returnType<React.ReactNode>()
@@ -73,6 +83,7 @@ export default function DashboardsList() {
               className="cursor-pointer"
               onClick={(event) => {
                 event.stopPropagation()
+                deleteDashboardMutation.mutate({ id: dashboard.id })
               }}
             >
               <span className="flex-1">Delete Dashboard</span>
