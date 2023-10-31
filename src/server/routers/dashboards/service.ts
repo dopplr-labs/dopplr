@@ -5,6 +5,7 @@ import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
 import { dashboards } from '@/db/schema/dashboards'
 import { createDashboardInput } from './input'
+import { charts, chartsToDashboards } from '@/db/schema/charts'
 
 export async function findUserDashboards(session: Session) {
   return db.select().from(dashboards).where(eq(dashboards.createdBy, session.user.id))
@@ -62,4 +63,21 @@ export async function duplicateDashboard(id: number, session: Session) {
     },
     session,
   )
+}
+
+/** Find a dashboard with all its charts */
+export async function findDashboardWithCharts(id: number) {
+  const dashboard = await findDashboardById(id)
+
+  const dashboardWithCharts = await db
+    .select()
+    .from(chartsToDashboards)
+    .innerJoin(charts, eq(chartsToDashboards.chartId, charts.id))
+    .innerJoin(dashboards, eq(chartsToDashboards.dashboardId, dashboards.id))
+    .where(eq(dashboards.id, id))
+
+  return {
+    ...dashboard,
+    charts: dashboardWithCharts.map((item) => item.charts),
+  }
 }
