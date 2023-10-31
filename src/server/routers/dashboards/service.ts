@@ -48,3 +48,18 @@ export async function deleteDashboard(id: number, session: Session) {
   const deletedDashboard = await db.delete(dashboards).where(eq(dashboards.id, id)).returning()
   return deletedDashboard[0]
 }
+
+export async function duplicateDashboard(id: number, session: Session) {
+  const dashboard = await findDashboardById(id)
+
+  return createDashboard(
+    {
+      name: dashboard.name + ' (copy)',
+      description: dashboard.description ?? undefined,
+      color: dashboard.color ?? undefined,
+      icon: dashboard.icon ?? undefined,
+      layout: dashboard.layout,
+    },
+    session,
+  )
+}

@@ -27,6 +27,14 @@ export default function DashboardsList() {
     },
   })
 
+  const duplicateDashboardMutation = trpc.dashboards.duplicate.useMutation({
+    onSuccess: () => {
+      dashboardsQuery.refetch()
+
+      toast({ title: 'Dashboard deleted successfully!' })
+    },
+  })
+
   return match(dashboardsQuery)
     .returnType<React.ReactNode>()
     .with({ status: 'loading' }, () => (
@@ -71,15 +79,18 @@ export default function DashboardsList() {
           </ContextMenuTrigger>
           <ContextMenuContent className="min-w-[12rem]">
             <ContextMenuItem
+              disabled={duplicateDashboardMutation.isLoading}
               className="cursor-pointer"
               onClick={(event) => {
                 event.stopPropagation()
+                duplicateDashboardMutation.mutate({ id: dashboard.id })
               }}
             >
               <span className="flex-1">Duplicate Dashboard</span>
               <RepeatIcon className="h-4 w-4" />
             </ContextMenuItem>
             <ContextMenuItem
+              disabled={deleteDashboardMutation.isLoading}
               className="cursor-pointer"
               onClick={(event) => {
                 event.stopPropagation()
