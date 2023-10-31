@@ -26,3 +26,8 @@ export const updateChartInput = createChartInput
   .extend({
     id: z.number(),
   })
+
+export const addToDashboardInput = z.object({
+  chartId: z.number(),
+  dashboardId: z.coerce.number(),
+})

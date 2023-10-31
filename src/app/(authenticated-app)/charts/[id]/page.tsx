@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { match } from 'ts-pattern'
-import { Code2Icon, LoaderIcon, SaveIcon, TerminalIcon, TrashIcon } from 'lucide-react'
+import { Code2Icon, LoaderIcon, PinIcon, SaveIcon, TerminalIcon, TrashIcon } from 'lucide-react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Monaco } from '@monaco-editor/react'
@@ -22,6 +22,7 @@ import { Form } from '@/components/ui/form'
 import QueryChartConfigInputs from '../../_components/query-chart-config-inputs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import AddToDashboardDialog from '../_components/add-to-dashboard-dialog'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
@@ -108,7 +109,7 @@ export default function ChartDetails() {
         key={chartSelected}
         className="w-full"
         data={parseQueryResult(runQueryMutation.data)}
-        {...getConfigFromValues(chartConfig.type, result.data)}
+        {...getConfigFromValues(chartConfig.type, result.data, runQueryMutation?.data)}
       />
     )
   }, [runQueryMutation, result, chartConfig, chartSelected])
@@ -157,6 +158,7 @@ export default function ChartDetails() {
               <Skeleton className="h-7 w-20" />
               <Skeleton className="h-7 w-20" />
               <Skeleton className="h-7 w-20" />
+              <Skeleton className="h-7 w-20" />
             </div>
           </div>
 
@@ -202,13 +204,21 @@ export default function ChartDetails() {
               <Button
                 loading={duplicateChartMutation.isLoading}
                 disabled={duplicateChartMutation.isLoading}
-                variant="secondary"
+                variant="outline"
                 onClick={() => {
                   duplicateChartMutation.mutate({ id: Number(id) })
                 }}
               >
                 Duplicate
               </Button>
+              <AddToDashboardDialog
+                chartId={chart.id}
+                trigger={
+                  <Button icon={<PinIcon />} variant="secondary">
+                    Add To Dashboard
+                  </Button>
+                }
+              />
               <Button
                 loading={updateChartMutation.isLoading}
                 disabled={updateChartMutation.isLoading}
