@@ -39,7 +39,6 @@ export default function ChartRenderer({ className, style, chart }: ChartRenderer
 
     return (
       <chartConfig.Component
-        className="h-full w-full"
         data={parseQueryResult(runQueryMutation.data)}
         {...getConfigFromValues(chartConfig.type, chart.config as Record<string, any>, runQueryMutation?.data)}
       />

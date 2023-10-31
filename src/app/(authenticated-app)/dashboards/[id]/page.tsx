@@ -3,10 +3,12 @@
 import { useParams } from 'next/navigation'
 import { match } from 'ts-pattern'
 import React from 'react'
+import GridLayout from 'react-grid-layout'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import ChartRenderer from '../_components/chart-renderer'
 import { Skeleton } from '@/components/ui/skeleton'
+import { generateDefaultLayout } from '@/lib/dashboards/utils'
 
 export default function DashboardDetails() {
   const { id } = useParams<{ id: string }>()
@@ -34,6 +36,8 @@ export default function DashboardDetails() {
       <ErrorMessage title="Something went wrong!" description={error?.message ?? 'Dashboard details may not exists!'} />
     ))
     .with({ status: 'success' }, ({ data }) => {
+      const dashboardLayout = (data.layout ?? generateDefaultLayout(data.charts)) as GridLayout.Layout[]
+
       return (
         <div className="space-y-4 overflow-y-auto p-4">
           <div>
@@ -41,9 +45,13 @@ export default function DashboardDetails() {
             <div className="text-sm text-muted-foreground">{data.description}</div>
           </div>
 
-          {data.charts.map((chart) => (
-            <ChartRenderer key={chart.id} chart={chart} />
-          ))}
+          <GridLayout layout={dashboardLayout} cols={12} rowHeight={30} width={1200}>
+            {data.charts.map((chart) => (
+              <div key={chart.id.toString()}>
+                <ChartRenderer chart={chart} />
+              </div>
+            ))}
+          </GridLayout>
         </div>
       )
     })
