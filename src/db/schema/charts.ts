@@ -1,5 +1,5 @@
 import { integer, json, pgEnum, pgTable, primaryKey, serial, text, time } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { InferSelectModel, relations } from 'drizzle-orm'
 import { resources } from './resource'
 import { users } from './auth'
 import { dashboards } from './dashboards'
@@ -26,6 +26,8 @@ export const charts = pgTable('charts', {
   createdBy: text('user_id').references(() => users.id),
   resourceId: integer('resource_id').references(() => resources.id),
 })
+
+export type Chart = InferSelectModel<typeof charts>
 
 export const chartRelations = relations(charts, ({ one, many }) => ({
   createdBy: one(users, {
