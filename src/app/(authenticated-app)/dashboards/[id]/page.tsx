@@ -4,12 +4,15 @@ import { useParams } from 'next/navigation'
 import { match } from 'ts-pattern'
 import React from 'react'
 import GridLayout from 'react-grid-layout'
+import { PenSquareIcon } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import ChartRenderer from '../_components/chart-renderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { generateDefaultLayout } from '@/lib/dashboards/utils'
 import { useToast } from '@/components/ui/use-toast'
+import UpdateDashboardDialog from '../../charts/_components/update-dashboard-dialog'
+import { Button } from '@/components/ui/button'
 
 export default function DashboardDetails() {
   const { id } = useParams<{ id: string }>()
@@ -35,9 +38,14 @@ export default function DashboardDetails() {
     .returnType<React.ReactNode>()
     .with({ status: 'loading' }, () => (
       <div className="space-y-4 p-3">
-        <div>
-          <Skeleton className="mb-1 h-8 w-96" />
-          <Skeleton className="h-3 w-64" />
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="mb-1 h-8 w-96" />
+            <Skeleton className="h-3 w-64" />
+          </div>
+          <div>
+            <Skeleton className="h-10 w-40" />
+          </div>
         </div>
 
         <div className="grid h-[85vh] w-full grid-cols-2 gap-4">
@@ -56,9 +64,16 @@ export default function DashboardDetails() {
 
       return (
         <div className="h-screen space-y-4 overflow-y-auto p-4">
-          <div>
-            <div className="text-2xl font-bold">{data.name}</div>
-            <div className="text-sm text-muted-foreground">{data.description}</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold">{data.name}</div>
+              <div className="text-sm text-muted-foreground">{data.description}</div>
+            </div>
+
+            <UpdateDashboardDialog
+              trigger={<Button icon={<PenSquareIcon />}>Update Dashboard</Button>}
+              dashboard={data}
+            />
           </div>
 
           <GridLayout

@@ -1,5 +1,5 @@
 import { json, pgTable, serial, text, time, varchar } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 import { chartsToDashboards } from './charts'
 
@@ -13,6 +13,8 @@ export const dashboards = pgTable('dashboards', {
   createdAt: time('created_at').defaultNow(),
   createdBy: text('user_id').references(() => users.id),
 })
+
+export type Dashboard = InferSelectModel<typeof dashboards>
 
 export const dashboardRelations = relations(dashboards, ({ one, many }) => ({
   createdBy: one(users, {

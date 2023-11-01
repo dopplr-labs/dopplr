@@ -65,7 +65,6 @@ export async function duplicateDashboard(id: number, session: Session) {
   )
 }
 
-/** Find a dashboard with all its charts */
 export async function findDashboardWithCharts(id: number) {
   const dashboard = await findDashboardById(id)
 
