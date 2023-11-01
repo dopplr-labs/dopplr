@@ -7,8 +7,9 @@ import {
   findDashboardById,
   findDashboardWithCharts,
   findUserDashboards,
+  updateDashboard,
 } from './service'
-import { createDashboardInput } from './input'
+import { createDashboardInput, updateDashboardInput } from './input'
 
 const idSchema = z.object({
   id: z.number().positive(),
@@ -23,4 +24,7 @@ export const dashboardsRouter = router({
   duplicate: protectedProcedure.input(idSchema).mutation(({ input, ctx }) => duplicateDashboard(input.id, ctx.session)),
   findOneById: protectedProcedure.input(idSchema).query(({ input }) => findDashboardById(input.id)),
   findOneWithCharts: protectedProcedure.input(idSchema).query(({ input }) => findDashboardWithCharts(input.id)),
+  update: protectedProcedure
+    .input(updateDashboardInput)
+    .mutation(({ input, ctx }) => updateDashboard(input, ctx.session)),
 })

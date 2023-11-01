@@ -10,3 +10,7 @@ export const createDashboardInput = z.object({
   color: z.string().optional(),
   layout: z.any().optional(),
 })
+
+export const updateDashboardInput = createDashboardInput.partial().extend({
+  id: z.number(),
+})

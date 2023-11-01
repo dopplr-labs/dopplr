@@ -9,11 +9,27 @@ import { ErrorMessage } from '@/components/ui/error-message'
 import ChartRenderer from '../_components/chart-renderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { generateDefaultLayout } from '@/lib/dashboards/utils'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function DashboardDetails() {
   const { id } = useParams<{ id: string }>()
+  const { toast } = useToast()
+  const utils = trpc.useContext()
 
   const dashboardDetailsQuery = trpc.dashboards.findOneWithCharts.useQuery({ id: Number(id) })
+
+  const updateLayoutMutation = trpc.dashboards.update.useMutation({
+    onError: () => {
+      toast({
+        title: 'Something went wrong!',
+        description: 'Something went wrong while updating layout, please try again!',
+        variant: 'destructive',
+      })
+    },
+    onSuccess: () => {
+      utils.dashboards.findOneWithCharts.invalidate()
+    },
+  })
 
   return match(dashboardDetailsQuery)
     .returnType<React.ReactNode>()
@@ -39,13 +55,21 @@ export default function DashboardDetails() {
       const dashboardLayout = (data.layout ?? generateDefaultLayout(data.charts)) as GridLayout.Layout[]
 
       return (
-        <div className="space-y-4 overflow-y-auto p-4">
+        <div className="h-screen space-y-4 overflow-y-auto p-4">
           <div>
             <div className="text-2xl font-bold">{data.name}</div>
             <div className="text-sm text-muted-foreground">{data.description}</div>
           </div>
 
-          <GridLayout layout={dashboardLayout} cols={12} rowHeight={30} width={1200}>
+          <GridLayout
+            layout={dashboardLayout}
+            cols={12}
+            rowHeight={30}
+            width={1200}
+            onLayoutChange={(layout) => {
+              updateLayoutMutation.mutate({ id: data.id, layout })
+            }}
+          >
             {data.charts.map((chart) => (
               <div key={chart.id.toString()}>
                 <ChartRenderer chart={chart} />

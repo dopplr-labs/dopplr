@@ -4,7 +4,7 @@ import z from 'zod'
 import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
 import { dashboards } from '@/db/schema/dashboards'
-import { createDashboardInput } from './input'
+import { createDashboardInput, updateDashboardInput } from './input'
 import { charts, chartsToDashboards } from '@/db/schema/charts'
 
 export async function findUserDashboards(session: Session) {
@@ -80,4 +80,25 @@ export async function findDashboardWithCharts(id: number) {
     ...dashboard,
     charts: dashboardWithCharts.map((item) => item.charts),
   }
+}
+
+export async function updateDashboard(input: z.infer<typeof updateDashboardInput>, session: Session) {
+  const dashboard = await findDashboardById(input.id)
+
+  if (dashboard.createdBy !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update this dashboard!' })
+  }
+
+  const updatedDashboard = await db
+    .update(dashboards)
+    .set({
+      name: input.name,
+      description: input.description,
+      color: input.color,
+      icon: input.icon,
+      layout: input.layout,
+    })
+    .returning()
+
+  return updatedDashboard[0]
 }
