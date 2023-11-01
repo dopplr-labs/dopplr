@@ -87,7 +87,7 @@ export default function DashboardDetails() {
           >
             {data.charts.map((chart) => (
               <div key={chart.id.toString()}>
-                <ChartRenderer chart={chart} />
+                <ChartRenderer chart={chart} dashboardId={data.id} />
               </div>
             ))}
           </GridLayout>

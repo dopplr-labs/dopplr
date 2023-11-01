@@ -27,7 +27,7 @@ export const updateChartInput = createChartInput
     id: z.number(),
   })
 
-export const addToDashboardInput = z.object({
+export const addOrRemoveFromDashboardInput = z.object({
   chartId: z.number(),
   dashboardId: z.coerce.number(),
 })

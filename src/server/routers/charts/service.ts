@@ -1,8 +1,8 @@
 import z from 'zod'
 import { Session } from 'next-auth'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { addToDashboardInput, createChartInput, updateChartInput } from './input'
+import { addOrRemoveFromDashboardInput, createChartInput, updateChartInput } from './input'
 import { db } from '@/db'
 import { charts, chartsToDashboards } from '@/db/schema/charts'
 import { resources } from '@/db/schema/resource'
@@ -78,7 +78,7 @@ export async function updateChart(input: z.infer<typeof updateChartInput>, sessi
   return updatedChart[0]
 }
 
-export async function addToDashboard(input: z.infer<typeof addToDashboardInput>, session: Session) {
+export async function addToDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>, session: Session) {
   const { charts: chart } = await findChartById(input.chartId)
   const dashboard = await findDashboardById(input.dashboardId)
 
@@ -90,8 +90,43 @@ export async function addToDashboard(input: z.infer<typeof addToDashboardInput>,
     throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to add this chart to this dashboard!' })
   }
 
+  const chartAlreadyAdded = await db
+    .select()
+    .from(chartsToDashboards)
+    .where(and(eq(chartsToDashboards.chartId, chart.id), eq(chartsToDashboards.dashboardId, dashboard.id)))
+
+  if (chartAlreadyAdded.length > 0) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'This chart is already added to the dashboard!' })
+  }
+
   await db.insert(chartsToDashboards).values({
     chartId: chart.id,
     dashboardId: dashboard.id,
   })
+}
+
+export async function removeFromDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>, session: Session) {
+  const { charts: chart } = await findChartById(input.chartId)
+  const dashboard = await findDashboardById(input.dashboardId)
+
+  if (chart.createdBy !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to remove this chart from this dashboard!' })
+  }
+
+  if (dashboard.createdBy !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to remove this chart from this dashboard!' })
+  }
+
+  const chartAlreadyAdded = await db
+    .select()
+    .from(chartsToDashboards)
+    .where(and(eq(chartsToDashboards.chartId, chart.id), eq(chartsToDashboards.dashboardId, dashboard.id)))
+
+  if (chartAlreadyAdded.length === 0) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'This chart is not added to the dashboard!' })
+  }
+
+  await db
+    .delete(chartsToDashboards)
+    .where(and(eq(chartsToDashboards.chartId, chart.id), eq(chartsToDashboards.dashboardId, dashboard.id)))
 }

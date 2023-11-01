@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useToast } from '@/components/ui/use-toast'
 import { trpc } from '@/lib/trpc/client'
-import { addToDashboardInput } from '@/server/routers/charts/input'
+import { addOrRemoveFromDashboardInput } from '@/server/routers/charts/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -33,14 +33,14 @@ export default function AddToDashboardDialog({ className, style, trigger, chartI
     },
   })
 
-  const form = useForm<z.infer<typeof addToDashboardInput>>({
-    resolver: zodResolver(addToDashboardInput),
+  const form = useForm<z.infer<typeof addOrRemoveFromDashboardInput>>({
+    resolver: zodResolver(addOrRemoveFromDashboardInput),
     defaultValues: {
       chartId,
     },
   })
 
-  const handleAddToDashboard = (values: z.infer<typeof addToDashboardInput>) => {
+  const handleAddToDashboard = (values: z.infer<typeof addOrRemoveFromDashboardInput>) => {
     addToDashboardMutation.mutate(values)
   }
 

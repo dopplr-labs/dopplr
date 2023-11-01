@@ -1,6 +1,6 @@
 import z from 'zod'
 import { protectedProcedure, router } from '@/server/trpc'
-import { addToDashboardInput, createChartInput, updateChartInput } from './input'
+import { addOrRemoveFromDashboardInput, createChartInput, updateChartInput } from './input'
 import {
   addToDashboard,
   createChart,
@@ -8,6 +8,7 @@ import {
   duplicateChart,
   findChartById,
   getUserCharts,
+  removeFromDashboard,
   updateChart,
 } from './service'
 
@@ -21,6 +22,9 @@ export const chartsRouter = router({
   findOneById: protectedProcedure.input(idSchema).query(({ input }) => findChartById(input.id)),
   update: protectedProcedure.input(updateChartInput).mutation(({ input, ctx }) => updateChart(input, ctx.session)),
   addToDashboard: protectedProcedure
-    .input(addToDashboardInput)
+    .input(addOrRemoveFromDashboardInput)
     .mutation(({ input, ctx }) => addToDashboard(input, ctx.session)),
+  removeFromDashboard: protectedProcedure
+    .input(addOrRemoveFromDashboardInput)
+    .mutation(({ input, ctx }) => removeFromDashboard(input, ctx.session)),
 })

@@ -97,6 +97,7 @@ export async function updateDashboard(input: z.infer<typeof updateDashboardInput
       icon: input.icon,
       layout: input.layout,
     })
+    .where(eq(dashboards.id, input.id))
     .returning()
 
   return updatedDashboard[0]

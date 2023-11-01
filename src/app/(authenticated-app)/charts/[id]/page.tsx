@@ -69,9 +69,17 @@ export default function ChartDetails() {
   })
 
   const updateChartMutation = trpc.charts.update.useMutation({
+    onError: (error) => {
+      toast({
+        title: 'Error while updating chart',
+        description: error.message ?? 'Something went wrong. Please try again later.',
+        variant: 'destructive',
+      })
+    },
     onSuccess: () => {
       chartDetailsQuery.refetch()
       utils.charts.getUserCharts.invalidate()
+      toast({ title: 'Chart updated successfully!' })
     },
   })
 
