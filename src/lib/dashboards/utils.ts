@@ -9,24 +9,24 @@ type ChartDimension = {
 
 export const CHART_DEFAULT_DIMENSIONS: Record<QueryChartType, ChartDimension> = {
   AREA_CHART: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
   BAR_CHART: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
   COLUMN_CHART: {
     w: 5,
     h: 8,
   },
   GAUGE_CHART: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
   HEAT_MAP: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
   LINE_CHART: {
     w: 3,
@@ -37,12 +37,12 @@ export const CHART_DEFAULT_DIMENSIONS: Record<QueryChartType, ChartDimension> = 
     h: 6,
   },
   SCATTER_CHART: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
   STAT_CARD: {
-    w: 3,
-    h: 3,
+    w: 5,
+    h: 8,
   },
 }
 

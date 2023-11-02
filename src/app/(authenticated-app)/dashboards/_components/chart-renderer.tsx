@@ -50,7 +50,7 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
   const chartContent = useMemo(() => {
     if (!runQueryMutation?.data || runQueryMutation.data?.length === 0) {
       return (
-        <div className="grid h-96 w-full place-content-center">
+        <div className="grid h-full w-full place-content-center">
           <LoaderIcon className="h-4 w-4 animate-spin" />
         </div>
       )
@@ -58,6 +58,7 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
 
     return (
       <chartConfig.Component
+        className="h-full w-full"
         data={parseQueryResult(runQueryMutation.data)}
         {...getConfigFromValues(chartConfig.type, chart.config as Record<string, any>, runQueryMutation?.data)}
       />
@@ -79,7 +80,7 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
   )
 
   return (
-    <div className={cn('h-full w-full rounded-md border p-4', className)} style={style}>
+    <div className={cn('h-full w-full overflow-hidden rounded-md border p-4', className)} style={style}>
       <div className="flex items-center justify-between">
         <h1 className="truncate font-medium">{chart.name}</h1>
 
@@ -107,9 +108,6 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <div className="my-2 h-[1px] w-full bg-muted" />
-
       {chartContent}
     </div>
   )
