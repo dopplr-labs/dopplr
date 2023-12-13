@@ -9,7 +9,6 @@ export async function runQuery(input: z.infer<typeof runQueryInput>) {
     const client = getPgClientForConnectionString(input.connectionString)
     // TODO: Check if this query method is insecure or not
     // and how to prevent SQL injection
-    await new Promise((resolve) => setTimeout(resolve, 2000))
     const result = await client.unsafe(input.query)
     return result
   }
