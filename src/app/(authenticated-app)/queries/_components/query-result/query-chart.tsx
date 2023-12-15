@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import z from 'zod'
@@ -16,10 +16,11 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import QueryChartConfigInputs from '@/app/(authenticated-app)/_components/query-chart-config-inputs'
 
-export default function QueryChart() {
+function QueryChartComponent() {
   const activeTabData = useStore((store) =>
     store.activeQueryTabId ? store.getTabData(store.activeQueryTabId) : undefined,
   )
+
   invariant(activeTabData, 'Could not find active tab data!')
   const queryResult = activeTabData.queryResult
 
@@ -142,3 +143,8 @@ export default function QueryChart() {
     </div>
   )
 }
+
+const QueryChart = memo(QueryChartComponent)
+QueryChart.displayName = 'QueryChart'
+
+export default QueryChart

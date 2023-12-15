@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useStore } from '@/stores'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { parseQueryResult } from '@/lib/query-chart/utils'
 
-export default function QueryTable() {
+function QueryTableComponent() {
   const queryResult = useStore((store) =>
     store.activeQueryTabId ? store.queryTabResult?.[store.activeQueryTabId] : undefined,
   )
@@ -76,3 +76,8 @@ export default function QueryTable() {
 
   return <div className="h-full w-full">{tableContent}</div>
 }
+
+const QueryTable = memo(QueryTableComponent)
+QueryTable.displayName = 'QueryTable'
+
+export default QueryTable
