@@ -10,7 +10,7 @@ import { useStore } from '@/stores'
 export default function ResourceSelector() {
   const activeQueryTabId = useStore((store) => store.activeQueryTabId)
   const activeQueryTabData = useStore((store) =>
-    store.activeQueryTabId ? store.queryTabData[store.activeQueryTabId] : undefined,
+    store.activeQueryTabId ? store.getTabData(store.activeQueryTabId) : undefined,
   )
   const updateQueryTabData = useStore((store) => store.updateQueryTabData)
 

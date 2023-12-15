@@ -74,16 +74,24 @@ export default function QueryChartConfigInputs({ inputs, control, columns }: Que
               .with({ type: 'number' }, ({ label, defaultValue }) => (
                 <Input type="number" placeholder={label} defaultValue={defaultValue} {...field} />
               ))
-              .with({ type: 'slider' }, ({ min, max, step, defaultValue }) => (
-                <Slider
-                  {...field}
-                  defaultValue={[defaultValue]}
-                  min={min}
-                  max={max}
-                  step={step}
-                  onValueChange={field.onChange}
-                  value={Array.isArray(field.value) ? field.value : [field.value]}
-                />
+              .with({ type: 'slider' }, ({ min, max, step, defaultValue }) => {
+                const _value = field.value ?? defaultValue
+
+                return (
+                  <Slider
+                    {...field}
+                    min={min}
+                    max={max}
+                    step={step}
+                    onValueChange={(value) => {
+                      field.onChange(value[0])
+                    }}
+                    value={Array.isArray(_value) ? _value : [_value]}
+                  />
+                )
+              })
+              .with({ type: 'text' }, ({ label, defaultValue }) => (
+                <Input placeholder={label} defaultValue={defaultValue} {...field} />
               ))
               .exhaustive()}
           </FormControl>

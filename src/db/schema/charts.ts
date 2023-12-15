@@ -3,7 +3,17 @@ import { relations } from 'drizzle-orm'
 import { resources } from './resource'
 import { users } from './auth'
 
-export const chartType = pgEnum('chart_type', ['BAR_CHART', 'COLUMN_CHART', 'PIE_CHART', 'LINE_CHART'])
+export const chartType = pgEnum('chart_type', [
+  'BAR_CHART',
+  'COLUMN_CHART',
+  'PIE_CHART',
+  'LINE_CHART',
+  'AREA_CHART',
+  'GAUGE_CHART',
+  'SCATTER_CHART',
+  'HEAT_MAP',
+  'STAT_CARD',
+])
 
 export const charts = pgTable('charts', {
   id: serial('id').primaryKey(),
