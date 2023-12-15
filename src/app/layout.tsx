@@ -6,6 +6,8 @@ import NextAuthProvider from './_components/next-auth-provider'
 import './globals.css'
 import { mono, sans } from '@/lib/fonts'
 
+import '../../node_modules/react-grid-layout/css/styles.css'
+
 export const metadata: Metadata = {
   title: 'Dopplr',
   description: 'An analytical tool for creating beautiful dashboards from sql queries',

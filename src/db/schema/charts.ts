@@ -1,7 +1,8 @@
-import { integer, json, pgEnum, pgTable, serial, text, time } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { integer, json, pgEnum, pgTable, primaryKey, serial, text, time } from 'drizzle-orm/pg-core'
+import { InferSelectModel, relations } from 'drizzle-orm'
 import { resources } from './resource'
 import { users } from './auth'
+import { dashboards } from './dashboards'
 
 export const chartType = pgEnum('chart_type', [
   'BAR_CHART',
@@ -26,7 +27,9 @@ export const charts = pgTable('charts', {
   resourceId: integer('resource_id').references(() => resources.id),
 })
 
-export const chartRelations = relations(charts, ({ one }) => ({
+export type Chart = InferSelectModel<typeof charts>
+
+export const chartRelations = relations(charts, ({ one, many }) => ({
   createdBy: one(users, {
     fields: [charts.createdBy],
     references: [users.id],
@@ -34,5 +37,32 @@ export const chartRelations = relations(charts, ({ one }) => ({
   resourceId: one(resources, {
     fields: [charts.resourceId],
     references: [resources.id],
+  }),
+  chartsToDashboards: many(chartsToDashboards),
+}))
+
+export const chartsToDashboards = pgTable(
+  'charts_to_dashboards',
+  {
+    chartId: integer('chart_id')
+      .notNull()
+      .references(() => charts.id),
+    dashboardId: integer('dashboard_id')
+      .notNull()
+      .references(() => dashboards.id),
+  },
+  (t) => ({
+    pk: primaryKey(t.chartId, t.dashboardId),
+  }),
+)
+
+export const chartsToDashboardsRelations = relations(chartsToDashboards, ({ one }) => ({
+  dashboard: one(dashboards, {
+    fields: [chartsToDashboards.dashboardId],
+    references: [dashboards.id],
+  }),
+  chart: one(charts, {
+    fields: [chartsToDashboards.chartId],
+    references: [charts.id],
   }),
 }))

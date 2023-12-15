@@ -9,15 +9,16 @@ type StatsCardConfig = {
   unit?: string
 }
 
-type StatsCardProps = StatsCardConfig & {
-  className?: string
-  style?: React.CSSProperties
-  data: any[]
-}
+type StatsCardProps = StatsCardConfig &
+  React.HTMLAttributes<HTMLDivElement> & {
+    className?: string
+    style?: React.CSSProperties
+    data: any[]
+  }
 
-const StatsCard = forwardRef(function StatsCard({ className, style, data, ...config }: StatsCardProps) {
+const StatsCard = forwardRef<HTMLDivElement, StatsCardProps>(({ className, style, data, ...config }, ref) => {
   return (
-    <div className={cn('flex flex-col rounded-md border p-4', className)} style={style}>
+    <div className={cn('flex flex-col rounded-md border p-4', className)} style={style} ref={ref}>
       <div className="mb-2 flex items-center space-x-1">
         <div
           className="h-[10px] w-[10px] rounded-full"
