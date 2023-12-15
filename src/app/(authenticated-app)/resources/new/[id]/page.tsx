@@ -1,7 +1,9 @@
 import { cloneElement } from 'react'
 import { notFound } from 'next/navigation'
+import { match } from 'ts-pattern'
 import { DATABASES } from '@/lib/data/databases'
 import CreatePGResource from './_components/create-pg-resource'
+import CreateMySQLResource from './_components/create-mysql-resource'
 
 export default function CreateResourcePage({ params: { id } }: { params: { id: string } }) {
   if (!(id in DATABASES)) {
@@ -21,17 +23,10 @@ export default function CreateResourcePage({ params: { id } }: { params: { id: s
           <div className="text-sm text-muted-foreground">{database.description}</div>
         </div>
       </div>
-      {(() => {
-        switch (id) {
-          case 'postgres': {
-            return <CreatePGResource />
-          }
-
-          default: {
-            return null
-          }
-        }
-      })()}
+      {match(id)
+        .with('postgres', () => <CreatePGResource />)
+        .with('mysql', () => <CreateMySQLResource />)
+        .otherwise(() => null)}
     </div>
   )
 }

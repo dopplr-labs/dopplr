@@ -7,17 +7,11 @@ import { db } from '@/db'
 import { resources } from '@/db/schema/resource'
 
 export async function createResource(input: z.infer<typeof createResourceInput>, session: Session) {
-  if (input.type === 'postgres') {
-    const resource = await db
-      .insert(resources)
-      .values({ name: input.name, type: 'postgres', connectionConfig: { url: input.url }, createdBy: session.user.id })
-      .returning()
-    return resource[0]
-  } else {
-    throw new TRPCError({
-      code: 'NOT_IMPLEMENTED',
-    })
-  }
+  const [resource] = await db
+    .insert(resources)
+    .values({ name: input.name, type: input.type, connectionConfig: { url: input.url }, createdBy: session.user.id })
+    .returning()
+  return resource
 }
 
 export async function getResources(session: Session) {

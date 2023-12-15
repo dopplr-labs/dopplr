@@ -8,7 +8,7 @@ export const resources = pgTable('resource', {
   createdAt: time('created_at').defaultNow(),
   createdBy: text('created_by').references(() => users.id),
   name: text('name').notNull(),
-  type: text('type', { enum: ['postgres'] }).notNull(),
+  type: text('type', { enum: ['postgres', 'mysql'] }).notNull(),
   connectionConfig: json('connection_config').notNull(),
 })
 

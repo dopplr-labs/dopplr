@@ -1,12 +1,12 @@
 import postgres from 'postgres'
 
 const globalForCache = globalThis as unknown as {
-  cache: Map<string, postgres.Sql>
+  pgConnectionsCache: Map<string, postgres.Sql>
 }
 
-const _connectionCaches = globalForCache.cache ?? new Map<string, postgres.Sql>()
+const _connectionCaches = globalForCache.pgConnectionsCache ?? new Map<string, postgres.Sql>()
 if (process.env.NODE_ENV !== 'production') {
-  globalForCache.cache = _connectionCaches
+  globalForCache.pgConnectionsCache = _connectionCaches
 }
 
 /**

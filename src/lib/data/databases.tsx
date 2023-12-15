@@ -32,7 +32,7 @@ export const DATABASES = {
     label: 'MySQL Database',
     description:
       'Link your MySQL database to harness its capabilities, execute efficient queries, and design comprehensive dashboards.',
-    disabled: true,
+    disabled: false,
   },
   'planetscale-mysql': {
     icon: (

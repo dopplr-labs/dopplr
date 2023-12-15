@@ -58,24 +58,18 @@ export default function ResourceDetailPage({ params: { id } }: { params: { id: s
                   <div className="text-sm text-muted-foreground">{database.label}</div>
                 </div>
               </div>
-              {(() => {
-                switch (resource.type) {
-                  case 'postgres': {
-                    return (
-                      <UpdatePGResource
-                        resource={resource}
-                        onUpdate={() => {
-                          resourceQuery.refetch()
-                        }}
-                      />
-                    )
-                  }
-
-                  default: {
-                    return null
-                  }
-                }
-              })()}
+              {match(resource.type)
+                .with('postgres', () => (
+                  <UpdatePGResource
+                    resource={resource}
+                    onUpdate={() => {
+                      resourceQuery.refetch()
+                    }}
+                  />
+                ))
+                // TODO: Add update support for MySQL
+                .with('mysql', () => null)
+                .exhaustive()}
               <div className="space-y-4">
                 <div className="font-medium text-muted-foreground">Danger Zone</div>
                 <DeleteResource resource={resource} />
