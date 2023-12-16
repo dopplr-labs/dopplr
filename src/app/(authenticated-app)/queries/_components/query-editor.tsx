@@ -171,24 +171,35 @@ export default function QueryEditor() {
             return (
               <PanelGroup direction="vertical">
                 <Panel defaultSize={60}>
-                  <PgEditor
-                    key={`${activeQueryTabData?.resourceId}-${activeQueryTabData?.tabId}-${activeQueryTabData?.savedQueryId}`}
-                    value={activeQueryTabData?.query}
-                    onChange={(value) => {
-                      if (value && activeQueryTabId) {
-                        updateQueryTabData(activeQueryTabId, {
-                          query: value,
-                          dataStatus: TabDataStatus.UNSAVED,
-                        })
-                      }
-                    }}
-                    resource={resource}
-                    format={formatQueryMutation.mutateAsync}
-                    runQuery={runQueryMutation.mutate}
-                    onMount={(editor) => {
-                      editorRef.current = editor
-                    }}
-                  />
+                  {match(resource.type)
+                    .with('postgres', () => (
+                      <PgEditor
+                        key={`${activeQueryTabData?.resourceId}-${activeQueryTabData?.tabId}-${activeQueryTabData?.savedQueryId}`}
+                        value={activeQueryTabData?.query}
+                        onChange={(value) => {
+                          if (value && activeQueryTabId) {
+                            updateQueryTabData(activeQueryTabId, {
+                              query: value,
+                              dataStatus: TabDataStatus.UNSAVED,
+                            })
+                          }
+                        }}
+                        resource={resource}
+                        format={formatQueryMutation.mutateAsync}
+                        runQuery={runQueryMutation.mutate}
+                        onMount={(editor) => {
+                          editorRef.current = editor
+                        }}
+                      />
+                    ))
+                    .otherwise(() => (
+                      <div className="flex h-full items-center justify-center">
+                        <ErrorMessage
+                          title="Unsupported resource"
+                          description="Only PostgreSQL resources are supported querying at the moment."
+                        />
+                      </div>
+                    ))}
                 </Panel>
                 <PanelResizeHandle className="h-[3px] bg-border/50 transition-colors data-[resize-handle-active]:bg-primary/50" />
                 <Panel defaultSize={40} minSize={30} maxSize={60}>

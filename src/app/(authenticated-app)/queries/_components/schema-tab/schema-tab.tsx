@@ -1,6 +1,7 @@
 import { match } from 'ts-pattern'
-import { getTableColumnsQuery } from '@/lib/pg/sql-queries'
-import { trpc } from '@/lib/trpc/client'
+import { z } from 'zod'
+import { getTableColumnsQuery as getPgTableColumnsQuery } from '@/lib/pg/sql-queries'
+import { ResourceGetOutput, trpc } from '@/lib/trpc/client'
 import { useStore } from '@/stores'
 import { Skeleton } from '@/components/ui/skeleton'
 import { range } from '@/lib/utils'
@@ -10,6 +11,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { TableColumn } from '@/types/database'
 import TableColumnContextMenu from './table-column-context-menu'
 import { EmptyMessage } from '@/components/ui/empty-message'
+import { getTableColumnsQuery as getMySqlTableColumnsQuery } from '@/lib/mysql/sql-queries'
+
+const tableQueries = {
+  postgres: getPgTableColumnsQuery,
+  mysql: getMySqlTableColumnsQuery,
+} satisfies Record<ResourceGetOutput['type'], (table?: string) => string>
 
 export default function SchemaTab() {
   const activeQueryTabData = useStore((store) =>
@@ -25,15 +32,21 @@ export default function SchemaTab() {
     },
   )
 
-  const connectionString = (getResourceQuery?.data?.connectionConfig as unknown as { url: string })?.url
-  const tablesQuery = trpc.query.runQuery.useQuery(
-    {
-      type: 'postgres',
-      connectionString,
-      query: getTableColumnsQuery(),
-    },
-    { enabled: !!connectionString },
-  )
+  const tablesQueryPayload = match(getResourceQuery)
+    .with({ status: 'success' }, ({ data }) => {
+      // Url should be present in the connection config
+      const { url } = z.object({ url: z.string() }).parse(data.connectionConfig)
+      const getTableColumnsQuery = tableQueries[data.type]
+
+      return {
+        type: data.type,
+        connectionString: url,
+        query: getTableColumnsQuery(),
+      }
+    })
+    .otherwise(() => undefined)
+
+  const tablesQuery = trpc.query.runQuery.useQuery(tablesQueryPayload!, { enabled: !!tablesQueryPayload })
 
   return match(tablesQuery)
     .returnType<React.ReactNode>()
@@ -68,14 +81,23 @@ export default function SchemaTab() {
         )
       }
 
-      const publicSchemaTables = data.filter((item) => item.schemaname === 'public') as unknown as TableColumn[]
+      const tables = data as TableColumn[]
+
+      if (tables.length === 0) {
+        return (
+          <div className="flex h-full items-center justify-center">
+            <EmptyMessage title="No tables found" description="Please create a table before creating a query" />
+          </div>
+        )
+      }
+
       return (
         <Accordion
           type="multiple"
           className="h-full w-full overflow-y-auto font-mono"
-          defaultValue={publicSchemaTables.map((table) => table.tablename)}
+          defaultValue={tables.map((table) => table.tablename)}
         >
-          {publicSchemaTables.map((table) => (
+          {tables.map((table) => (
             <AccordionItem value={table.tablename} key={table.tablename}>
               <TableColumnContextMenu resourceId={getResourceQuery.data.id} table={table}>
                 <AccordionTrigger className="px-4 font-bold hover:no-underline">{table.tablename}</AccordionTrigger>

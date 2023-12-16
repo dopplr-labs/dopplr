@@ -3,10 +3,8 @@ export type Schema = {
 }
 
 type Column = {
-  attisdropped: boolean
   attname: string
   attnum: number
-  attrelid: string
   data_type: string
 }
 
@@ -14,7 +12,7 @@ export type TableColumn = {
   schemaname: string
   tablename: string
   quoted_name: string
-  is_table: boolean
+  is_table: boolean | (1 | 0)
   columns: Column[]
 }
 

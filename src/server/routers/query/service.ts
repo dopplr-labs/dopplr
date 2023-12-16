@@ -18,6 +18,7 @@ export async function runQuery(input: z.infer<typeof runQueryInput>) {
   } else if (input.type === 'mysql') {
     const client = await getMySqlClientForConnectionString(input.connectionString)
     const [result] = await client.query<RowDataPacket[]>(input.query)
+
     return result
   }
 
