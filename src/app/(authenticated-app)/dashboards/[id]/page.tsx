@@ -2,26 +2,48 @@
 
 import { useParams } from 'next/navigation'
 import { match } from 'ts-pattern'
-import React from 'react'
+import React, { useState } from 'react'
 import GridLayout from 'react-grid-layout'
-import { PenSquareIcon } from 'lucide-react'
+import { PenSquareIcon, SaveIcon } from 'lucide-react'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import ChartRenderer from '../_components/chart-renderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { generateDefaultLayout } from '@/lib/dashboards/utils'
 import { useToast } from '@/components/ui/use-toast'
-import UpdateDashboardDialog from '../../charts/_components/update-dashboard-dialog'
 import { Button } from '@/components/ui/button'
+import EditableInput from '@/components/ui/editable-input'
 
 export default function DashboardDetails() {
+  const [isDashboardEditable, setIsDashboardEditable] = useState(false)
+  const [dashboardData, setDashboardData] = useState<{
+    name: string
+    description: string
+    layout: GridLayout.Layout[]
+  }>({
+    layout: [],
+    name: '',
+    description: '',
+  })
+
   const { id } = useParams<{ id: string }>()
   const { toast } = useToast()
   const utils = trpc.useContext()
 
-  const dashboardDetailsQuery = trpc.dashboards.findOneWithCharts.useQuery({ id: Number(id) })
+  const dashboardDetailsQuery = trpc.dashboards.findOneWithCharts.useQuery(
+    { id: Number(id) },
+    {
+      onSuccess: (data) => {
+        setDashboardData({
+          layout: data.layout as GridLayout.Layout[],
+          name: data.name,
+          description: data?.description ?? '',
+        })
+      },
+    },
+  )
 
-  const updateLayoutMutation = trpc.dashboards.update.useMutation({
+  const updateDashboardMutation = trpc.dashboards.update.useMutation({
     onError: () => {
       toast({
         title: 'Something went wrong!',
@@ -30,6 +52,13 @@ export default function DashboardDetails() {
       })
     },
     onSuccess: () => {
+      toast({
+        title: 'Success',
+        description: 'Dashboard updated successfully!',
+        variant: 'success',
+      })
+      setIsDashboardEditable(false)
+      utils.dashboards.findUserDashboard.invalidate()
       utils.dashboards.findOneWithCharts.invalidate()
     },
   })
@@ -66,23 +95,55 @@ export default function DashboardDetails() {
         <div className="h-screen space-y-4 overflow-y-auto p-4">
           <div className="flex items-center justify-between px-[10px]">
             <div>
-              <div className="text-2xl font-bold">{data.name}</div>
-              <div className="text-sm text-muted-foreground">{data.description}</div>
+              <EditableInput
+                className="text-2xl font-bold"
+                editable={isDashboardEditable}
+                value={dashboardData.name}
+                onChange={(value) => {
+                  setDashboardData((prev) => ({ ...prev, name: value }))
+                }}
+              />
+              <EditableInput
+                className="text-sm text-muted-foreground"
+                editable={isDashboardEditable}
+                value={dashboardData.description}
+                onChange={(value) => {
+                  setDashboardData((prev) => ({ ...prev, description: value }))
+                }}
+              />
             </div>
 
-            <UpdateDashboardDialog
-              trigger={<Button icon={<PenSquareIcon />}>Update Dashboard</Button>}
-              dashboard={data}
-            />
+            {isDashboardEditable ? (
+              <Button
+                icon={<SaveIcon />}
+                loading={updateDashboardMutation.isLoading}
+                onClick={() => {
+                  updateDashboardMutation.mutate({ id: data.id, ...dashboardData })
+                }}
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                icon={<PenSquareIcon />}
+                onClick={() => {
+                  setIsDashboardEditable(true)
+                }}
+              >
+                Update Dashboard
+              </Button>
+            )}
           </div>
 
           <GridLayout
+            isDraggable={isDashboardEditable}
+            isResizable={isDashboardEditable}
             layout={dashboardLayout}
             cols={12}
             rowHeight={30}
             width={1200}
             onLayoutChange={(layout) => {
-              updateLayoutMutation.mutate({ id: data.id, layout })
+              setDashboardData((prev) => ({ ...prev, layout }))
             }}
           >
             {data.charts.map((chart) => (
