@@ -23,6 +23,7 @@ import QueryChartConfigInputs from '../../_components/query-chart-config-inputs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import AddToDashboardDialog from '../_components/add-to-dashboard-dialog'
+import { Textarea } from '@/components/ui/textarea'
 
 type CodeEditor = ReturnType<Monaco['editor']['create']>
 
@@ -34,6 +35,7 @@ export default function ChartDetails() {
   const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
   const [query, setQuery] = useState('')
   const [name, setName] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
   const utils = trpc.useContext()
 
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
@@ -52,6 +54,7 @@ export default function ChartDetails() {
       onSuccess: (data) => {
         form.reset(data.charts.config as Record<string, string | number>)
         setName(data.charts.name)
+        setDescription(data.charts?.description ?? '')
         setQuery(data.charts.query)
         setChartSelected(data.charts.type!)
       },
@@ -327,6 +330,17 @@ export default function ChartDetails() {
                             placeholder="Enter name of your chart"
                             onChange={(e) => {
                               setName(e.target.value)
+                            }}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <div>Chart Description</div>
+                          <Textarea
+                            value={description}
+                            placeholder="More about chart"
+                            onChange={(e) => {
+                              setDescription(e.target.value)
                             }}
                           />
                         </div>

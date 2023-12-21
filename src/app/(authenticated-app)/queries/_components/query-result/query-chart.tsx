@@ -15,6 +15,7 @@ import { createChartInput } from '@/server/routers/charts/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import QueryChartConfigInputs from '@/app/(authenticated-app)/_components/query-chart-config-inputs'
+import { Textarea } from '@/components/ui/textarea'
 
 function QueryChartComponent() {
   const activeTabData = useStore((store) =>
@@ -26,6 +27,7 @@ function QueryChartComponent() {
 
   const [chartSelected, setChartSelected] = useState<QueryChartType>('BAR_CHART')
   const [name, setName] = useState<string>('')
+  const [description, setDescription] = useState('')
 
   const chartConfig = QUERY_CHARTS_CONFIG[chartSelected]
   const validationSchema = chartConfig.validationSchema
@@ -122,6 +124,17 @@ function QueryChartComponent() {
             placeholder="Enter name of your chart"
             onChange={(e) => {
               setName(e.target.value)
+            }}
+          />
+        </div>
+
+        <div className="space-y-1">
+          <div>Chart Description</div>
+          <Textarea
+            value={description}
+            placeholder="What is chart about ?"
+            onChange={(e) => {
+              setDescription(e.target.value)
             }}
           />
         </div>

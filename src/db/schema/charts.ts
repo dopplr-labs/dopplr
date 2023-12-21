@@ -21,6 +21,7 @@ export const charts = pgTable('charts', {
   createdAt: time('created_at').defaultNow(),
   query: text('query').notNull(),
   name: text('name').notNull(),
+  description: text('description'),
   config: json('config'),
   type: chartType('chart_type'),
   createdBy: text('user_id').references(() => users.id),

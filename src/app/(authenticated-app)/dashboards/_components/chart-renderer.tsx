@@ -83,8 +83,11 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
 
   return (
     <div className={cn('h-full w-full overflow-hidden rounded-md border p-4', className)} style={style}>
-      <div className="flex h-[2rem] items-center justify-between">
-        <h1 className="truncate font-medium">{chart.name}</h1>
+      <div className="mb-2 flex h-[2rem] justify-between">
+        <div>
+          <h1 className="truncate text-sm font-medium">{chart.name}</h1>
+          {!!chart.description && <p className="truncate text-xs text-muted-foreground">{chart.description}</p>}
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

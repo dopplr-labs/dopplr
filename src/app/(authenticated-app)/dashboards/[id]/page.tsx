@@ -64,7 +64,7 @@ export default function DashboardDetails() {
 
       return (
         <div className="h-screen space-y-4 overflow-y-auto p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-[10px]">
             <div>
               <div className="text-2xl font-bold">{data.name}</div>
               <div className="text-sm text-muted-foreground">{data.description}</div>
