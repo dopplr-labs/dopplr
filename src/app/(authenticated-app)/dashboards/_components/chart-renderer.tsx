@@ -82,7 +82,7 @@ export default function ChartRenderer({ className, style, chart, dashboardId }: 
   )
 
   return (
-    <div className={cn('h-full w-full overflow-hidden rounded-md border p-4', className)} style={style}>
+    <div className={cn('h-full w-full overflow-hidden rounded-md border bg-background p-4', className)} style={style}>
       <div className="mb-2 flex h-[2rem] justify-between">
         <div>
           <h1 className="truncate text-sm font-medium">{chart.name}</h1>

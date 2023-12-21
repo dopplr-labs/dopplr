@@ -5,6 +5,7 @@ import { match } from 'ts-pattern'
 import React, { useState } from 'react'
 import GridLayout from 'react-grid-layout'
 import { PenSquareIcon, SaveIcon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import ChartRenderer from '../_components/chart-renderer'
@@ -15,6 +16,8 @@ import { Button } from '@/components/ui/button'
 import EditableInput from '@/components/ui/editable-input'
 
 export default function DashboardDetails() {
+  const { theme } = useTheme()
+  const isDarkMode = theme?.endsWith('dark')
   const [isDashboardEditable, setIsDashboardEditable] = useState(false)
   const [dashboardData, setDashboardData] = useState<{
     name: string
@@ -93,7 +96,7 @@ export default function DashboardDetails() {
 
       return (
         <div className="h-screen space-y-4 overflow-y-auto p-4">
-          <div className="flex items-center justify-between px-[10px]">
+          <div className="flex items-center justify-between">
             <div>
               <EditableInput
                 className="text-2xl font-bold"
@@ -141,9 +144,13 @@ export default function DashboardDetails() {
             layout={dashboardLayout}
             cols={12}
             rowHeight={30}
-            width={1200}
+            width={1700}
             onLayoutChange={(layout) => {
               setDashboardData((prev) => ({ ...prev, layout }))
+            }}
+            className="min-h-[85vh] rounded-md bg-accent"
+            style={{
+              backgroundImage: isDarkMode ? 'url(/graph-dark.svg)' : 'url(/graph.svg)',
             }}
           >
             {data.charts.map((chart) => (
