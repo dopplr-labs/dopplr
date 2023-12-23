@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { PencilIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Input } from './input'
 
 type EditableInputProps = {
   className?: string
@@ -14,9 +14,17 @@ export default function EditableInput({ className, style, editable, value, onCha
   const [focused, setFocused] = useState(false)
 
   return (
-    <div className={className} style={style}>
+    <div
+      data-editable={editable}
+      className={cn(
+        'relative after:pointer-events-none after:absolute after:-inset-1 after:rounded-md after:bg-muted after:opacity-0 after:transition-all data-[editable="true"]:hover:after:opacity-100',
+        className,
+      )}
+      style={style}
+    >
       {editable && focused ? (
-        <Input
+        <input
+          className="relative z-10 w-full !min-w-0 border-none bg-transparent p-0 focus-visible:outline-none"
           autoFocus
           value={value}
           onChange={(e) => {
@@ -33,12 +41,13 @@ export default function EditableInput({ className, style, editable, value, onCha
         />
       ) : (
         <div
-          className={cn('w-max rounded-md px-1', editable && 'hover:bg-muted')}
+          className="relative z-10 flex items-center gap-2"
           onClick={() => {
             setFocused(true)
           }}
         >
-          {value}
+          <div>{value}</div>
+          {!!editable && <PencilIcon className="h-4 w-4 text-muted-foreground" />}
         </div>
       )}
     </div>

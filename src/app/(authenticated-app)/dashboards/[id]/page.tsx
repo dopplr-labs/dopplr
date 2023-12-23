@@ -19,6 +19,8 @@ export default function DashboardDetails() {
   const { theme } = useTheme()
   const isDarkMode = theme?.endsWith('dark')
   const [isDashboardEditable, setIsDashboardEditable] = useState(false)
+
+  /** We have to update data on save button click */
   const [dashboardData, setDashboardData] = useState<{
     name: string
     description: string
