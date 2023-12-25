@@ -2,6 +2,7 @@ import z from 'zod'
 
 export const createChartInput = z.object({
   query: z.string(),
+  description: z.string().optional(),
   name: z.string().min(3, 'Enter at least 3 characters'),
   config: z.any(),
   type: z.enum([

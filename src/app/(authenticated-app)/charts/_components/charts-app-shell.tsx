@@ -1,5 +1,6 @@
 'use-client'
 
+import Sidebar from '../../_components/sidebar'
 import ChartsList from './charts-list'
 
 type ChartsAppShellProps = {
@@ -9,9 +10,9 @@ type ChartsAppShellProps = {
 export default function ChartsAppShell({ children }: ChartsAppShellProps) {
   return (
     <div className="flex h-full">
-      <div className="w-[280px] overflow-auto border-r p-3">
+      <Sidebar className="w-[280px] overflow-auto border-r p-3">
         <ChartsList />
-      </div>
+      </Sidebar>
       <div className="flex-1">{children}</div>
     </div>
   )

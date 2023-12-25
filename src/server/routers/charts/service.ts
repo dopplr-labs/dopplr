@@ -13,6 +13,7 @@ export async function createChart(input: z.infer<typeof createChartInput>, sessi
     .insert(charts)
     .values({
       name: input.name,
+      description: input.description,
       query: input.query,
       config: input.config,
       resourceId: input.resource,
@@ -69,6 +70,7 @@ export async function updateChart(input: z.infer<typeof updateChartInput>, sessi
     .update(charts)
     .set({
       name: input.name,
+      description: input.description,
       query: input.query,
       config: input.config,
       type: input.type,

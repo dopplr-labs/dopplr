@@ -1,4 +1,7 @@
+'use client'
+
 import {
+  ArrowRight,
   BarChartHorizontalBigIcon,
   DatabaseZapIcon,
   LayoutDashboardIcon,
@@ -9,6 +12,8 @@ import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import NavLink from './nav-link'
 import AccountMenu from './account-menu'
+import { Button } from '@/components/ui/button'
+import { useStore } from '@/stores'
 
 const MENU_ITEMS = [
   {
@@ -39,6 +44,9 @@ const MENU_ITEMS = [
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  const sidebarVisible = useStore((store) => store.sidebarVisible)
+  const setSidebarVisible = useStore((store) => store.setSidebarVisible)
+
   return (
     <div className="flex h-screen flex-col">
       <div className="h-14 flex-shrink-0 border-b bg-background px-6">
@@ -52,10 +60,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="relative flex flex-1 overflow-hidden">
-        <div className="sticky left-0 top-0 flex flex-shrink-0 flex-col gap-3 overflow-auto border-r p-3">
-          {MENU_ITEMS.map((item) => {
-            return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
-          })}
+        <div className="sticky left-0 top-0 flex flex-shrink-0 flex-col justify-between gap-3 overflow-auto border-r p-3">
+          <div className="flex flex-col gap-3">
+            {MENU_ITEMS.map((item) => {
+              return <NavLink icon={item.icon} label={item.label} href={item.href} key={item.href} />
+            })}
+          </div>
+          {!sidebarVisible && (
+            <Button
+              icon={<ArrowRight />}
+              variant="ghost"
+              onClick={() => {
+                setSidebarVisible(true)
+              }}
+            />
+          )}
         </div>
         <div className="flex-1 overflow-hidden">{children}</div>
       </div>

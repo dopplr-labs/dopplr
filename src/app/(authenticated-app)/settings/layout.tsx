@@ -1,5 +1,6 @@
 import { PaletteIcon } from 'lucide-react'
 import NavLink from './_components/nav-link'
+import Sidebar from '../_components/sidebar'
 
 type SettingsLayoutProps = {
   children: React.ReactNode
@@ -8,9 +9,9 @@ type SettingsLayoutProps = {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
     <div className="flex h-full">
-      <div className="w-[280px] overflow-auto border-r p-3">
+      <Sidebar className="w-[280px] overflow-auto border-r p-3">
         <NavLink label="Appearance" href="/settings" icon={<PaletteIcon />} />
-      </div>
+      </Sidebar>
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
   )
