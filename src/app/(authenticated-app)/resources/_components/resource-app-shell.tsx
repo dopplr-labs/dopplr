@@ -11,6 +11,7 @@ import { simpleHash } from '@/lib/random/utils'
 import NavLink from './nav-link'
 import { BaseButton } from '@/components/ui/button'
 import { ErrorMessage } from '@/components/ui/error-message'
+import Sidebar from '../../_components/sidebar'
 
 type ResourceAppShellProps = {
   children: React.ReactNode
@@ -23,7 +24,7 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
 
   return (
     <div className="flex h-full">
-      <div className="w-[280px] overflow-auto border-r p-3">
+      <Sidebar className="w-[280px] overflow-auto border-r p-3">
         {match(getResourcesQuery)
           .returnType<React.ReactNode>()
           .with({ status: 'loading' }, () => (
@@ -79,7 +80,7 @@ export default function ResourceAppShell({ children }: ResourceAppShellProps) {
             )
           })
           .exhaustive()}
-      </div>
+      </Sidebar>
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
   )

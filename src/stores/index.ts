@@ -6,6 +6,8 @@ export type Store = {
   setCommandPalleteVisible: (visible: boolean) => void
   saveQueryVisible: boolean
   setSaveQueryVisible: (visible: boolean) => void
+  sidebarVisible: boolean
+  setSidebarVisible: (visible: boolean) => void
 } & TabState
 
 export const useStore = create<Store>((set, ...args) => ({
@@ -18,6 +20,10 @@ export const useStore = create<Store>((set, ...args) => ({
   saveQueryVisible: false,
   setSaveQueryVisible: (visible) => {
     set({ saveQueryVisible: visible })
+  },
+  sidebarVisible: true,
+  setSidebarVisible: (visible) => {
+    set({ sidebarVisible: visible })
   },
   ...createTabSlice(set, ...args),
 }))
