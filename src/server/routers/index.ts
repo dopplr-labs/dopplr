@@ -1,5 +1,6 @@
 import { router } from '../trpc'
 import { chartsRouter } from './charts/router'
+import { dashboardUserRouter } from './dashboard-user/router'
 import { dashboardsRouter } from './dashboards/router'
 import { historyRouter } from './history/router'
 import { queryRouter } from './query/router'
@@ -11,6 +12,7 @@ export const appRouter = router({
   history: historyRouter,
   charts: chartsRouter,
   dashboards: dashboardsRouter,
+  dashboardUser: dashboardUserRouter,
 })
 
 export type AppRouter = typeof appRouter
