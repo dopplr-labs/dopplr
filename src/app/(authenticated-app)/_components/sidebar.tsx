@@ -22,7 +22,7 @@ export default function Sidebar({ className, style, children }: SidebarProps) {
       })}
       style={style}
     >
-      <div className="absolute inset-x-0 bottom-0 flex h-12 w-full items-center border-t px-4">
+      <div className="absolute inset-x-0 bottom-0 flex h-12 w-full items-center border-t bg-background px-4">
         <Button
           icon={<ArrowLeft />}
           variant="ghost"
