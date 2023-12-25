@@ -17,8 +17,9 @@ export default function Sidebar({ className, style, children }: SidebarProps) {
 
   return (
     <div
-      className={cn('relative', className, {
-        hidden: !sidebarVisible,
+      className={cn('relative transition-all', className, {
+        // @TODO: Add proper animation
+        'hidden -translate-x-full': !sidebarVisible,
       })}
       style={style}
     >
