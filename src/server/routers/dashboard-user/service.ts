@@ -32,3 +32,16 @@ export async function createInvitation(input: z.infer<typeof createInvitationInp
 
   return invitation[0]
 }
+
+export async function findSentInvitations(session: Session) {
+  const result = await db
+    .select()
+    .from(dashboardUserInvite)
+    .where(eq(dashboardUserInvite.from, session.user.id))
+    .leftJoin(users, eq(dashboardUserInvite.to, users.id))
+
+  return result.map((item) => ({
+    ...item.dashboard_user_invite,
+    to: item.user,
+  }))
+}

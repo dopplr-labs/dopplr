@@ -4,6 +4,7 @@ import { SendIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { match } from 'ts-pattern'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { createInvitationInput } from '@/server/routers/dashboard-user/input'
@@ -11,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { trpc } from '@/lib/trpc/client'
+import { ErrorMessage } from '@/components/ui/error-message'
+import { ROLE_LABEL_MAP } from '@/lib/dashboards/dashboard-user'
 
 type ShareDashboardProps = {
   className?: string
@@ -23,8 +26,11 @@ type ShareDashboardProps = {
 export default function ShareDashboard({ className, style, open, onOpenChange, dashboardId }: ShareDashboardProps) {
   const { toast } = useToast()
 
+  const sentInvitationsQuery = trpc.dashboardUser.findSentInvitations.useQuery()
+
   const invitationMutation = trpc.dashboardUser.createInvitation.useMutation({
     onSuccess: () => {
+      sentInvitationsQuery.refetch()
       form.reset({ to: '' })
       toast({
         title: 'Success!',
@@ -93,9 +99,11 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
                             <SelectValue placeholder="Role" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="VIEWER">can view</SelectItem>
-                            <SelectItem value="EDITOR">can edit</SelectItem>
-                            <SelectItem value="OWNER">owner</SelectItem>
+                            {Object.entries(ROLE_LABEL_MAP).map(([role, label]) => (
+                              <SelectItem key={role} value={role}>
+                                {label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -108,6 +116,35 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
               <Button icon={<SendIcon />} type="submit" />
             </form>
           </Form>
+
+          {match(sentInvitationsQuery)
+            .returnType<React.ReactNode>()
+            .with({ status: 'loading' }, () => <div>Loading</div>)
+            .with({ status: 'error' }, ({ error }) => (
+              <div className="flex items-center justify-center">
+                <ErrorMessage title="Something went wrong" description={error?.message ?? ''} />
+              </div>
+            ))
+            .with({ status: 'success' }, ({ data: invitations }) => {
+              const pendingInvitations = invitations.filter((invite) => invite.status === 'NOT_CONFIRMED')
+
+              return (
+                <div>
+                  <div className="space-y-2">
+                    <h1>Pending Invitations</h1>
+                    <div className="flex flex-col gap-1">
+                      {pendingInvitations.map((invite) => (
+                        <div className="flex items-center justify-between rounded-md border px-4 py-2" key={invite.id}>
+                          <div className="text-sm">{invite?.to?.email}</div>
+                          <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+            .exhaustive()}
         </div>
       </DialogContent>
     </Dialog>
