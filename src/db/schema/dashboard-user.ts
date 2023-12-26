@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, serial, text, time } from 'drizzle-orm/pg-core'
+import { integer, pgEnum, pgTable, serial, text, time, timestamp } from 'drizzle-orm/pg-core'
 import { InferSelectModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 import { dashboards } from './dashboards'
@@ -21,7 +21,7 @@ export const dashboardUserInvite = pgTable('dashboard_user_invite', {
   role: dashboardUserRole('role').notNull(),
   status: dashboardInviteStatus('status').default('NOT_CONFIRMED').notNull(),
   // An invitation will expire in 10days
-  expriesOn: time('epries_on').notNull(),
+  expireOn: timestamp('expire_on').notNull(),
 })
 export type DashboardUserInvite = InferSelectModel<typeof dashboardUserInvite>
 
