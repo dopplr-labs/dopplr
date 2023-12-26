@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { Session } from 'next-auth'
 import dayjs from 'dayjs'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { createInvitationInput } from './input'
+import { createInvitationInput, findSentInvitationsInput } from './input'
 import { db } from '@/db'
 import { dashboardUserInvite } from '@/db/schema/dashboard-user'
 import { users } from '@/db/schema/auth'
@@ -33,11 +33,11 @@ export async function createInvitation(input: z.infer<typeof createInvitationInp
   return invitation[0]
 }
 
-export async function findSentInvitations(session: Session) {
+export async function findSentInvitations(input: z.input<typeof findSentInvitationsInput>, session: Session) {
   const result = await db
     .select()
     .from(dashboardUserInvite)
-    .where(eq(dashboardUserInvite.from, session.user.id))
+    .where(and(eq(dashboardUserInvite.from, session.user.id), eq(dashboardUserInvite.dashboard, input.dashboard)))
     .leftJoin(users, eq(dashboardUserInvite.to, users.id))
 
   return result.map((item) => ({

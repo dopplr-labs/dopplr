@@ -26,7 +26,7 @@ type ShareDashboardProps = {
 export default function ShareDashboard({ className, style, open, onOpenChange, dashboardId }: ShareDashboardProps) {
   const { toast } = useToast()
 
-  const sentInvitationsQuery = trpc.dashboardUser.findSentInvitations.useQuery()
+  const sentInvitationsQuery = trpc.dashboardUser.findSentInvitations.useQuery({ dashboard: dashboardId })
 
   const invitationMutation = trpc.dashboardUser.createInvitation.useMutation({
     onSuccess: () => {
