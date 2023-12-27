@@ -10,3 +10,8 @@ export const createInvitationInput = z.object({
 export const findSentInvitationsInput = z.object({
   dashboard: z.number(),
 })
+
+export const acceptOrRejectInviteInput = z.object({
+  id: z.number(),
+  status: z.enum(['ACCEPT', 'REJECT']),
+})

@@ -1,6 +1,6 @@
 import { protectedProcedure, router } from '@/server/trpc'
-import { createInvitationInput, findSentInvitationsInput } from './input'
-import { createInvitation, findReceivedInvitations, findSentInvitations } from './service'
+import { acceptOrRejectInviteInput, createInvitationInput, findSentInvitationsInput } from './input'
+import { acceptOrRejectInvite, createInvitation, findReceivedInvitations, findSentInvitations } from './service'
 
 export const dashboardUserRouter = router({
   createInvitation: protectedProcedure
@@ -10,4 +10,7 @@ export const dashboardUserRouter = router({
     .input(findSentInvitationsInput)
     .query(({ input, ctx }) => findSentInvitations(input, ctx.session)),
   findReceivedInvitations: protectedProcedure.query(({ ctx }) => findReceivedInvitations(ctx.session)),
+  acceptOrRejectInvite: protectedProcedure
+    .input(acceptOrRejectInviteInput)
+    .mutation(({ input, ctx }) => acceptOrRejectInvite(input, ctx.session)),
 })

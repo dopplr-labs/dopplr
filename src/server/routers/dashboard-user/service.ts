@@ -3,7 +3,7 @@ import { Session } from 'next-auth'
 import dayjs from 'dayjs'
 import { and, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { createInvitationInput, findSentInvitationsInput } from './input'
+import { acceptOrRejectInviteInput, createInvitationInput, findSentInvitationsInput } from './input'
 import { db } from '@/db'
 import { dashboardUserInvite } from '@/db/schema/dashboard-user'
 import { users } from '@/db/schema/auth'
@@ -60,4 +60,45 @@ export async function findReceivedInvitations(session: Session) {
     from: item.user!,
     dashboard: item.dashboards!,
   }))
+}
+
+export async function findInvitationById(id: number) {
+  const invite = await db.select().from(dashboardUserInvite).where(eq(dashboardUserInvite.id, id))
+
+  if (invite.length === 0) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Invitation not found!',
+    })
+  }
+
+  return invite[0]
+}
+
+export async function acceptOrRejectInvite(input: z.infer<typeof acceptOrRejectInviteInput>, session: Session) {
+  const invite = await findInvitationById(input.id)
+
+  /** Only the user who received it can accept it */
+  if (invite.to !== session.user.id) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not allowed to accept or reject invitation!',
+    })
+  }
+
+  /**
+   * If user is accepting the invitation then
+   * update status to COMPLETED and create DashboardUser with proper permissions
+   * */
+  if (input.status === 'ACCEPT') {
+    return null
+  }
+
+  /** Otherwise remove the invitation */
+  const rejectedInvitation = await db
+    .delete(dashboardUserInvite)
+    .where(eq(dashboardUserInvite.id, input.id))
+    .returning()
+
+  return rejectedInvitation[0]
 }
