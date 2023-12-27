@@ -5,6 +5,7 @@ import {
   BarChartHorizontalBigIcon,
   DatabaseZapIcon,
   LayoutDashboardIcon,
+  MailIcon,
   SettingsIcon,
   TerminalIcon,
 } from 'lucide-react'
@@ -35,6 +36,11 @@ const MENU_ITEMS = [
     icon: <LayoutDashboardIcon />,
     label: 'Dashboards',
     href: '/dashboards',
+  },
+  {
+    icon: <MailIcon />,
+    label: 'Invites',
+    href: '/invites',
   },
   {
     icon: <SettingsIcon />,
