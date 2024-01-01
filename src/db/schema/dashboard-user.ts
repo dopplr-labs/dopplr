@@ -6,6 +6,7 @@ import { dashboards } from './dashboards'
 export const dashboardUserRole = pgEnum('dashboard_user_role', ['EDITOR', 'VIEWER', 'OWNER'])
 export const dashboardInviteStatus = pgEnum('dashboard_invite_status', ['CONFIRMED', 'NOT_CONFIRMED'])
 
+/** Dashboard Invitations */
 export const dashboardUserInvite = pgTable('dashboard_user_invite', {
   id: serial('id').primaryKey(),
   createdAt: time('created_at').defaultNow(),
@@ -36,6 +37,31 @@ export const dashboardUserInviteRelations = relations(dashboardUserInvite, ({ on
   }),
   dashboard: one(dashboards, {
     fields: [dashboardUserInvite.dashboard],
+    references: [dashboards.id],
+  }),
+}))
+
+/** Dashboard User */
+export const dashboardUser = pgTable('dashboard_user', {
+  id: serial('id').primaryKey(),
+  createdAt: time('created_at').defaultNow(),
+  user: text('user')
+    .references(() => users.id)
+    .notNull(),
+  dashboard: integer('dashboard')
+    .references(() => dashboards.id)
+    .notNull(),
+  role: dashboardUserRole('role').notNull(),
+})
+export type DashboardUser = InferSelectModel<typeof dashboardUser>
+
+export const dashboardUserRelations = relations(dashboardUser, ({ one }) => ({
+  user: one(users, {
+    fields: [dashboardUser.user],
+    references: [users.id],
+  }),
+  dashboard: one(dashboards, {
+    fields: [dashboardUser.dashboard],
     references: [dashboards.id],
   }),
 }))
