@@ -146,35 +146,78 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
             ))
             .with({ status: 'success' }, ({ data: invitations }) => {
               const pendingInvitations = invitations.filter((invite) => invite.status === 'NOT_CONFIRMED')
+              const acceptedInvitations = invitations.filter((invite) => invite.status === 'CONFIRMED')
 
-              if (pendingInvitations.length === 0) {
-                return <EmptyMessage title="No previous invitations" description="You have not invited anyone yet." />
+              if (invitations.length === 0) {
+                return (
+                  <EmptyMessage title="No invitations yet" description="Start by sending and invitation to a user" />
+                )
               }
 
               return (
                 <div>
-                  <div className="space-y-2">
-                    <h1>Pending Invitations</h1>
-                    <div className="flex flex-col gap-1">
-                      {pendingInvitations.map((invite) => (
-                        <div className="flex items-center justify-between rounded-md border px-4 py-2" key={invite.id}>
-                          <div className="text-sm">{invite?.to?.email}</div>
-                          <div className="flex items-center gap-2">
-                            <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
-                            <Button
-                              icon={<XIcon />}
-                              size="icon-sm"
-                              loading={deleteInviteMutation.isLoading}
-                              variant="ghost"
-                              onClick={() => {
-                                deleteInviteMutation.mutate({ id: invite.id })
-                              }}
-                            />
+                  {acceptedInvitations.length === 0 ? (
+                    <EmptyMessage
+                      title="No accepted invitations"
+                      description="No-one has accepted your invitations yet."
+                    />
+                  ) : (
+                    <div className="space-y-2">
+                      <h1>Accepted Invitations</h1>
+                      <div className="flex flex-col gap-1">
+                        {acceptedInvitations.map((invite) => (
+                          <div
+                            className="flex items-center justify-between rounded-md border px-4 py-2"
+                            key={invite.id}
+                          >
+                            <div className="text-sm">{invite?.to?.email}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
+                              <Button
+                                icon={<XIcon />}
+                                size="icon-sm"
+                                loading={deleteInviteMutation.isLoading}
+                                variant="ghost"
+                                onClick={() => {
+                                  deleteInviteMutation.mutate({ id: invite.id })
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {pendingInvitations.length === 0 ? (
+                    <EmptyMessage title="No pending invitations" description="You have not invited anyone yet." />
+                  ) : (
+                    <div className="space-y-2">
+                      <h1>Pending Invitations</h1>
+                      <div className="flex flex-col gap-1">
+                        {pendingInvitations.map((invite) => (
+                          <div
+                            className="flex items-center justify-between rounded-md border px-4 py-2"
+                            key={invite.id}
+                          >
+                            <div className="text-sm">{invite?.to?.email}</div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
+                              <Button
+                                icon={<XIcon />}
+                                size="icon-sm"
+                                loading={deleteInviteMutation.isLoading}
+                                variant="ghost"
+                                onClick={() => {
+                                  deleteInviteMutation.mutate({ id: invite.id })
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )
             })
