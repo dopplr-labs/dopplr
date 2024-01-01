@@ -11,6 +11,7 @@ import {
   removeFromDashboard,
   updateChart,
 } from './service'
+import { isDashboardEditable } from '../dashboards/middlewares'
 
 const idSchema = z.object({ id: z.number() })
 
@@ -23,8 +24,10 @@ export const chartsRouter = router({
   update: protectedProcedure.input(updateChartInput).mutation(({ input, ctx }) => updateChart(input, ctx.session)),
   addToDashboard: protectedProcedure
     .input(addOrRemoveFromDashboardInput)
-    .mutation(({ input, ctx }) => addToDashboard(input, ctx.session)),
+    .use(isDashboardEditable)
+    .mutation(({ input }) => addToDashboard(input)),
   removeFromDashboard: protectedProcedure
     .input(addOrRemoveFromDashboardInput)
-    .mutation(({ input, ctx }) => removeFromDashboard(input, ctx.session)),
+    .use(isDashboardEditable)
+    .mutation(({ input }) => removeFromDashboard(input)),
 })

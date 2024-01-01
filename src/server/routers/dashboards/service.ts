@@ -59,16 +59,7 @@ export async function findDashboardById(id: number) {
   return dashboardFound[0]
 }
 
-export async function deleteDashboard(id: number, session: Session) {
-  const dashboard = await findDashboardById(id)
-
-  if (dashboard.createdBy !== session.user.id) {
-    throw new TRPCError({
-      code: 'FORBIDDEN',
-      message: 'You are not allowed to delete this dashboard!',
-    })
-  }
-
+export async function deleteDashboard(id: number) {
   const deletedDashboard = await db.delete(dashboards).where(eq(dashboards.id, id)).returning()
   return deletedDashboard[0]
 }
@@ -104,13 +95,7 @@ export async function findDashboardWithCharts(id: number) {
   }
 }
 
-export async function updateDashboard(input: z.infer<typeof updateDashboardInput>, session: Session) {
-  const dashboard = await findDashboardById(input.id)
-
-  if (dashboard.createdBy !== session.user.id) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update this dashboard!' })
-  }
-
+export async function updateDashboard(input: z.infer<typeof updateDashboardInput>) {
   const updatedDashboard = await db
     .update(dashboards)
     .set({

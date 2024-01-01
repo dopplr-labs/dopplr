@@ -21,15 +21,18 @@ type AddToDashboardDialogProps = {
 export default function AddToDashboardDialog({ className, style, trigger, chartId }: AddToDashboardDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
-  //   const utils = trpc.useContext()
+  const utils = trpc.useContext()
 
   const { data: dashboards } = trpc.dashboards.findUserDashboard.useQuery()
   const addToDashboardMutation = trpc.charts.addToDashboard.useMutation({
     onSuccess: () => {
       setIsDialogOpen(false)
 
-      //   utils.dashboards.findUserDashboard.invalidate()
+      utils.dashboards.findUserDashboard.invalidate()
       toast({ title: 'Chart added to dashboard successfully!' })
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error?.message ?? 'Something went wrong!', variant: 'destructive' })
     },
   })
 
@@ -57,7 +60,7 @@ export default function AddToDashboardDialog({ className, style, trigger, chartI
           <form className="space-y-2" onSubmit={form.handleSubmit(handleAddToDashboard)}>
             <FormField
               control={form.control}
-              name="dashboardId"
+              name="id"
               render={({ field }) => {
                 return (
                   <FormItem>
@@ -70,7 +73,7 @@ export default function AddToDashboardDialog({ className, style, trigger, chartI
 
                         <SelectContent>
                           {dashboards?.map((dashboard) => (
-                            <SelectItem key={dashboard.id} value={dashboard.id.toString()}>
+                            <SelectItem key={dashboard.id} value={dashboard?.id?.toString() ?? ''}>
                               {dashboard.name}
                             </SelectItem>
                           ))}

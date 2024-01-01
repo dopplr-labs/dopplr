@@ -80,17 +80,9 @@ export async function updateChart(input: z.infer<typeof updateChartInput>, sessi
   return updatedChart[0]
 }
 
-export async function addToDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>, session: Session) {
+export async function addToDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>) {
   const { charts: chart } = await findChartById(input.chartId)
-  const dashboard = await findDashboardById(input.dashboardId)
-
-  if (chart.createdBy !== session.user.id) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to add this chart to this dashboard!' })
-  }
-
-  if (dashboard.createdBy !== session.user.id) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to add this chart to this dashboard!' })
-  }
+  const dashboard = await findDashboardById(input.id)
 
   const chartAlreadyAdded = await db
     .select()
@@ -107,17 +99,9 @@ export async function addToDashboard(input: z.infer<typeof addOrRemoveFromDashbo
   })
 }
 
-export async function removeFromDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>, session: Session) {
+export async function removeFromDashboard(input: z.infer<typeof addOrRemoveFromDashboardInput>) {
   const { charts: chart } = await findChartById(input.chartId)
-  const dashboard = await findDashboardById(input.dashboardId)
-
-  if (chart.createdBy !== session.user.id) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to remove this chart from this dashboard!' })
-  }
-
-  if (dashboard.createdBy !== session.user.id) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to remove this chart from this dashboard!' })
-  }
+  const dashboard = await findDashboardById(input.id)
 
   const chartAlreadyAdded = await db
     .select()

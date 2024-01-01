@@ -155,7 +155,7 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
               }
 
               return (
-                <div>
+                <div className="space-y-4">
                   {acceptedInvitations.length === 0 ? (
                     <EmptyMessage
                       title="No accepted invitations"

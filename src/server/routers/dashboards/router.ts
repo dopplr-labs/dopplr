@@ -24,7 +24,7 @@ export const dashboardsRouter = router({
   delete: protectedProcedure
     .input(idSchema)
     .use(isDashboardOwner)
-    .mutation(({ input, ctx }) => deleteDashboard(input.id, ctx.session)),
+    .mutation(({ input }) => deleteDashboard(input.id)),
   duplicate: protectedProcedure.input(idSchema).mutation(({ input, ctx }) => duplicateDashboard(input.id, ctx.session)),
   findOneById: protectedProcedure
     .input(idSchema)
@@ -37,5 +37,5 @@ export const dashboardsRouter = router({
   update: protectedProcedure
     .input(updateDashboardInput)
     .use(isDashboardEditable)
-    .mutation(({ input, ctx }) => updateDashboard(input, ctx.session)),
+    .mutation(({ input }) => updateDashboard(input)),
 })
