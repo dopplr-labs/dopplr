@@ -50,10 +50,10 @@ export default function DashboardDetails() {
   )
 
   const updateDashboardMutation = trpc.dashboards.update.useMutation({
-    onError: () => {
+    onError: (error) => {
       toast({
         title: 'Something went wrong!',
-        description: 'Something went wrong while updating layout, please try again!',
+        description: error?.message ?? 'Something went wrong while updating dashboard, please try again!',
         variant: 'destructive',
       })
     },
