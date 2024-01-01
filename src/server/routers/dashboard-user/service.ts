@@ -20,6 +20,27 @@ export async function createInvitation(input: z.infer<typeof createInvitationInp
     })
   }
 
+  const existingInvite = await db.select().from(dashboardUserInvite).where(eq(dashboardUserInvite.to, user[0].id))
+
+  /** Case 1. User have already sent and invitation and it is not expired yet. */
+  if (existingInvite.length !== 0 && dayjs(existingInvite[0].expireOn).isAfter(dayjs())) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'You have already sent an invitation to this user.',
+    })
+  }
+
+  /** Case 2. User have already sent and invitation but that invitation is expired. */
+  if (existingInvite.length !== 0 && dayjs(existingInvite[0].expireOn).isBefore(dayjs())) {
+    const updatedInvitation = await db
+      .update(dashboardUserInvite)
+      .set({ expireOn })
+      .where(eq(dashboardUserInvite.id, existingInvite[0].id))
+      .returning()
+
+    return updatedInvitation[0]
+  }
+
   const invitation = await db
     .insert(dashboardUserInvite)
     .values({

@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { trpc } from '@/lib/trpc/client'
 import { ErrorMessage } from '@/components/ui/error-message'
 import { ROLE_LABEL_MAP } from '@/lib/dashboards/dashboard-user'
+import { EmptyMessage } from '@/components/ui/empty-message'
 
 type ShareDashboardProps = {
   className?: string
@@ -31,7 +32,7 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
   const invitationMutation = trpc.dashboardUser.createInvitation.useMutation({
     onSuccess: () => {
       sentInvitationsQuery.refetch()
-      form.reset({ to: '' })
+      form.reset({ to: '', dashboard: dashboardId })
       toast({
         title: 'Success!',
         description: 'Invitation sent to user successfully!',
@@ -127,6 +128,10 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
             ))
             .with({ status: 'success' }, ({ data: invitations }) => {
               const pendingInvitations = invitations.filter((invite) => invite.status === 'NOT_CONFIRMED')
+
+              if (pendingInvitations.length === 0) {
+                return <EmptyMessage title="No previous invitations" description="You have not invited anyone yet." />
+              }
 
               return (
                 <div>
