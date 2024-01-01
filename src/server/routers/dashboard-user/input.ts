@@ -19,3 +19,7 @@ export const acceptOrRejectInviteInput = z.object({
 export const deleteInvitationInput = z.object({
   id: z.number(),
 })
+
+export const findDashboardUserInput = z.object({
+  id: z.number(),
+})

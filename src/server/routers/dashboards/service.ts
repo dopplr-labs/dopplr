@@ -24,7 +24,7 @@ export async function findUserDashboards(session: Session) {
     .where(eq(dashboardUser.user, session.user.id))
     .leftJoin(dashboards, eq(dashboards.id, dashboardUser.dashboard))
 
-  return dashboardUsers.map((i) => i.dashboards)
+  return dashboardUsers.map((i) => ({ ...i.dashboards, role: i.dashboard_user.role }))
 }
 
 export async function createDashboard(input: z.infer<typeof createDashboardInput>, session: Session) {

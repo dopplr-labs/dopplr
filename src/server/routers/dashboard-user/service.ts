@@ -3,7 +3,12 @@ import { Session } from 'next-auth'
 import dayjs from 'dayjs'
 import { and, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
-import { acceptOrRejectInviteInput, createInvitationInput, findSentInvitationsInput } from './input'
+import {
+  acceptOrRejectInviteInput,
+  createInvitationInput,
+  findDashboardUserInput,
+  findSentInvitationsInput,
+} from './input'
 import { db } from '@/db'
 import { dashboardUser, dashboardUserInvite } from '@/db/schema/dashboard-user'
 import { users } from '@/db/schema/auth'
@@ -155,4 +160,17 @@ export async function deleteInvitation(inviteId: number, session: Session) {
     .returning()
 
   return deletedInvitation[0]
+}
+
+export async function findDashboardUser(input: z.infer<typeof findDashboardUserInput>, session: Session) {
+  const dashboards = await db
+    .select()
+    .from(dashboardUser)
+    .where(and(eq(dashboardUser.dashboard, input.id), eq(dashboardUser.user, session.user.id)))
+
+  if (dashboards.length === 0) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Dashboard user not found!' })
+  }
+
+  return dashboards[0]
 }

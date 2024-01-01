@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
 import EditableInput from '@/components/ui/editable-input'
 import DashboardActions from '../_components/dashboard-actions'
+import When from '@/components/when'
 
 export default function DashboardDetails() {
   const { theme } = useTheme()
@@ -48,6 +49,8 @@ export default function DashboardDetails() {
       },
     },
   )
+
+  const dashboardUserQuery = trpc.dashboardUser.findDashboardUser.useQuery({ id: Number(id) })
 
   const updateDashboardMutation = trpc.dashboards.update.useMutation({
     onError: (error) => {
@@ -119,29 +122,31 @@ export default function DashboardDetails() {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              {isDashboardEditable ? (
-                <Button
-                  icon={<SaveIcon />}
-                  loading={updateDashboardMutation.isLoading}
-                  onClick={() => {
-                    updateDashboardMutation.mutate({ id: data.id, ...dashboardData })
-                  }}
-                >
-                  Save
-                </Button>
-              ) : (
-                <Button
-                  icon={<PenSquareIcon />}
-                  onClick={() => {
-                    setIsDashboardEditable(true)
-                  }}
-                >
-                  Update Dashboard
-                </Button>
-              )}
-              <DashboardActions dashboardId={data.id} />
-            </div>
+            <When truthy={dashboardUserQuery?.data?.role === 'OWNER' || dashboardUserQuery?.data?.role === 'EDITOR'}>
+              <div className="flex items-center gap-2">
+                {isDashboardEditable ? (
+                  <Button
+                    icon={<SaveIcon />}
+                    loading={updateDashboardMutation.isLoading}
+                    onClick={() => {
+                      updateDashboardMutation.mutate({ id: data.id, ...dashboardData })
+                    }}
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <Button
+                    icon={<PenSquareIcon />}
+                    onClick={() => {
+                      setIsDashboardEditable(true)
+                    }}
+                  >
+                    Update Dashboard
+                  </Button>
+                )}
+                <DashboardActions dashboardId={data.id} />
+              </div>
+            </When>
           </div>
 
           <GridLayout

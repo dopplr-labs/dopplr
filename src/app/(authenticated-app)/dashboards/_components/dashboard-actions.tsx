@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { trpc } from '@/lib/trpc/client'
 import { toast } from '@/components/ui/use-toast'
 import ShareDashboard from './share-dashboard'
+import When from '@/components/when'
 
 type DashboardActionProps = {
   className?: string
@@ -19,6 +20,8 @@ export default function DashboardActions({ className, style, dashboardId }: Dash
 
   const utils = trpc.useContext()
 
+  const dashboardUserQuery = trpc.dashboardUser.findDashboardUser.useQuery({ id: dashboardId })
+
   const deleteDashboardMutation = trpc.dashboards.delete.useMutation({
     onSuccess: () => {
       utils.dashboards.findUserDashboard.invalidate()
@@ -29,6 +32,10 @@ export default function DashboardActions({ className, style, dashboardId }: Dash
     },
   })
 
+  if (dashboardUserQuery?.data?.role === 'VIEWER') {
+    return null
+  }
+
   return (
     <Fragment>
       <DropdownMenu>
@@ -37,22 +44,27 @@ export default function DashboardActions({ className, style, dashboardId }: Dash
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="start" className={className} style={style}>
-          <DropdownMenuItem
-            onClick={() => {
-              setShareOpen(true)
-            }}
-          >
-            <Share2Icon className="mr-2 h-4 w-4" />
-            <span>Share</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => {
-              deleteDashboardMutation.mutate({ id: dashboardId })
-            }}
-          >
-            <Trash className="mr-2 h-4 w-4" />
-            <span>Delete</span>
-          </DropdownMenuItem>
+          <When truthy={dashboardUserQuery?.data?.role === 'OWNER' || dashboardUserQuery?.data?.role === 'EDITOR'}>
+            <DropdownMenuItem
+              onClick={() => {
+                setShareOpen(true)
+              }}
+            >
+              <Share2Icon className="mr-2 h-4 w-4" />
+              <span>Share</span>
+            </DropdownMenuItem>
+          </When>
+
+          <When truthy={dashboardUserQuery?.data?.role === 'OWNER'}>
+            <DropdownMenuItem
+              onClick={() => {
+                deleteDashboardMutation.mutate({ id: dashboardId })
+              }}
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              <span>Delete</span>
+            </DropdownMenuItem>
+          </When>
         </DropdownMenuContent>
       </DropdownMenu>
 

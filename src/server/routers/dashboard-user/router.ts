@@ -3,12 +3,14 @@ import {
   acceptOrRejectInviteInput,
   createInvitationInput,
   deleteInvitationInput,
+  findDashboardUserInput,
   findSentInvitationsInput,
 } from './input'
 import {
   acceptOrRejectInvite,
   createInvitation,
   deleteInvitation,
+  findDashboardUser,
   findReceivedInvitations,
   findSentInvitations,
 } from './service'
@@ -27,4 +29,7 @@ export const dashboardUserRouter = router({
   deleteInvitation: protectedProcedure
     .input(deleteInvitationInput)
     .mutation(({ input, ctx }) => deleteInvitation(input.id, ctx.session)),
+  findDashboardUser: protectedProcedure
+    .input(findDashboardUserInput)
+    .query(({ input, ctx }) => findDashboardUser(input, ctx.session)),
 })
