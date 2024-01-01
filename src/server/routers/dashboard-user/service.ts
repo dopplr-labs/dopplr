@@ -20,7 +20,10 @@ export async function createInvitation(input: z.infer<typeof createInvitationInp
     })
   }
 
-  const existingInvite = await db.select().from(dashboardUserInvite).where(eq(dashboardUserInvite.to, user[0].id))
+  const existingInvite = await db
+    .select()
+    .from(dashboardUserInvite)
+    .where(and(eq(dashboardUserInvite.to, user[0].id), eq(dashboardUserInvite.dashboard, input.dashboard)))
 
   /** Case 1. User have already sent and invitation and it is not expired yet. */
   if (existingInvite.length !== 0 && dayjs(existingInvite[0].expireOn).isAfter(dayjs())) {

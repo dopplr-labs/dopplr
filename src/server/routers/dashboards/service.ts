@@ -6,9 +6,25 @@ import { db } from '@/db'
 import { dashboards } from '@/db/schema/dashboards'
 import { createDashboardInput, updateDashboardInput } from './input'
 import { charts, chartsToDashboards } from '@/db/schema/charts'
+import { dashboardUser } from '@/db/schema/dashboard-user'
 
+/**
+ * There can be two type of dashboards that a user can have
+ * 1. Dashboard which a user created by himself
+ * 2. Dashboard on which the user is invited
+ * */
 export async function findUserDashboards(session: Session) {
-  return db.select().from(dashboards).where(eq(dashboards.createdBy, session.user.id))
+  /**
+   * We create a DashboardUser with OWNER role when user crates a dashboard,
+   * it makes the process to find the dashboards easier
+   * */
+  const dashboardUsers = await db
+    .select()
+    .from(dashboardUser)
+    .where(eq(dashboardUser.user, session.user.id))
+    .leftJoin(dashboards, eq(dashboards.id, dashboardUser.dashboard))
+
+  return dashboardUsers.map((i) => i.dashboards)
 }
 
 export async function createDashboard(input: z.infer<typeof createDashboardInput>, session: Session) {
@@ -19,6 +35,13 @@ export async function createDashboard(input: z.infer<typeof createDashboardInput
       createdBy: session.user.id,
     })
     .returning()
+
+  /** To keep track of permissions on dashboard */
+  await db.insert(dashboardUser).values({
+    dashboard: dashboardCreated[0].id,
+    role: 'OWNER',
+    user: session.user.id,
+  })
 
   return dashboardCreated[0]
 }
