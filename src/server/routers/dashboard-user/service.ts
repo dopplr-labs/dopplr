@@ -5,7 +5,7 @@ import { and, eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { acceptOrRejectInviteInput, createInvitationInput, findSentInvitationsInput } from './input'
 import { db } from '@/db'
-import { dashboardUserInvite } from '@/db/schema/dashboard-user'
+import { dashboardUser, dashboardUserInvite } from '@/db/schema/dashboard-user'
 import { users } from '@/db/schema/auth'
 import { dashboards } from '@/db/schema/dashboards'
 
@@ -109,10 +109,22 @@ export async function acceptOrRejectInvite(input: z.infer<typeof acceptOrRejectI
 
   /**
    * If user is accepting the invitation then
-   * update status to COMPLETED and create DashboardUser with proper permissions
+   * update status to CONFIRMED and create DashboardUser with proper permissions
    * */
   if (input.status === 'ACCEPT') {
-    return null
+    await db.insert(dashboardUser).values({
+      dashboard: invite.dashboard,
+      role: invite.role,
+      user: invite.to,
+    })
+
+    const updatedInvitations = await db
+      .update(dashboardUserInvite)
+      .set({ status: 'CONFIRMED' })
+      .where(eq(dashboardUserInvite.id, invite.id))
+      .returning()
+
+    return updatedInvitations[0]
   }
 
   /** Otherwise remove the invitation */

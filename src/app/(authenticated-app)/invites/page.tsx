@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
+import { EmptyMessage } from '@/components/ui/empty-message'
 
 export default function Invites() {
   const { toast } = useToast()
@@ -49,6 +50,14 @@ export default function Invites() {
           </div>
         ))
         .with({ status: 'success' }, ({ data: invitations }) => {
+          if (invitations.length === 0) {
+            return (
+              <div className="flex items-center justify-center">
+                <EmptyMessage title="No invitations" description="No-one has invited you yet." />
+              </div>
+            )
+          }
+
           return (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {invitations.map((invite) => {
