@@ -1,6 +1,6 @@
 'use client'
 
-import { SendIcon } from 'lucide-react'
+import { SendIcon, XIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -36,6 +36,24 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
       toast({
         title: 'Success!',
         description: 'Invitation sent to user successfully!',
+        variant: 'success',
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: 'Something went wrong!',
+        description: error?.message ?? '',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  const deleteInviteMutation = trpc.dashboardUser.deleteInvitation.useMutation({
+    onSuccess: () => {
+      sentInvitationsQuery.refetch()
+      toast({
+        title: 'Success!',
+        description: 'Invitation deleted successfully!',
         variant: 'success',
       })
     },
@@ -141,7 +159,18 @@ export default function ShareDashboard({ className, style, open, onOpenChange, d
                       {pendingInvitations.map((invite) => (
                         <div className="flex items-center justify-between rounded-md border px-4 py-2" key={invite.id}>
                           <div className="text-sm">{invite?.to?.email}</div>
-                          <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm text-muted-foreground">{ROLE_LABEL_MAP[invite.role]}</div>
+                            <Button
+                              icon={<XIcon />}
+                              size="icon-sm"
+                              loading={deleteInviteMutation.isLoading}
+                              variant="ghost"
+                              onClick={() => {
+                                deleteInviteMutation.mutate({ id: invite.id })
+                              }}
+                            />
+                          </div>
                         </div>
                       ))}
                     </div>

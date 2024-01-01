@@ -1,6 +1,17 @@
 import { protectedProcedure, router } from '@/server/trpc'
-import { acceptOrRejectInviteInput, createInvitationInput, findSentInvitationsInput } from './input'
-import { acceptOrRejectInvite, createInvitation, findReceivedInvitations, findSentInvitations } from './service'
+import {
+  acceptOrRejectInviteInput,
+  createInvitationInput,
+  deleteInvitationInput,
+  findSentInvitationsInput,
+} from './input'
+import {
+  acceptOrRejectInvite,
+  createInvitation,
+  deleteInvitation,
+  findReceivedInvitations,
+  findSentInvitations,
+} from './service'
 
 export const dashboardUserRouter = router({
   createInvitation: protectedProcedure
@@ -13,4 +24,7 @@ export const dashboardUserRouter = router({
   acceptOrRejectInvite: protectedProcedure
     .input(acceptOrRejectInviteInput)
     .mutation(({ input, ctx }) => acceptOrRejectInvite(input, ctx.session)),
+  deleteInvitation: protectedProcedure
+    .input(deleteInvitationInput)
+    .mutation(({ input, ctx }) => deleteInvitation(input.id, ctx.session)),
 })

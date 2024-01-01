@@ -123,3 +123,21 @@ export async function acceptOrRejectInvite(input: z.infer<typeof acceptOrRejectI
 
   return rejectedInvitation[0]
 }
+
+export async function deleteInvitation(inviteId: number, session: Session) {
+  const invite = await findInvitationById(inviteId)
+
+  if (invite.from !== session.user.id) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not allowed to delete this invitation!',
+    })
+  }
+
+  const deletedInvitation = await db
+    .delete(dashboardUserInvite)
+    .where(eq(dashboardUserInvite.id, invite.id))
+    .returning()
+
+  return deletedInvitation[0]
+}

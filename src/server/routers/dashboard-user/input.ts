@@ -15,3 +15,7 @@ export const acceptOrRejectInviteInput = z.object({
   id: z.number(),
   status: z.enum(['ACCEPT', 'REJECT']),
 })
+
+export const deleteInvitationInput = z.object({
+  id: z.number(),
+})
